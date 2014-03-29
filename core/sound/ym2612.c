@@ -997,7 +997,7 @@ INLINE void set_sr(FM_SLOT *SLOT,int v)
 }
 
 /* set release rate */
-INLINE void set_sl_rr(FM_SLOT *SLOT,int v)
+static INLINE void set_sl_rr(FM_SLOT *SLOT,int v)
 {
   SLOT->sl = sl_table[ v>>4 ];
   

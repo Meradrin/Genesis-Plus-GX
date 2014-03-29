@@ -1242,7 +1242,7 @@ INLINE void set_ar_dr(int slot,int v)
 }
 
 /* set sustain level & release rate */
-INLINE void set_sl_rr(int slot,int v)
+static INLINE void set_sl_rr(int slot,int v)
 {
   YM2413_OPLL_CH   *CH   = &ym2413.P_CH[slot/2];
   YM2413_OPLL_SLOT *SLOT = &CH->SLOT[slot&1];

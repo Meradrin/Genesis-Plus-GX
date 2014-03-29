@@ -44,6 +44,8 @@
   machine lock up.
 */
 
+struct _zbank_memory_map zbank_memory_map[256];
+
 unsigned int zbank_unused_r(unsigned int address)
 {
 #ifdef LOGERROR

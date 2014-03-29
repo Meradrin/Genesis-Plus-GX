@@ -1,0 +1,216 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B4DFFF82-D0FC-4DA9-85F5-73596227AA67}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>GenPlusGX-Marmelade-Module</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\..\Bin\Modules\</OutDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)\..\..\Bin\Modules\</OutDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;INLINE=__inline;_CRT_SECURE_NO_WARNINGS;MARMELADE_MODULE;_DEBUG;_WINDOWS;_USRDLL;GENPLUSGXDEBUG_EXPORTS;%(PreprocessorDefinitions);LSB_FIRST;USE_32BPP_RENDERING;LOGERROR;LOG_CDC;LOG_CDD;LOG_SCD;LOGVDP;LOG_PCM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\..\core\z80\;$(ProjectDir)\..\..\core\ntsc\;$(ProjectDir)\..\..\core\sound\;$(ProjectDir)\..\..\core\m68k\;$(ProjectDir)\..\..\core\input_hw\;$(ProjectDir)\..\..\core\cd_hw\;$(ProjectDir)\..\..\core\cart_hw\svp\;$(ProjectDir)\..\..\core\cart_hw\;$(ProjectDir)\..\..\core\;$(ProjectDir)\..\Util\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;INLINE=__inline;_CRT_SECURE_NO_WARNINGS;MARMELADE_MODULE;NDEBUG;_WINDOWS;_USRDLL;GENPLUSGXDEBUG_EXPORTS;%(PreprocessorDefinitions);LSB_FIRST;USE_32BPP_RENDERING;LOGERROR;LOG_CDC;LOG_CDD;LOG_SCD;LOGVDP;LOG_PCM</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(ProjectDir)\..\;$(ProjectDir)\..\..\core\z80\;$(ProjectDir)\..\..\core\ntsc\;$(ProjectDir)\..\..\core\sound\;$(ProjectDir)\..\..\core\m68k\;$(ProjectDir)\..\..\core\input_hw\;$(ProjectDir)\..\..\core\cd_hw\;$(ProjectDir)\..\..\core\cart_hw\svp\;$(ProjectDir)\..\..\core\cart_hw\;$(ProjectDir)\..\..\core\;$(ProjectDir)\..\Util\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\core\cart_hw\areplay.c" />
+    <ClCompile Include="..\..\core\cart_hw\eeprom_93c.c" />
+    <ClCompile Include="..\..\core\cart_hw\eeprom_i2c.c" />
+    <ClCompile Include="..\..\core\cart_hw\eeprom_spi.c" />
+    <ClCompile Include="..\..\core\cart_hw\ggenie.c" />
+    <ClCompile Include="..\..\core\cart_hw\md_cart.c" />
+    <ClCompile Include="..\..\core\cart_hw\sms_cart.c" />
+    <ClCompile Include="..\..\core\cart_hw\sram.c" />
+    <ClCompile Include="..\..\core\cart_hw\svp\ssp16.c" />
+    <ClCompile Include="..\..\core\cart_hw\svp\svp.c" />
+    <ClCompile Include="..\..\core\cd_hw\cdc.c" />
+    <ClCompile Include="..\..\core\cd_hw\cdd.c" />
+    <ClCompile Include="..\..\core\cd_hw\cd_cart.c" />
+    <ClCompile Include="..\..\core\cd_hw\gfx.c" />
+    <ClCompile Include="..\..\core\cd_hw\pcm.c" />
+    <ClCompile Include="..\..\core\cd_hw\scd.c" />
+    <ClCompile Include="..\..\core\genesis.c" />
+    <ClCompile Include="..\..\core\input_hw\activator.c" />
+    <ClCompile Include="..\..\core\input_hw\gamepad.c" />
+    <ClCompile Include="..\..\core\input_hw\input.c" />
+    <ClCompile Include="..\..\core\input_hw\lightgun.c" />
+    <ClCompile Include="..\..\core\input_hw\mouse.c" />
+    <ClCompile Include="..\..\core\input_hw\paddle.c" />
+    <ClCompile Include="..\..\core\input_hw\sportspad.c" />
+    <ClCompile Include="..\..\core\input_hw\teamplayer.c" />
+    <ClCompile Include="..\..\core\input_hw\terebi_oekaki.c" />
+    <ClCompile Include="..\..\core\input_hw\xe_a1p.c" />
+    <ClCompile Include="..\..\core\io_ctrl.c" />
+    <ClCompile Include="..\..\core\loadrom.c" />
+    <ClCompile Include="..\..\core\m68k\m68kcpu.c" />
+    <ClCompile Include="..\..\core\m68k\s68kcpu.c" />
+    <ClCompile Include="..\..\core\mem68k.c" />
+    <ClCompile Include="..\..\core\membnk.c" />
+    <ClCompile Include="..\..\core\memz80.c" />
+    <ClCompile Include="..\..\core\ntsc\md_ntsc.c" />
+    <ClCompile Include="..\..\core\ntsc\sms_ntsc.c" />
+    <ClCompile Include="..\..\core\sound\blip_buf.c" />
+    <ClCompile Include="..\..\core\sound\eq.c" />
+    <ClCompile Include="..\..\core\sound\sn76489.c" />
+    <ClCompile Include="..\..\core\sound\sound.c" />
+    <ClCompile Include="..\..\core\sound\ym2413.c" />
+    <ClCompile Include="..\..\core\sound\ym2612.c" />
+    <ClCompile Include="..\..\core\state.c" />
+    <ClCompile Include="..\..\core\system.c" />
+    <ClCompile Include="..\..\core\vdp_ctrl.c" />
+    <ClCompile Include="..\..\core\vdp_render.c" />
+    <ClCompile Include="..\..\core\z80\z80.c" />
+    <ClCompile Include="..\api\MarmeladeModule.cpp" />
+    <ClCompile Include="..\Debug\Memory.cpp" />
+    <ClCompile Include="..\Debug\Breakpoint.cpp" />
+    <ClCompile Include="..\Util\scrc32.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\core\cart_hw\areplay.h" />
+    <ClInclude Include="..\..\core\cart_hw\eeprom_93c.h" />
+    <ClInclude Include="..\..\core\cart_hw\eeprom_i2c.h" />
+    <ClInclude Include="..\..\core\cart_hw\eeprom_spi.h" />
+    <ClInclude Include="..\..\core\cart_hw\ggenie.h" />
+    <ClInclude Include="..\..\core\cart_hw\md_cart.h" />
+    <ClInclude Include="..\..\core\cart_hw\sms_cart.h" />
+    <ClInclude Include="..\..\core\cart_hw\sram.h" />
+    <ClInclude Include="..\..\core\cart_hw\svp\ssp16.h" />
+    <ClInclude Include="..\..\core\cart_hw\svp\svp.h" />
+    <ClInclude Include="..\..\core\cd_hw\cdc.h" />
+    <ClInclude Include="..\..\core\cd_hw\cdd.h" />
+    <ClInclude Include="..\..\core\cd_hw\cd_cart.h" />
+    <ClInclude Include="..\..\core\cd_hw\gfx.h" />
+    <ClInclude Include="..\..\core\cd_hw\pcm.h" />
+    <ClInclude Include="..\..\core\cd_hw\scd.h" />
+    <ClInclude Include="..\Debug\DebugMacro.h" />
+    <ClInclude Include="..\Debug\Memory.h" />
+    <ClInclude Include="..\..\core\genesis.h" />
+    <ClInclude Include="..\..\core\hvc.h" />
+    <ClInclude Include="..\..\core\input_hw\activator.h" />
+    <ClInclude Include="..\..\core\input_hw\gamepad.h" />
+    <ClInclude Include="..\..\core\input_hw\input.h" />
+    <ClInclude Include="..\..\core\input_hw\lightgun.h" />
+    <ClInclude Include="..\..\core\input_hw\mouse.h" />
+    <ClInclude Include="..\..\core\input_hw\paddle.h" />
+    <ClInclude Include="..\..\core\input_hw\sportspad.h" />
+    <ClInclude Include="..\..\core\input_hw\teamplayer.h" />
+    <ClInclude Include="..\..\core\input_hw\terebi_oekaki.h" />
+    <ClInclude Include="..\..\core\input_hw\xe_a1p.h" />
+    <ClInclude Include="..\..\core\io_ctrl.h" />
+    <ClInclude Include="..\..\core\loadrom.h" />
+    <ClInclude Include="..\..\core\m68k\m68k.h" />
+    <ClInclude Include="..\..\core\m68k\m68kconf.h" />
+    <ClInclude Include="..\..\core\m68k\m68kcpu.h" />
+    <ClInclude Include="..\..\core\m68k\m68ki_cycles.h" />
+    <ClInclude Include="..\..\core\m68k\m68ki_instruction_jump_table.h" />
+    <ClInclude Include="..\..\core\m68k\m68kops.h" />
+    <ClInclude Include="..\..\core\m68k\s68kconf.h" />
+    <ClInclude Include="..\..\core\m68k\s68ki_cycles.h" />
+    <ClInclude Include="..\..\core\macros.h" />
+    <ClInclude Include="..\..\core\mem68k.h" />
+    <ClInclude Include="..\..\core\membnk.h" />
+    <ClInclude Include="..\..\core\memz80.h" />
+    <ClInclude Include="..\..\core\ntsc\md_ntsc.h" />
+    <ClInclude Include="..\..\core\ntsc\md_ntsc_config.h" />
+    <ClInclude Include="..\..\core\ntsc\md_ntsc_impl.h" />
+    <ClInclude Include="..\..\core\ntsc\sms_ntsc.h" />
+    <ClInclude Include="..\..\core\ntsc\sms_ntsc_config.h" />
+    <ClInclude Include="..\..\core\ntsc\sms_ntsc_impl.h" />
+    <ClInclude Include="..\..\core\shared.h" />
+    <ClInclude Include="..\..\core\sound\blip_buf.h" />
+    <ClInclude Include="..\..\core\sound\eq.h" />
+    <ClInclude Include="..\..\core\sound\sn76489.h" />
+    <ClInclude Include="..\..\core\sound\sound.h" />
+    <ClInclude Include="..\..\core\sound\ym2413.h" />
+    <ClInclude Include="..\..\core\sound\ym2612.h" />
+    <ClInclude Include="..\..\core\state.h" />
+    <ClInclude Include="..\..\core\system.h" />
+    <ClInclude Include="..\..\core\types.h" />
+    <ClInclude Include="..\..\core\vdp_ctrl.h" />
+    <ClInclude Include="..\..\core\vdp_render.h" />
+    <ClInclude Include="..\..\core\z80\osd_cpu.h" />
+    <ClInclude Include="..\..\core\z80\z80.h" />
+    <ClInclude Include="..\api\APIMarmelade.h" />
+    <ClInclude Include="..\Debug\Breakpoint.h" />
+    <ClInclude Include="..\Util\osd.h" />
+    <ClInclude Include="..\Util\scrc32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\core\cart_hw\svp\imageformat.txt" />
+    <None Include="..\..\core\cart_hw\svp\svpdoc.txt" />
+    <None Include="..\..\core\m68k\readme.txt" />
+    <None Include="..\..\core\ntsc\changes.txt" />
+    <None Include="..\..\core\ntsc\license.txt" />
+    <None Include="..\..\core\ntsc\readme.txt" />
+    <None Include="..\..\core\ntsc\sms_ntsc.txt" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
