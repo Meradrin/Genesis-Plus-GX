@@ -18,6 +18,7 @@ extern int vdp_68k_irq_ack(int int_level);
 #include "m68kconf.h"
 #include "m68kcpu.h"
 #include "m68kops.h"
+#include "Debug/DebugMacro.h"
 
 /* ======================================================================== */
 /* ================================= DATA ================================= */
@@ -236,6 +237,7 @@ void m68k_set_irq_delay(unsigned int int_level)
       m68ki_trace_t1() /* auto-disable (see m68kcpu.h) */
       m68ki_use_data_space() /* auto-disable (see m68kcpu.h) */
       REG_IR = m68ki_read_imm_16();
+      SPY_M68K_PRE_EXEC;
       m68ki_instruction_jump_table[REG_IR]();
       m68ki_exception_if_trace() /* auto-disable (see m68kcpu.h) */
       irq_latency = 0;
@@ -292,6 +294,8 @@ void m68k_run(unsigned int cycles)
     /* Decode next instruction */
     REG_IR = m68ki_read_imm_16();
 	
+    SPY_M68K_PRE_EXEC;
+
     /* Execute instruction */
 	m68ki_instruction_jump_table[REG_IR]();
     USE_CYCLES(CYC_INSTRUCTION[REG_IR]);

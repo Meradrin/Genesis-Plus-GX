@@ -1,5 +1,10 @@
 #include "API\APIMarmelade.h"
 #include "Debug\Memory.h"
+#include "Debug\DebugCPU.h"
+#include "Debug\Register.h"
+#include "Debug\Disasm.h"
+#include "Debug\MemoryMap.h"
+#include "Debug\DebugInfo.h"
 
 extern "C"
 {
@@ -292,17 +297,26 @@ void RenderFrame(EmulatorHandle _hData)
 
 bool IsNeedBreak(EmulatorHandle _hData)
 {
-    return false;
+    bool bIsNeedBreak = false;
+
+    for (int i = 0; i < kCPU_Count; ++i)
+        bIsNeedBreak |= gbNeedBreak[i];
+
+    return bIsNeedBreak;
 }
 
 void Play(EmulatorHandle _hData)
 {
-
+    for (int i = 0; i < kCPU_Count; ++i)
+        gbNeedBreak[i] = false;
 }
 
 void Break(EmulatorHandle _hData)
 {
+    if (system_hw == SYSTEM_MCD || (system_hw & SYSTEM_PBC) == SYSTEM_MD)
+        gbNeedBreak[1] = true;
 
+    gbNeedBreak[0] = true;
 }
 
 bool OpenROM(EmulatorHandle _hData, const char* _szROMFile)
@@ -607,44 +621,90 @@ Status ModuleIsSupportedVersion(uint32 _uiVersion)
 
 Status ModuleGetAPI(uint32 _uiVersion, EmulatorModuleAPI* _pAPI)
 {
-    if (_uiVersion == CURRENT_EMU_MODULE_API_VERSION)
-    {
-        _pAPI->Emu.SetVideoRenderCallback = SetRenderFnc;
-        _pAPI->Emu.SetAudioSampleCallback = SetAudioFnc;
-        _pAPI->Emu.SetInputCallback = SetInputFnc;
-        _pAPI->Emu.GetTargetCount = GetTargetCount;
-        _pAPI->Emu.GetConsoleName = GetConsoleName;
-        _pAPI->Emu.GetEmulatorName = GetEmulatorName;
-        _pAPI->Emu.GetEmulatorVersion = GetEmulatorVersion;
-        _pAPI->Emu.GetROMFilters = GetFilters;
-        _pAPI->Emu.Init = Init;
-        _pAPI->Emu.Terminate = Terminate;
-        _pAPI->Emu.DoFrame = RenderFrame;
-        _pAPI->Emu.OpenROM = OpenROM;
-        _pAPI->Emu.Reset = Reset;
-        _pAPI->Emu.GetInputMgr = GetInputMgr;
-        _pAPI->Emu.GetMemoryCount = GetMemoryCount;
-        _pAPI->Emu.GetMemory = GetMemory;
+    if (_uiVersion != CURRENT_EMU_MODULE_API_VERSION)
+        return STATUS_INVALID;
+    _pAPI->Emu.SetVideoRenderCallback = SetRenderFnc;
+    _pAPI->Emu.SetAudioSampleCallback = SetAudioFnc;
+    _pAPI->Emu.SetInputCallback = SetInputFnc;
+    _pAPI->Emu.GetTargetCount = GetTargetCount;
+    _pAPI->Emu.GetConsoleName = GetConsoleName;
+    _pAPI->Emu.GetEmulatorName = GetEmulatorName;
+    _pAPI->Emu.GetEmulatorVersion = GetEmulatorVersion;
+    _pAPI->Emu.GetROMFilters = GetFilters;
+    _pAPI->Emu.Init = Init;
+    _pAPI->Emu.Terminate = Terminate;
+    _pAPI->Emu.DoFrame = RenderFrame;
+    _pAPI->Emu.OpenROM = OpenROM;
+    _pAPI->Emu.Reset = Reset;
+    _pAPI->Emu.Play = Play;
+    _pAPI->Emu.Break = Break;
+    _pAPI->Emu.IsNeedBreak = IsNeedBreak;
+    _pAPI->Emu.GetInputMgr = GetInputMgr;
+    _pAPI->Emu.GetMemoryCount = GetMemoryCount;
+    _pAPI->Emu.GetMemory = GetMemory;
+//    _pAPI->Emu.GetTileInfo = GetTileInfo;
+    _pAPI->Emu.GetGroupPropertiesCount = GetGroupPropertiesCount;
+    _pAPI->Emu.GetGroupProperties = GetGroupProperties;
+    _pAPI->Emu.GetCPUCount = GetCPUCount;
+    _pAPI->Emu.GetCPU = GetCPU;
+    _pAPI->Emu.SetExecutionBreak = SetExecutionBreak;
+//    _pAPI->Emu.GetBreakpointMgr = GetBreakpointMgr;
+//    _pAPI->Emu.GetSaveStateMode = GetSaveStateMode;
+//    _pAPI->Emu.GetSaveState = GetSaveState;
+//    _pAPI->Emu.SetSaveState = SetSaveState;
+//    _pAPI->Emu.DeleteSaveState = DeleteSaveState;
+//    _pAPI->Emu.GetSaveStateExt = GetSaveStateExt;
 
-        // Input
-        _pAPI->Inputs.GetPortCount = GetPortCount;
-        _pAPI->Inputs.GetPortName = GetPortName;
-        _pAPI->Inputs.GetDeviceTypeCount = GetDeviceTypeCount;
-        _pAPI->Inputs.GetDeviceTypeName = GetDeviceTypeName;
-        _pAPI->Inputs.GetDeviceInputCount = GetDeviceInputCount;
-        _pAPI->Inputs.GetDeviceInputName = GetDeviceInputName;
-        _pAPI->Inputs.GetDeviceOnPort = GetDeviceOnPort;
-        _pAPI->Inputs.SetDeviceOnPort = SetDeviceOnPort;
+    // Input
+    _pAPI->Inputs.GetPortCount = GetPortCount;
+    _pAPI->Inputs.GetPortName = GetPortName;
+    _pAPI->Inputs.GetDeviceTypeCount = GetDeviceTypeCount;
+    _pAPI->Inputs.GetDeviceTypeName = GetDeviceTypeName;
+    _pAPI->Inputs.GetDeviceInputCount = GetDeviceInputCount;
+    _pAPI->Inputs.GetDeviceInputName = GetDeviceInputName;
+    _pAPI->Inputs.GetDeviceOnPort = GetDeviceOnPort;
+    _pAPI->Inputs.SetDeviceOnPort = SetDeviceOnPort;
 
-        // Memory
-        _pAPI->Memory.GetName = GetName;
-        _pAPI->Memory.GetByte = GetByte;
-        _pAPI->Memory.SetByte = SetByte;
-        _pAPI->Memory.GetSize = GetSize;
-        _pAPI->Memory.GetMap = GetMap;
+    // Group Properties
+    _pAPI->GroupProperties.GetTitles = GetTitles;
+    _pAPI->GroupProperties.IsNeedRefresh = IsNeedRefresh;
+    _pAPI->GroupProperties.GetProperties = GetProperties;
 
-        return STATUS_VALID;
-    }
+    // CPU
+    _pAPI->CPU.GetBusMem = GetBusMem;
+    _pAPI->CPU.GetCallstack = GetCallstack;
+    _pAPI->CPU.GetDiasm = GetDiasm; 
+    _pAPI->CPU.GetName = GetCPUName;
+    _pAPI->CPU.GetRegisters = GetRegisters;
+    _pAPI->CPU.GetValidStep = GetValidStep;
+    _pAPI->CPU.StepIn = StepIn;
+    _pAPI->CPU.StepOut = StepOut;
+    _pAPI->CPU.StepOver = StepOver;
 
-    return STATUS_INVALID;
+    _pAPI->Register.GetRegisterCount = GetRegisterCount;
+    _pAPI->Register.GetRegisterName = GetRegisterName;
+    _pAPI->Register.GetRegisterValue = GetRegisterValue;
+    _pAPI->Register.SetRegisterValue = SetRegisterValue;
+    _pAPI->Register.GetRunningAddr = GetRunningAddr;
+    _pAPI->Register.GetStackAddr = GetStackAddr;
+
+    _pAPI->Disasm.DumpFormat = DumpFormat;
+    _pAPI->Disasm.GetDumpFormatCount = GetDumpFormatCount;
+    _pAPI->Disasm.GetDumpFormatName = GetDumpFormatName;
+    _pAPI->Disasm.GetEndiannessType = GetEndiannessType;
+    _pAPI->Disasm.GetLongSize = GetLongSize;
+    _pAPI->Disasm.GetWordSize = GetWordSize;
+    _pAPI->Disasm.GetOpcodeSize = GetOpcodeSize;
+    _pAPI->Disasm.GetOpcodeText = GetOpcodeText;
+    _pAPI->Disasm.GetOpcodeFormatedText = GetOpcodeFormatedText;
+    _pAPI->Disasm.GetResultOperand = GetResultOperand;
+
+    // Memory
+    _pAPI->Memory.GetName = GetName;
+    _pAPI->Memory.GetByte = GetByte;
+    _pAPI->Memory.SetByte = SetByte;
+    _pAPI->Memory.GetSize = GetSize;
+    _pAPI->Memory.GetMap = GetMap;
+
+    return STATUS_VALID;
 }

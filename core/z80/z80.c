@@ -125,6 +125,7 @@
  *****************************************************************************/
 #include "shared.h"
 #include "z80.h"
+#include "Debug/DebugMacro.h"
 
 /* execute main opcodes inside a big switch statement */
 #define BIG_SWITCH 1
@@ -3406,6 +3407,7 @@ void z80_run(unsigned int cycles)
 
     Z80.after_ei = FALSE;
     R++;
+    SPY_Z80_PRE_EXEC;
     EXEC_INLINE(op,ROP());
   }
 } 

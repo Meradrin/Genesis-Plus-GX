@@ -18,6 +18,7 @@ extern int scd_68k_irq_ack(int level);
 #include "s68kconf.h"
 #include "m68kcpu.h"
 #include "m68kops.h"
+#include "Debug/DebugMacro.h"
 
 /* ======================================================================== */
 /* ================================= DATA ================================= */
@@ -255,6 +256,8 @@ void s68k_run(unsigned int cycles)
 
     /* Decode next instruction */
     REG_IR = m68ki_read_imm_16();
+
+    SPY_S68K_PRE_EXEC;
 
     /* Execute instruction */
 	m68ki_instruction_jump_table[REG_IR]();

@@ -1,5 +1,5 @@
-#ifndef debug_macro_h
-#define debug_macro_h
+#ifndef DebugMacro_h
+#define DebugMacro_h
 
 #include "Breakpoint.h"
 

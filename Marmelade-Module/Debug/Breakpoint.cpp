@@ -1,21 +1,7 @@
 #include "Breakpoint.h"
+#include "API\APIMarmelade.h"
 
 int gIsDebugAccess = 0;
-
-void SpyM68kPreExec()
-{
-
-}
-
-void SpyS68kPreExec()
-{
-
-}
-
-void SpyZ80PreExec()
-{
-
-}
 
 void SpyM68kBusPreRead(unsigned _uiAddr, unsigned _uiSize)
 {
@@ -75,4 +61,19 @@ void SpyVDPVSRamPreRead(unsigned _uiAddr, unsigned _uiSize)
 void SpyVDPVSRamWPrerite(unsigned _uiAddr, unsigned _uiData, unsigned _uiSize)
 {
 
+}
+
+void SetBreakpoint(uint32 _uiMemType, uint32 _uiPos, uint32 _uiBreakValue)
+{
+
+}
+
+unsigned GetBreakpoint(unsigned _uiMemType, unsigned _uiPos)
+{
+    return 0;
+}
+
+unsigned IsNeedBreak(unsigned _uiMemType, unsigned _uiPos, unsigned _uiBreakMask)
+{
+    return false;
 }

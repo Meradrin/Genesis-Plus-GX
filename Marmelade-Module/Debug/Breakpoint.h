@@ -1,10 +1,18 @@
-#ifndef spy_h
-#define spy_h
+#ifndef Spy_h
+#define Spy_h
 
 #ifdef __cplusplus
 extern "C"
 {
 #endif
+
+#define BREAK_FLAG_EXEC  1
+#define BREAK_FLAG_READ  2
+#define BREAK_FLAG_WRITE 4
+
+void SetBreakpoint(unsigned _uiMemType, unsigned _uiPos, unsigned _uiBreakValue);
+unsigned GetBreakpoint(unsigned _uiMemType, unsigned _uiPos);
+unsigned IsNeedBreak(unsigned _uiMemType, unsigned _uiPos, unsigned _uiBreakMask);
 
 void SpyM68kPreExec();
 void SpyS68kPreExec();

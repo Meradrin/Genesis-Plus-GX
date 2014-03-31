@@ -3,6 +3,17 @@
 
 #include "API\APIMarmelade.h"
 
+enum MemoryTypes_e
+{
+    kMemory_Z80,
+    kMemory_M68000,
+    kMemory_S68000,
+    kMemory_VRAM,
+    kMemory_PAL,
+    kMemory_ROM,
+    kMemory_Count,
+};
+
 uint32        GetMemoryCount(EmulatorHandle _hData);
 MemoryHandle  GetMemory(EmulatorHandle _hData, uint32 _uiMemIndex);
 
