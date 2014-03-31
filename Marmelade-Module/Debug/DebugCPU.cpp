@@ -3,7 +3,7 @@
 #include "MemoryMap.h"
 #include "Register.h"
 #include "Disasm.h"
-#include "Breakpoint.h"
+#include "Spy.h"
 
 extern "C"
 {
@@ -170,12 +170,58 @@ void StepOver(CPUHandle _CPU)
 
 extern "C" void SpyM68kPreExec()
 {
+    if (guiStepCount[1] > 0)
+        --guiStepCount[1];
 
+    if (guiStepCount[1] == 0)
+    {
+        gbNeedBreak[1] = true;
+        guiStepCount[1] = -1;
+    }
+
+    uint32 uiPC = GetRunningAddr(GetM68000Register());
+
+    if (IsNeedBreak(kMemory_M68000, uiPC, BREAK_FLAG_EXEC))
+    {
+        gbNeedBreak[1] = true;
+        guiStepCount[1] = -1;
+    }
+
+    UpdateM68000Map();
+
+    if (gbNeedBreak[1] && gExecutionBreak != NULL)
+    {
+        //UpdateCallstack();
+        gExecutionBreak(0x1);
+    }
 }
 
 extern "C" void SpyS68kPreExec()
 {
+    if (guiStepCount[2] > 0)
+        --guiStepCount[2];
 
+    if (guiStepCount[2] == 0)
+    {
+        gbNeedBreak[2] = true;
+        guiStepCount[2] = -1;
+    }
+
+    uint32 uiPC = GetRunningAddr(GetS68000Register());
+
+    if (IsNeedBreak(kMemory_S68000, uiPC, BREAK_FLAG_EXEC))
+    {
+        gbNeedBreak[2] = true;
+        guiStepCount[2] = -1;
+    }
+
+    UpdateS68000Map();
+
+    if (gbNeedBreak[2] && gExecutionBreak != NULL)
+    {
+        //UpdateCallstack();
+        gExecutionBreak(0x2);
+    }
 }
 
 extern "C" void SpyZ80PreExec()

@@ -1,7 +1,7 @@
 #ifndef DebugMacro_h
 #define DebugMacro_h
 
-#include "Breakpoint.h"
+#include "Spy.h"
 
 #define IS_DEBUG_READ       gIsDebugAcess
 #define IS_DEBUG_WRITE      gIsDebugAcess

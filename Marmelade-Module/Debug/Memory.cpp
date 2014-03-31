@@ -189,14 +189,12 @@ unsigned GetSize(MemoryHandle _Mem)
 
 MemoryMapHandle GetMap(MemoryHandle _Mem)
 {
-    return NULL;
-
     MemoryTypes_e  mem = (MemoryTypes_e)((uint32)_Mem - 1);
 
     switch (mem)
     {
     case kMemory_Z80:
-        return GetZ80MemMap;
+        return GetZ80MemMap();
     case kMemory_M68000:
         return GetM68000MemMap();
     case kMemory_S68000:

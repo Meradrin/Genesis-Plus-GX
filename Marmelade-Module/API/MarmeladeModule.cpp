@@ -5,6 +5,7 @@
 #include "Debug\Disasm.h"
 #include "Debug\MemoryMap.h"
 #include "Debug\DebugInfo.h"
+#include "Debug\Breakpoint.h"
 
 extern "C"
 {
@@ -611,6 +612,11 @@ void osd_input_update()
     }
 }
 
+BreakpointMgrHandle GetBreakpointMgr(EmulatorHandle _hData)
+{
+    return GetBreakHandle();
+}
+
 Status ModuleIsSupportedVersion(uint32 _uiVersion)
 {
     if (_uiVersion == CURRENT_EMU_MODULE_API_VERSION)
@@ -648,7 +654,7 @@ Status ModuleGetAPI(uint32 _uiVersion, EmulatorModuleAPI* _pAPI)
     _pAPI->Emu.GetCPUCount = GetCPUCount;
     _pAPI->Emu.GetCPU = GetCPU;
     _pAPI->Emu.SetExecutionBreak = SetExecutionBreak;
-//    _pAPI->Emu.GetBreakpointMgr = GetBreakpointMgr;
+    _pAPI->Emu.GetBreakpointMgr = GetBreakpointMgr;
 //    _pAPI->Emu.GetSaveStateMode = GetSaveStateMode;
 //    _pAPI->Emu.GetSaveState = GetSaveState;
 //    _pAPI->Emu.SetSaveState = SetSaveState;
@@ -705,6 +711,30 @@ Status ModuleGetAPI(uint32 _uiVersion, EmulatorModuleAPI* _pAPI)
     _pAPI->Memory.SetByte = SetByte;
     _pAPI->Memory.GetSize = GetSize;
     _pAPI->Memory.GetMap = GetMap;
+
+    // Memory Map
+    _pAPI->MemoryMap.Clear = ClearMap;
+    _pAPI->MemoryMap.Load = LoadMap;
+    _pAPI->MemoryMap.Save = SaveMap;
+    _pAPI->MemoryMap.FillLabelPosition = FillLabelPosition;
+    _pAPI->MemoryMap.FindLabel = FindLabel;
+    _pAPI->MemoryMap.GetComment = GetComment;
+    _pAPI->MemoryMap.GetFlagCount = GetFlagCount;
+    _pAPI->MemoryMap.GetFlagName = GetFlagName;
+    _pAPI->MemoryMap.GetFlags = GetFlags;
+    _pAPI->MemoryMap.GetLabel = GetLabel;
+    _pAPI->MemoryMap.GetLabelCount = GetLabelCount;
+    _pAPI->MemoryMap.GetMapName = GetMapName;
+    _pAPI->MemoryMap.GetMapType = GetMapType;
+    _pAPI->MemoryMap.SetComment = SetComment;
+    _pAPI->MemoryMap.SetFlags = SetFlags;
+    _pAPI->MemoryMap.SetLabel = SetLabel;
+    _pAPI->MemoryMap.SetMapType = SetMapType;
+    _pAPI->MemoryMap.GetCommentCount = GetCommentCount;
+    _pAPI->MemoryMap.FillCommentPosition = FillCommentPosition;
+
+    // Breakpoints
+    _pAPI->Breakpoint.SetBreakpoints = SetBreakpoints;
 
     return STATUS_VALID;
 }

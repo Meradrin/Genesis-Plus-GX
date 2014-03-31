@@ -4024,19 +4024,24 @@ DiassemblerHandle GetS68000Disasm()
 
 void GetOpcodeFormatedText(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 _uiPosition, uint32 _uiFlag, char* _szOutput, uint32 _uiOutputSize)
 {
-    if ((uint32)_Disasm == (uint32)GetM68000Disasm() + 1)
+    _szOutput[0] = '?';
+    _szOutput[1] = '?';
+    _szOutput[2] = '?';
+    _szOutput[3] = '\0';
+
+    if (_Disasm == GetM68000Disasm())
     {
         Disasm68000::gCurrentCore = &m68k;
         strcpy(_szOutput, Disasm68000::Diasm68k::GetOpcodeSpecialText(_uiPosition));
     }
 
-    if ((uint32)_Disasm == (uint32)GetS68000Disasm() + 1)
+    if (_Disasm == GetS68000Disasm())
     {
         Disasm68000::gCurrentCore = &s68k;
         strcpy(_szOutput, Disasm68000::Diasm68k::GetOpcodeSpecialText(_uiPosition));
     }
 
-    if ((uint32)_Disasm == (uint32)GetZ80Disasm() + 1)
+    if (_Disasm == GetZ80Disasm())
     {
         DisasmZ80::z80dis2(_uiPosition, _szOutput);
     }
@@ -4044,19 +4049,24 @@ void GetOpcodeFormatedText(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 
 
 void GetOpcodeText(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 _uiPosition, uint32 _uiFlag, char* _szOutput, uint32 _uiOutputSize)
 {
-    if ((uint32)_Disasm == (uint32)GetM68000Disasm() + 1)
+    _szOutput[0] = '?';
+    _szOutput[1] = '?';
+    _szOutput[2] = '?';
+    _szOutput[3] = '\0';
+
+    if (_Disasm == GetM68000Disasm())
     {
         Disasm68000::gCurrentCore = &m68k;
         strcpy(_szOutput, Disasm68000::Diasm68k::GetOpcodeText(_uiPosition));
     }
 
-    if ((uint32)_Disasm == (uint32)GetS68000Disasm() + 1)
+    if (_Disasm == GetS68000Disasm())
     {
         Disasm68000::gCurrentCore = &s68k;
         strcpy(_szOutput, Disasm68000::Diasm68k::GetOpcodeText(_uiPosition));
     }
 
-    if ((uint32)_Disasm == (uint32)GetZ80Disasm() + 1)
+    if (_Disasm == GetZ80Disasm())
     {
         DisasmZ80::z80dis2(_uiPosition, _szOutput);
     }
@@ -4064,21 +4074,21 @@ void GetOpcodeText(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 _uiPosit
 
 uint32 GetOpcodeSize(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 _uiPosition, uint32 _uiFlag)
 {
-    if ((uint32)_Disasm == (uint32)GetM68000Disasm() + 1)
+    if (_Disasm == GetM68000Disasm())
     {
         Disasm68000::gCurrentCore = &m68k;
         Disasm68000::guiCurrentFlow = _uiPosition;
         return Disasm68000::Diasm68k::GetOpcodeSize(Disasm68000::NextWord());
     }
 
-    if ((uint32)_Disasm == (uint32)GetS68000Disasm() + 1)
+    if (_Disasm == GetS68000Disasm())
     {
         Disasm68000::gCurrentCore = &s68k;
         Disasm68000::guiCurrentFlow = _uiPosition;
         return Disasm68000::Diasm68k::GetOpcodeSize(Disasm68000::NextWord());
     }
 
-    if ((uint32)_Disasm == (uint32)GetZ80Disasm() + 1)
+    if (_Disasm == GetZ80Disasm())
     {
         return (uint32)DisasmZ80::z80opsize(_uiPosition);
     }
@@ -4093,7 +4103,7 @@ bool GetResultOperand(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 _uiPo
 
 uint32 GetEndiannessType(DiassemblerHandle _Disasm)
 {
-    if ((uint32)_Disasm == (uint32)GetM68000Disasm() + 1 || (uint32)_Disasm == (uint32)GetS68000Disasm() + 1)
+    if (_Disasm == GetM68000Disasm()  || _Disasm == GetS68000Disasm())
         return ENDIANNESS_BIG;
 
     return ENDIANNESS_LITTLE;
@@ -4101,7 +4111,7 @@ uint32 GetEndiannessType(DiassemblerHandle _Disasm)
 
 uint32 GetWordSize(DiassemblerHandle _Disasm)
 {
-    if ((uint32)_Disasm == (uint32)GetM68000Disasm() + 1 || (uint32)_Disasm == (uint32)GetS68000Disasm() + 1)
+    if (_Disasm == GetM68000Disasm() || _Disasm == GetS68000Disasm())
         return 2;
     
     return 1;
@@ -4109,7 +4119,7 @@ uint32 GetWordSize(DiassemblerHandle _Disasm)
 
 uint32 GetLongSize(DiassemblerHandle _Disasm)
 {
-    if ((uint32)_Disasm == (uint32)GetM68000Disasm() + 1 || (uint32)_Disasm == (uint32)GetS68000Disasm() + 1)
+    if (_Disasm == GetM68000Disasm() || _Disasm == GetS68000Disasm())
         return 4;
 
     return 2;

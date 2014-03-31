@@ -254,10 +254,10 @@ void s68k_run(unsigned int cycles)
     /* Set the address space for reads */
     m68ki_use_data_space() /* auto-disable (see m68kcpu.h) */
 
+    SPY_S68K_PRE_EXEC;
+
     /* Decode next instruction */
     REG_IR = m68ki_read_imm_16();
-
-    SPY_S68K_PRE_EXEC;
 
     /* Execute instruction */
 	m68ki_instruction_jump_table[REG_IR]();

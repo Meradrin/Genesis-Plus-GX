@@ -127,11 +127,12 @@
     <ClCompile Include="..\..\core\vdp_render.c" />
     <ClCompile Include="..\..\core\z80\z80.c" />
     <ClCompile Include="..\api\MarmeladeModule.cpp" />
+    <ClCompile Include="..\Debug\Breakpoint.cpp" />
     <ClCompile Include="..\Debug\DebugCPU.cpp" />
     <ClCompile Include="..\Debug\DebugInfo.cpp" />
     <ClCompile Include="..\Debug\Disasm.cpp" />
     <ClCompile Include="..\Debug\Memory.cpp" />
-    <ClCompile Include="..\Debug\Breakpoint.cpp" />
+    <ClCompile Include="..\Debug\Spy.cpp" />
     <ClCompile Include="..\Debug\MemoryMap.cpp" />
     <ClCompile Include="..\Debug\Register.cpp" />
     <ClCompile Include="..\Util\scrc32.c" />
@@ -153,6 +154,7 @@
     <ClInclude Include="..\..\core\cd_hw\gfx.h" />
     <ClInclude Include="..\..\core\cd_hw\pcm.h" />
     <ClInclude Include="..\..\core\cd_hw\scd.h" />
+    <ClInclude Include="..\Debug\Breakpoint.h" />
     <ClInclude Include="..\Debug\DebugCPU.h" />
     <ClInclude Include="..\Debug\DebugInfo.h" />
     <ClInclude Include="..\Debug\DebugMacro.h" />
@@ -205,7 +207,7 @@
     <ClInclude Include="..\..\core\z80\osd_cpu.h" />
     <ClInclude Include="..\..\core\z80\z80.h" />
     <ClInclude Include="..\api\APIMarmelade.h" />
-    <ClInclude Include="..\Debug\Breakpoint.h" />
+    <ClInclude Include="..\Debug\Spy.h" />
     <ClInclude Include="..\Debug\MemoryMap.h" />
     <ClInclude Include="..\Debug\Register.h" />
     <ClInclude Include="..\Util\osd.h" />
