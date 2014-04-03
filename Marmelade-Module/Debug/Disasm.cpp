@@ -1,4 +1,5 @@
 #include "Disasm.h"
+#include "MemoryMap.h"
 #include <ctype.h>
 #include <string.h>
 #include <stdio.h>
@@ -1209,7 +1210,7 @@ namespace Disasm68000
                     // 111 000  addr16      dddddddd dddddddd
                     {
                         uint32 uiPos = (Position & 0xffff0000) | Next_Word();
-                        const char* szLabel = NULL;//g_RomMapManager.GetLabel(uiPos);
+                        const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiPos);
 
                         if (szLabel)
                             sprintf(Dbg_EA_Str, "(~~%08X~~).w", uiPos);
@@ -1221,7 +1222,7 @@ namespace Disasm68000
                     // 111 001  addr32      dddddddd dddddddd ddddddddd dddddddd
                     {
                         uint32 uiPos = Next_Long();
-                        const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiPos);
+                        const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiPos);
 
                         if (szLabel)
                             sprintf(Dbg_EA_Str, "(~~%08X~~).l", uiPos);
@@ -1829,7 +1830,7 @@ namespace Disasm68000
                     {
                         //DBCC  Ds,label
                         uint32 uiLabelPos = _uiPosition + 2 + ((signed short)Next_Word());
-                        const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiLabelPos);
+                        const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiLabelPos);
 
                         if (szLabel)
                             sprintf(Dbg_Str, "DB%s D%.1d,(~~%08X~~).w", Make_Dbg_Cond_Str((OPC >> 8) & 0xF), OPC & 0x7, uiLabelPos);
@@ -1860,7 +1861,7 @@ namespace Disasm68000
                 if (OPC & 0xFF)
                 {
                     uint32 uiLabelPos = _uiPosition + 2 + ((signed char)(OPC & 0xFF));
-                    const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiLabelPos);
+                    const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiLabelPos);
 
                     if ((OPC & 0xF00) == 0x100)
                     {
@@ -1891,7 +1892,7 @@ namespace Disasm68000
                 else
                 {
                     uint32 uiLabelPos = _uiPosition + 2 + ((signed short)(Next_Word()));
-                    const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiLabelPos);
+                    const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiLabelPos);
 
                     if ((OPC & 0xF00) == 0x100)
                     {
@@ -2448,7 +2449,7 @@ namespace Disasm68000
                     // 111 000  addr16      dddddddd dddddddd
                     {
                         uint32 uiPos = (Position & 0xffff0000) | Next_Word();
-                        const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiPos);
+                        const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiPos);
 
                         if (szLabel)
                             sprintf(Dbg_EA_Str, "(?!?LINK{^}$%04X{^}%d?!?).w", uiPos & 0xffff, uiPos);
@@ -2460,7 +2461,7 @@ namespace Disasm68000
                     // 111 001  addr32      dddddddd dddddddd ddddddddd dddddddd
                     {
                         uint32 uiPos = Next_Long();
-                        const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiPos);
+                        const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiPos);
 
                         if (szLabel)
                             sprintf(Dbg_EA_Str, "(?!?LINK{^}$%08X{^}%d?!?).l", uiPos, uiPos);
@@ -3210,7 +3211,7 @@ namespace Disasm68000
                 {
                     TotalSizeMode = SizeMode = 2;
                     uint32 uiLabelPos = _uiPosition + 2 + ((signed char)(OPC & 0xFF));
-                    const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiLabelPos);
+                    const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiLabelPos);
 
                     if ((OPC & 0xF00) == 0x100)
                     {
@@ -3232,7 +3233,7 @@ namespace Disasm68000
                 else
                 {
                     uint32 uiLabelPos = _uiPosition + 2 + ((signed short)(Next_Word()));
-                    const char* szLabel = NULL; //g_RomMapManager.GetLabel(uiLabelPos);
+                    const char* szLabel = GetLabel((gCurrentCore == &m68k ? GetM68000MemMap() : GetS68000MemMap()), uiLabelPos);
 
                     if ((OPC & 0xF00) == 0x100)
                     {
@@ -3655,14 +3656,14 @@ namespace DisasmZ80
 
     char Mnemonics[256][16] =
     {
-        "NOP","LD BC,#h","LD (BC),A","INC BC","INC B","DEC B","LD B,*h","RLCA",
-        "EX AF,AF'","ADD HL,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,*h","RRCA",
-        "DJNZ *h","LD DE,#h","LD (DE),A","INC DE","INC D","DEC D","LD D,*h","RLA",
-        "JR *h","ADD HL,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,*h","RRA",
-        "JR NZ,*h","LD HL,#h","LD (#h),HL","INC HL","INC H","DEC H","LD H,*h","DAA",
-        "JR Z,*h","ADD HL,HL","LD HL,(#h)","DEC HL","INC L","DEC L","LD L,*h","CPL",
-        "JR NC,*h","LD SP,#h","LD (#h),A","INC SP","INC (HL)","DEC (HL)","LD (HL),*h","SCF",
-        "JR C,*h","ADD HL,SP","LD A,(#h)","DEC SP","INC A","DEC A","LD A,*h","CCF",
+        "NOP","LD BC,$#","LD (BC),A","INC BC","INC B","DEC B","LD B,$*","RLCA",
+        "EX AF,AF'","ADD HL,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,$*","RRCA",
+        "DJNZ $*","LD DE,$#","LD (DE),A","INC DE","INC D","DEC D","LD D,$*","RLA",
+        "JR $*","ADD HL,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,$*","RRA",
+        "JR NZ,$*","LD HL,$#","LD ($#),HL","INC HL","INC H","DEC H","LD H,$*","DAA",
+        "JR Z,$*","ADD HL,HL","LD HL,($#)","DEC HL","INC L","DEC L","LD L,$*","CPL",
+        "JR NC,$*","LD SP,$#","LD ($#),A","INC SP","INC (HL)","DEC (HL)","LD (HL),$*","SCF",
+        "JR C,$*","ADD HL,SP","LD A,($#)","DEC SP","INC A","DEC A","LD A,$*","CCF",
         "LD B,B","LD B,C","LD B,D","LD B,E","LD B,H","LD B,L","LD B,(HL)","LD B,A",
         "LD C,B","LD C,C","LD C,D","LD C,E","LD C,H","LD C,L","LD C,(HL)","LD C,A",
         "LD D,B","LD D,C","LD D,D","LD D,E","LD D,H","LD D,L","LD D,(HL)","LD D,A",
@@ -3679,14 +3680,14 @@ namespace DisasmZ80
         "XOR B","XOR C","XOR D","XOR E","XOR H","XOR L","XOR (HL)","XOR A",
         "OR B","OR C","OR D","OR E","OR H","OR L","OR (HL)","OR A",
         "CP B","CP C","CP D","CP E","CP H","CP L","CP (HL)","CP A",
-        "RET NZ","POP BC","JP NZ,#h","JP #h","CALL NZ,#h","PUSH BC","ADD *h","RST 00h",
-        "RET Z","RET","JP Z,#h","PFX_CB","CALL Z,#h","CALL #h","ADC *h","RST 08h",
-        "RET NC","POP DE","JP NC,#h","OUTA (*h)","CALL NC,#h","PUSH DE","SUB *h","RST 10h",
-        "RET C","EXX","JP C,#h","INA (*h)","CALL C,#h","PFX_DD","SBC *h","RST 18h",
-        "RET PO","POP HL","JP PO,#h","EX HL,(SP)","CALL PO,#h","PUSH HL","AND *h","RST 20h",
-        "RET PE","LD PC,HL","JP PE,#h","EX DE,HL","CALL PE,#h","PFX_ED","XOR *h","RST 28h",
-        "RET P","POP AF","JP P,#h","DI","CALL P,#h","PUSH AF","OR *h","RST 30h",
-        "RET M","LD SP,HL","JP M,#h","EI","CALL M,#h","PFX_FD","CP *h","RST 38h"
+        "RET NZ","POP BC","JP NZ,$#","JP $#","CALL NZ,$#","PUSH BC","ADD $*","RST 00h",
+        "RET Z","RET","JP Z,$#","PFX_CB","CALL Z,$#","CALL $#","ADC $*","RST 08h",
+        "RET NC","POP DE","JP NC,$#","OUTA ($*)","CALL NC,$#","PUSH DE","SUB $*","RST 10h",
+        "RET C","EXX","JP C,$#","INA ($*)","CALL C,$#","PFX_DD","SBC $*","RST 18h",
+        "RET PO","POP HL","JP PO,$#","EX HL,(SP)","CALL PO,$#","PUSH HL","AND $*","RST 20h",
+        "RET PE","LD PC,HL","JP PE,$#","EX DE,HL","CALL PE,$#","PFX_ED","XOR $*","RST 28h",
+        "RET P","POP AF","JP P,$#","DI","CALL P,$#","PUSH AF","OR $*","RST 30h",
+        "RET M","LD SP,HL","JP M,$#","EI","CALL M,$#","PFX_FD","CP $*","RST 38h"
     };
 
 
@@ -3766,38 +3767,38 @@ namespace DisasmZ80
 
     char MnemonicsXX[256][16] =
     {
-        "NOP","LD BC,#h","LD (BC),A","INC BC","INC B","DEC B","LD B,*h","RLCA",
-        "EX AF,AF'","ADD I%,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,*h","RRCA",
-        "DJNZ *h","LD DE,#h","LD (DE),A","INC DE","INC D","DEC D","LD D,*h","RLA",
-        "JR *h","ADD I%,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,*h","RRA",
-        "JR NZ,*h","LD I%,#h","LD (#h),I%","INC I%","INC I%h","DEC I%h","LD I%Xh,*h","DAA",
-        "JR Z,*h","ADD I%,I%","LD I%,(#h)","DEC I%","INC I%l","DEC I%l","LD I%l,*h","CPL",
-        "JR NC,*h","LD SP,#h","LD (#h),A","INC SP","INC (I%+*h)","DEC (I%+*h)","LD (I%+*h),*h","SCF",
-        "JR C,*h","ADD I%,SP","LD A,(#h)","DEC SP","INC A","DEC A","LD A,*h","CCF",
-        "LD B,B","LD B,C","LD B,D","LD B,E","LD B,I%h","LD B,I%l","LD B,(I%+*h)","LD B,A",
-        "LD C,B","LD C,C","LD C,D","LD C,E","LD C,I%h","LD C,I%l","LD C,(I%+*h)","LD C,A",
-        "LD D,B","LD D,C","LD D,D","LD D,E","LD D,I%h","LD D,I%l","LD D,(I%+*h)","LD D,A",
-        "LD E,B","LD E,C","LD E,D","LD E,E","LD E,I%h","LD E,I%l","LD E,(I%+*h)","LD E,A",
-        "LD I%h,B","LD I%h,C","LD I%h,D","LD I%h,E","LD I%h,I%h","LD I%h,I%l","LD H,(I%+*h)","LD I%h,A",
-        "LD I%l,B","LD I%l,C","LD I%l,D","LD I%l,E","LD I%l,I%h","LD I%l,I%l","LD L,(I%+*h)","LD I%l,A",
-        "LD (I%+*h),B","LD (I%+*h),C","LD (I%+*h),D","LD (I%+*h),E","LD (I%+*h),H","LD (I%+*h),L","HALT","LD (I%+*h),A",
-        "LD A,B","LD A,C","LD A,D","LD A,E","LD A,I%h","LD A,L","LD A,(I%+*h)","LD A,A",
-        "ADD B","ADD C","ADD D","ADD E","ADD I%h","ADD I%l","ADD (I%+*h)","ADD A",
-        "ADC B","ADC C","ADC D","ADC E","ADC I%h","ADC I%l","ADC (I%+*h)","ADC,A",
-        "SUB B","SUB C","SUB D","SUB E","SUB I%h","SUB I%l","SUB (I%+*h)","SUB A",
-        "SBC B","SBC C","SBC D","SBC E","SBC I%h","SBC I%l","SBC (I%+*h)","SBC A",
-        "AND B","AND C","AND D","AND E","AND I%h","AND I%l","AND (I%+*h)","AND A",
-        "XOR B","XOR C","XOR D","XOR E","XOR I%h","XOR I%l","XOR (I%+*h)","XOR A",
-        "OR B","OR C","OR D","OR E","OR I%h","OR I%l","OR (I%+*h)","OR A",
-        "CP B","CP C","CP D","CP E","CP I%h","CP I%l","CP (I%+*h)","CP A",
-        "RET NZ","POP BC","JP NZ,#h","JP #h","CALL NZ,#h","PUSH BC","ADD *h","RST 00h",
-        "RET Z","RET","JP Z,#h","PFX_CB","CALL Z,#h","CALL #h","ADC *h","RST 08h",
-        "RET NC","POP DE","JP NC,#h","OUTA (*h)","CALL NC,#h","PUSH DE","SUB *h","RST 10h",
-        "RET C","EXX","JP C,#h","INA (*h)","CALL C,#h","PFX_DD","SBC *h","RST 18h",
-        "RET PO","POP I%","JP PO,#h","EX I%,(SP)","CALL PO,#h","PUSH I%","AND *h","RST 20h",
-        "RET PE","LD PC,I%","JP PE,#h","EX DE,I%","CALL PE,#h","PFX_ED","XOR *h","RST 28h",
-        "RET P","POP AF","JP P,#h","DI","CALL P,#h","PUSH AF","OR *h","RST 30h",
-        "RET M","LD SP,I%","JP M,#h","EI","CALL M,#h","PFX_FD","CP *h","RST 38h"
+        "NOP","LD BC,$#","LD (BC),A","INC BC","INC B","DEC B","LD B,$*","RLCA",
+        "EX AF,AF'","ADD I%,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,$*","RRCA",
+        "DJNZ $*","LD DE,$#","LD (DE),A","INC DE","INC D","DEC D","LD D,$*","RLA",
+        "JR $*","ADD I%,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,$*","RRA",
+        "JR NZ,$*","LD I%,$#","LD ($#),I%","INC I%","INC I%h","DEC I%h","LD I%Xh,$*","DAA",
+        "JR Z,$*","ADD I%,I%","LD I%,($#)","DEC I%","INC I%l","DEC I%l","LD I%l,$*","CPL",
+        "JR NC,$*","LD SP,$#","LD ($#),A","INC SP","INC (I%+$*)","DEC (I%+$*)","LD (I%+$*),$*","SCF",
+        "JR C,$*","ADD I%,SP","LD A,($#)","DEC SP","INC A","DEC A","LD A,$*","CCF",
+        "LD B,B","LD B,C","LD B,D","LD B,E","LD B,I%h","LD B,I%l","LD B,(I%+$*)","LD B,A",
+        "LD C,B","LD C,C","LD C,D","LD C,E","LD C,I%h","LD C,I%l","LD C,(I%+$*)","LD C,A",
+        "LD D,B","LD D,C","LD D,D","LD D,E","LD D,I%h","LD D,I%l","LD D,(I%+$*)","LD D,A",
+        "LD E,B","LD E,C","LD E,D","LD E,E","LD E,I%h","LD E,I%l","LD E,(I%+$*)","LD E,A",
+        "LD I%h,B","LD I%h,C","LD I%h,D","LD I%h,E","LD I%h,I%h","LD I%h,I%l","LD H,(I%+$*)","LD I%h,A",
+        "LD I%l,B","LD I%l,C","LD I%l,D","LD I%l,E","LD I%l,I%h","LD I%l,I%l","LD L,(I%+$*)","LD I%l,A",
+        "LD (I%+$*),B","LD (I%+$*),C","LD (I%+$*),D","LD (I%+$*),E","LD (I%+$*),H","LD (I%+$*),L","HALT","LD (I%+$*),A",
+        "LD A,B","LD A,C","LD A,D","LD A,E","LD A,I%h","LD A,L","LD A,(I%+$*)","LD A,A",
+        "ADD B","ADD C","ADD D","ADD E","ADD I%h","ADD I%l","ADD (I%+$*)","ADD A",
+        "ADC B","ADC C","ADC D","ADC E","ADC I%h","ADC I%l","ADC (I%+$*)","ADC,A",
+        "SUB B","SUB C","SUB D","SUB E","SUB I%h","SUB I%l","SUB (I%+$*)","SUB A",
+        "SBC B","SBC C","SBC D","SBC E","SBC I%h","SBC I%l","SBC (I%+$*)","SBC A",
+        "AND B","AND C","AND D","AND E","AND I%h","AND I%l","AND (I%+$*)","AND A",
+        "XOR B","XOR C","XOR D","XOR E","XOR I%h","XOR I%l","XOR (I%+$*)","XOR A",
+        "OR B","OR C","OR D","OR E","OR I%h","OR I%l","OR (I%+$*)","OR A",
+        "CP B","CP C","CP D","CP E","CP I%h","CP I%l","CP (I%+$*)","CP A",
+        "RET NZ","POP BC","JP NZ,$#","JP $#","CALL NZ,$#","PUSH BC","ADD $*","RST 00h",
+        "RET Z","RET","JP Z,$#","PFX_CB","CALL Z,$#","CALL $#","ADC $*","RST 08h",
+        "RET NC","POP DE","JP NC,$#","OUTA ($*)","CALL NC,$#","PUSH DE","SUB $*","RST 10h",
+        "RET C","EXX","JP C,$#","INA ($*)","CALL C,$#","PFX_DD","SBC $*","RST 18h",
+        "RET PO","POP I%","JP PO,$#","EX I%,(SP)","CALL PO,$#","PUSH I%","AND $*","RST 20h",
+        "RET PE","LD PC,I%","JP PE,$#","EX DE,I%","CALL PE,$#","PFX_ED","XOR $*","RST 28h",
+        "RET P","POP AF","JP P,$#","DI","CALL P,$#","PUSH AF","OR $*","RST 30h",
+        "RET M","LD SP,I%","JP M,$#","EI","CALL M,$#","PFX_FD","CP $*","RST 38h"
     };
 
 
@@ -3974,7 +3975,7 @@ namespace DisasmZ80
                 sprintf(U, "%s%.2X",U, I);
                 *R++='\0';
                 addr++;
-                sprintf(strchr(T,'\0'),"%s%hX%s",P,I,R);
+                sprintf(strchr(T,'\0'),"%s%02X%s",P,I,R);
             }
             else
             {
@@ -3986,16 +3987,19 @@ namespace DisasmZ80
             I = z80_readmap[(addr & 0xffff) >> 10][(addr & 0xffff) & 0x03FF];
             addr++;
             J = z80_readmap[(addr & 0xffff) >> 10][(addr & 0xffff) & 0x03FF];
-            sprintf(U, "%s%.2X%.2X",U, I, J);
+            sprintf(U, "%s%.02X%.02X",U, I, J);
             *P++='\0';
             addr++;
-            sprintf(T,"%s%hX%s",S,256*J+I,P);
+            sprintf(T,"%s%04X%s",S,(J << 8 | I),P);
         }
         else
             strcpy(T,S);
 
         //strcat(str, U);
         strcat(str, T);
+
+        for (uint32 i = 0; str[i] != '\0'; ++i)
+            str[i] = tolower(str[i]);
 
         return addr - iStartAddr;
     }

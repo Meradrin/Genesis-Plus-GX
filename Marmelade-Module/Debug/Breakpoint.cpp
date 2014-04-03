@@ -13,8 +13,8 @@ void UpdateBreakMap()
 {
     for (uint32 uiMemIndex = 0; uiMemIndex < kMemory_Count; ++uiMemIndex)
     {
+        gBreakInfo[uiMemIndex].mMap.clear();
         gBreakInfo[uiMemIndex].mMap.resize(GetSize((MemoryMapHandle)(uiMemIndex + 1)));
-        gBreakInfo[uiMemIndex].mDef.clear();
 
         uint32 uiDefCount = gBreakInfo[uiMemIndex].mDef.size();
 
@@ -51,3 +51,14 @@ void SetBreakpoints(BreakpointMgrHandle _BreakMgr, Breakpoint* _pBreak, uint32 _
     UpdateBreakMap();
 }
 
+
+unsigned IsNeedBreak(unsigned _uiMemType, unsigned _uiPos, unsigned _uiBreakMask)
+{
+    return (gBreakInfo[_uiMemType].mMap[_uiPos & 0xffffff] & _uiBreakMask) != 0;
+}
+
+void InitBreakpoint()
+{
+    for (uint32 uiMemIndex = 0; uiMemIndex < kMemory_Count; ++uiMemIndex)
+        gBreakInfo[uiMemIndex].mMap.resize(GetSize((MemoryMapHandle)(uiMemIndex + 1)));
+}

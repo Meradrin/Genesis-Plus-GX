@@ -49,6 +49,9 @@ unsigned int m68k_read_bus_8(unsigned int address)
   error("Unused read8 %08X (%08X)\n", address, m68k_get_reg(M68K_REG_PC));
 #endif
   address = m68k.pc | (address & 1);
+
+  SPY_BUS_M68K_PRE_READ(address, 1);
+
   return READ_BYTE(m68k.memory_map[((address)>>16)&0xff].base, (address) & 0xffff);
 }
 
@@ -58,6 +61,9 @@ unsigned int m68k_read_bus_16(unsigned int address)
   error("Unused read16 %08X (%08X)\n", address, m68k_get_reg(M68K_REG_PC));
 #endif
   address = m68k.pc;
+
+  SPY_BUS_M68K_PRE_READ(address, 2);
+
   return *(uint16 *)(m68k.memory_map[((address)>>16)&0xff].base + ((address) & 0xffff));
 }
 
@@ -67,6 +73,8 @@ void m68k_unused_8_w(unsigned int address, unsigned int data)
 #ifdef LOGERROR
   error("Unused write8 %08X = %02X (%08X)\n", address, data, m68k_get_reg(M68K_REG_PC));
 #endif
+
+  SPY_BUS_M68K_PRE_WRITE(address, data, 1);
 }
 
 void m68k_unused_16_w(unsigned int address, unsigned int data)
@@ -74,6 +82,8 @@ void m68k_unused_16_w(unsigned int address, unsigned int data)
 #ifdef LOGERROR
   error("Unused write16 %08X = %04X (%08X)\n", address, data, m68k_get_reg(M68K_REG_PC));
 #endif
+
+  SPY_BUS_M68K_PRE_WRITE(address, data, 2);
 }
 
 
@@ -86,6 +96,9 @@ void m68k_lockup_w_8 (unsigned int address, unsigned int data)
 #ifdef LOGERROR
   error ("Lockup %08X = %02X (%08X)\n", address, data, m68k_get_reg(M68K_REG_PC));
 #endif
+
+  SPY_BUS_M68K_PRE_WRITE(address, data, 1);
+
   if (!config.force_dtack)
   {
     m68k_pulse_halt();
@@ -98,6 +111,9 @@ void m68k_lockup_w_16 (unsigned int address, unsigned int data)
 #ifdef LOGERROR
   error ("Lockup %08X = %04X (%08X)\n", address, data, m68k_get_reg(M68K_REG_PC));
 #endif
+
+  SPY_BUS_M68K_PRE_WRITE(address, data, 2);
+
   if (!config.force_dtack)
   {
     m68k_pulse_halt();
@@ -110,12 +126,14 @@ unsigned int m68k_lockup_r_8 (unsigned int address)
 #ifdef LOGERROR
   error ("Lockup %08X.b (%08X)\n", address, m68k_get_reg(M68K_REG_PC));
 #endif
+
   if (!config.force_dtack)
   {
     m68k_pulse_halt();
     m68k.cycles = m68k.cycle_end;
   }
   address = m68k.pc | (address & 1);
+  SPY_BUS_M68K_PRE_READ(address, 1);
   return READ_BYTE(m68k.memory_map[((address)>>16)&0xff].base, (address) & 0xffff);
 }
 
@@ -130,6 +148,7 @@ unsigned int m68k_lockup_r_16 (unsigned int address)
     m68k.cycles = m68k.cycle_end;
   }
   address = m68k.pc;
+  SPY_BUS_M68K_PRE_READ(address, 1);
   return *(uint16 *)(m68k.memory_map[((address)>>16)&0xff].base + ((address) & 0xffff));
 }
 

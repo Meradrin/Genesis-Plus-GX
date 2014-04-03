@@ -10,6 +10,7 @@ enum MemoryTypes_e
     kMemory_S68000,
     kMemory_VRAM,
     kMemory_PAL,
+    kMemory_VSRAM,
     kMemory_ROM,
     kMemory_Count,
 };

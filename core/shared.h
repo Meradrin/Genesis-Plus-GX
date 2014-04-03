@@ -6,6 +6,8 @@
 #include <string.h>
 #include <math.h>
 
+#include "..\Marmelade-Module\Debug\DebugMacro.h"
+
 #include "types.h"
 #include "macros.h"
 #include "osd.h"

@@ -1,7 +1,11 @@
 #ifndef DebugMacro_h
 #define DebugMacro_h
 
+#ifdef MARMELADE_MODULE
+
 #include "Spy.h"
+
+extern void error(char* _szStr, ...);
 
 #define IS_DEBUG_READ       gIsDebugAcess
 #define IS_DEBUG_WRITE      gIsDebugAcess
@@ -23,5 +27,30 @@
 #define SPY_VDP_VRAM_PRE_WRITE(addr, data, size)    SpyVDPVRamPreWrite(addr, data,size)
 #define SPY_VDP_CRAM_PRE_WRITE(addr, data, size)    SpyVDPCRamPreWrite(addr, data, size)
 #define SPY_VDP_VSRAM_PRE_WRITE(addr, data, size)   SpyVDPVSRamWPrerite(addr, data, size)
+
+#else
+
+#define IS_DEBUG_READ
+#define IS_DEBUG_WRITE
+
+#define SPY_M68K_PRE_EXEC
+#define SPY_S68K_PRE_EXEC
+#define SPY_Z80_PRE_EXEC
+
+#define SPY_BUS_M68K_PRE_READ(addr, size)
+#define SPY_BUS_S68K_PRE_READ(addr, size)
+#define SPY_BUS_Z80_PRE_READ(addr, size)
+#define SPY_VDP_VRAM_PRE_READ(addr, size)
+#define SPY_VDP_CRAM_PRE_READ(addr, size)
+#define SPY_VDP_VSRAM_PRE_READ(addr, size)
+
+#define SPY_BUS_M68K_PRE_WRITE(addr, data, size)
+#define SPY_BUS_S68K_PRE_WRITE(addr, data, size)
+#define SPY_BUS_Z80_PRE_WRITE(addr, data, size)
+#define SPY_VDP_VRAM_PRE_WRITE(addr, data, size)
+#define SPY_VDP_CRAM_PRE_WRITE(addr, data, size)
+#define SPY_VDP_VSRAM_PRE_WRITE(addr, data, size)
+
+#endif
 
 #endif /* debug_macro_h */

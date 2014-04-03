@@ -4,6 +4,7 @@
 #include "Register.h"
 #include "Disasm.h"
 #include "Spy.h"
+#include "Breakpoint.h"
 
 extern "C"
 {
@@ -92,7 +93,7 @@ MemoryHandle GetBusMem(CPUHandle _CPU)
 
     if (system_hw == SYSTEM_MCD)
     {
-        switch ((uint32)_CPU)
+        switch ((uint32)_CPU - 1)
         {
         case kCPU_Z80:
             return GetMemory(NULL, 1);
@@ -105,7 +106,7 @@ MemoryHandle GetBusMem(CPUHandle _CPU)
     }
     else if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
     {
-        switch ((uint32)_CPU)
+        switch ((uint32)_CPU - 1)
         {
         case kCPU_Z80:
             return GetMemory(NULL, 1);

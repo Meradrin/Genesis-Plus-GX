@@ -861,6 +861,7 @@ void vdp_z80_ctrl_w(unsigned int data)
       if (!pending && !(code & 0x03))
       {
         /* Process VRAM read */
+        SPY_VDP_VRAM_PRE_READ(addr & 0x3FFF, 1);
         fifo[0] = vram[addr & 0x3FFF];
 
         /* Increment address register */
@@ -971,6 +972,7 @@ void vdp_sms_ctrl_w(unsigned int data)
     if (code == 0)
     {
       /* Process VRAM read */
+      SPY_VDP_VRAM_PRE_READ(addr & 0x3FFF, 1);
       fifo[0] = vram[addr & 0x3FFF];
 
       /* Increment address register */
@@ -1172,6 +1174,7 @@ void vdp_tms_ctrl_w(unsigned int data)
     if (code == 0)
     {
       /* Process VRAM read */
+      SPY_VDP_VRAM_PRE_READ(addr & 0x3FFF, 1);
       fifo[0] = vram[addr & 0x3FFF];
 
       /* Increment address register */
@@ -2248,12 +2251,13 @@ static void vdp_bus_w(unsigned int data)
 
       /* Pointer to VRAM */
       uint16 *p = (uint16 *)&vram[index];
-
       /* Byte-swap data if A0 is set */
       if (addr & 1)
       {
         data = ((data >> 8) | (data << 8)) & 0xFFFF;
       }
+
+      SPY_VDP_VRAM_PRE_WRITE(index, data, 2);
 
       /* Intercept writes to Sprite Attribute Table */
       if ((index & sat_base_mask) == satb)
@@ -2438,6 +2442,8 @@ static void vdp_68k_data_w_m4(unsigned int data)
       data = ((data >> 8) | (data << 8)) & 0xFFFF;
     }
 
+    SPY_VDP_VRAM_PRE_WRITE(index, data, 2);
+
     /* Only write unique data to VRAM */
     if (data != *p)
     {
@@ -2522,6 +2528,9 @@ static unsigned int vdp_68k_data_r_m4(void)
   /* Increment address register (TODO: check how address is incremented in Mode 4) */
   addr += (reg[15] + 1);
 
+  SPY_VDP_VRAM_PRE_READ(index, 1);
+  SPY_VDP_VRAM_PRE_READ(index + 1, 1);
+
   /* Read VRAM data */
   return *(uint16 *) &vram[index];
 }
@@ -2539,6 +2548,8 @@ static unsigned int vdp_68k_data_r_m5(void)
     case 0x00:
     {
       /* read two bytes from VRAM */
+      SPY_VDP_VRAM_PRE_READ(addr & 0x3FFF, 1);
+      SPY_VDP_VRAM_PRE_READ((addr + 1) & 0x3FFF, 1);
       data = *(uint16 *)&vram[addr & 0xFFFE];
 
 #ifdef LOGVDP
@@ -2591,6 +2602,7 @@ static unsigned int vdp_68k_data_r_m5(void)
     case 0x0c: /* undocumented 8-bit VRAM read */
     {
       /* Read one byte from VRAM adjacent address */
+      SPY_VDP_VRAM_PRE_READ(addr ^ 1, 1);
       data = READ_BYTE(vram, addr ^ 1);
 
       /* Unused bits are set using data from next available FIFO entry */
@@ -2659,6 +2671,8 @@ static void vdp_z80_data_w_m4(unsigned int data)
     /* VRAM address */
     int index = addr & 0x3FFF;
 
+    SPY_VDP_VRAM_PRE_WRITE(index, data, 1);
+
     /* Only write unique data to VRAM */
     if (data != vram[index])
     {
@@ -2699,6 +2713,8 @@ static void vdp_z80_data_w_m5(unsigned int data)
         /* Update internal SAT */
         WRITE_BYTE(sat, index & sat_addr_mask, data);
       }
+
+      SPY_VDP_VRAM_PRE_WRITE(index, data, 1);
 
       /* Only write unique data to VRAM */
       if (data != READ_BYTE(vram, index))
@@ -2796,6 +2812,7 @@ static unsigned int vdp_z80_data_r_m4(void)
   pending = 0;
 
   /* Process next read */
+  SPY_VDP_VRAM_PRE_READ(addr & 0x3FFF, 1);
   fifo[0] = vram[addr & 0x3FFF];
 
   /* Increment address register (TODO: check how address is incremented with Mega Drive VDP in Mode 4) */
@@ -2818,6 +2835,7 @@ static unsigned int vdp_z80_data_r_m5(void)
     case 0x00: /* VRAM */
     {
       /* Return low byte from even address & high byte from odd address */
+      SPY_VDP_VRAM_PRE_READ(addr ^ 1, 1);
       data = READ_BYTE(vram, addr ^ 1);
       break;
     }
@@ -2882,6 +2900,7 @@ static void vdp_z80_data_w_ms(unsigned int data)
     index = addr & 0x3FFF;
 
     /* VRAM write */
+    SPY_VDP_VRAM_PRE_WRITE(index, data, 1);
     if (data != vram[index])
     {
       int name;
@@ -2950,6 +2969,7 @@ static void vdp_z80_data_w_gg(unsigned int data)
     index = addr & 0x3FFF;
 
     /* VRAM write */
+    SPY_VDP_VRAM_PRE_WRITE(index, data, 1);
     if (data != vram[index])
     {
       int name;
@@ -3015,6 +3035,7 @@ static void vdp_z80_data_w_sg(unsigned int data)
   pending = 0;
 
   /* VRAM write */
+  SPY_VDP_VRAM_PRE_WRITE(index, data, 1);
   vram[index] = data;
 
   /* Update address register */
@@ -3155,6 +3176,7 @@ static void vdp_dma_copy(unsigned int length)
     do
     {
       /* Read byte from adjacent VRAM source address */
+      SPY_VDP_VRAM_PRE_READ(source ^ 1, 1);
       data = READ_BYTE(vram, source ^ 1);
 
       /* Intercept writes to Sprite Attribute Table */
@@ -3165,6 +3187,7 @@ static void vdp_dma_copy(unsigned int length)
       }
 
       /* Write byte to adjacent VRAM destination address */
+      SPY_VDP_VRAM_PRE_WRITE(addr ^ 1, data, 1);
       WRITE_BYTE(vram, addr ^ 1, data);
 
       /* Update pattern cache */
@@ -3206,6 +3229,7 @@ static void vdp_dma_fill(unsigned int length)
         }
 
         /* Write byte to adjacent VRAM address */
+        SPY_VDP_VRAM_PRE_WRITE(addr ^ 1, data, 1);
         WRITE_BYTE(vram, addr ^ 1, data);
 
         /* Update pattern cache */

@@ -257,6 +257,8 @@ static void s68k_poll_sync(unsigned int reg_mask)
 
 static unsigned int scd_read_byte(unsigned int address)
 {
+  SPY_BUS_S68K_PRE_READ(address, 1);
+
   /* PCM area (8K) is mirrored into $FF0000-$FF7FFF */
   if (address < 0xff8000)
   {
@@ -368,6 +370,8 @@ static unsigned int scd_read_byte(unsigned int address)
 
 static unsigned int scd_read_word(unsigned int address)
 {
+  SPY_BUS_S68K_PRE_READ(address, 2);
+
   /* PCM area (8K) is mirrored into $FF0000-$FF7FFF */
   if (address < 0xff8000)
   {
@@ -509,6 +513,7 @@ INLINE void word_ram_switch(uint8 mode)
 
 static void scd_write_byte(unsigned int address, unsigned int data)
 {
+  SPY_BUS_S68K_PRE_WRITE(address, data, 1);
   /* PCM area (8K) is mirrored into $FF0000-$FF7FFF */
   if (address < 0xff8000)
   {
@@ -790,6 +795,7 @@ static void scd_write_byte(unsigned int address, unsigned int data)
 
 static void scd_write_word(unsigned int address, unsigned int data)
 {
+  SPY_BUS_S68K_PRE_WRITE(address, data, 2);
   /* PCM area (8K) is mirrored into $FF0000-$FF7FFF */
   if (address < 0xff8000)
   {

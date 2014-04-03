@@ -23,7 +23,8 @@ const char gMemoryTypeNames[kMemory_Count][32] =
     "68000",
     "68000 Sega CD",
     "VRAM",
-    "PAL",
+    "CRAM",
+    "VSRAM",
     "ROM",
 };
 
@@ -34,6 +35,7 @@ uint32 gSegaCDMemoryTypes[] =
     kMemory_Z80,
     kMemory_VRAM,
     kMemory_PAL,
+    kMemory_VSRAM,
     kMemory_ROM,
 };
 
@@ -43,6 +45,7 @@ uint32 gMegadriveTypes[] =
     kMemory_Z80,
     kMemory_VRAM,
     kMemory_PAL,
+    kMemory_VSRAM,
     kMemory_ROM,
 };
 
@@ -139,7 +142,11 @@ int GetByte(MemoryHandle _Mem, unsigned _uiPosition)
                     return cram[_uiPosition & 0x7f];
 
                 return cram[_uiPosition & 0x1f];
-            }            
+            }
+        case kMemory_VSRAM:
+            {
+                return vsram[_uiPosition & 0x7f];
+            }
         }
     }
 
@@ -182,6 +189,9 @@ unsigned GetSize(MemoryHandle _Mem)
             return 0x80;
 
         return 0x20;
+
+    case kMemory_VSRAM:
+        return 0x80;
     }
 
     return 0;

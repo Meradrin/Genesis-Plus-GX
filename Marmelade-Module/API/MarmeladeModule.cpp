@@ -325,6 +325,8 @@ bool OpenROM(EmulatorHandle _hData, const char* _szROMFile)
     if (!load_rom((char*)_szROMFile))
         return false;
 
+    InitBreakpoint();
+
     switch (system_hw)
     {
     case SYSTEM_MD:
