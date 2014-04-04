@@ -616,7 +616,7 @@ static INT32  out_fm[8];  /* outputs of working channels */
 static UINT32 bitmask;    /* working channels output bitmasking (DAC quantization) */ 
 
 
-INLINE void FM_KEYON(FM_CH *CH , int s )
+static INLINE void FM_KEYON(FM_CH *CH , int s )
 {
   FM_SLOT *SLOT = &CH->SLOT[s];
 
@@ -651,7 +651,7 @@ INLINE void FM_KEYON(FM_CH *CH , int s )
   SLOT->key = 1;
 }
 
-INLINE void FM_KEYOFF(FM_CH *CH , int s )
+static INLINE void FM_KEYOFF(FM_CH *CH , int s )
 {
   FM_SLOT *SLOT = &CH->SLOT[s];
 
@@ -684,7 +684,7 @@ INLINE void FM_KEYOFF(FM_CH *CH , int s )
   SLOT->key = 0;
 }
 
-INLINE void FM_KEYON_CSM(FM_CH *CH , int s )
+static INLINE void FM_KEYON_CSM(FM_CH *CH , int s )
 {
   FM_SLOT *SLOT = &CH->SLOT[s];
 
@@ -717,7 +717,7 @@ INLINE void FM_KEYON_CSM(FM_CH *CH , int s )
   }
 }
 
-INLINE void FM_KEYOFF_CSM(FM_CH *CH , int s )
+static INLINE void FM_KEYOFF_CSM(FM_CH *CH , int s )
 {
   FM_SLOT *SLOT = &CH->SLOT[s];
   if (!SLOT->key)
@@ -748,7 +748,7 @@ INLINE void FM_KEYOFF_CSM(FM_CH *CH , int s )
 }
 
 /* CSM Key Controll */
-INLINE void CSMKeyControll(FM_CH *CH)
+static INLINE void CSMKeyControll(FM_CH *CH)
 {
   /* all key ON (verified by Nemesis on real hardware) */
   FM_KEYON_CSM(CH,SLOT1);
@@ -758,7 +758,7 @@ INLINE void CSMKeyControll(FM_CH *CH)
   ym2612.OPN.SL3.key_csm = 1;
 }
 
-INLINE void INTERNAL_TIMER_A()
+static INLINE void INTERNAL_TIMER_A()
 {
   if (ym2612.OPN.ST.mode & 0x01)
   {
@@ -779,7 +779,7 @@ INLINE void INTERNAL_TIMER_A()
   }
 }
 
-INLINE void INTERNAL_TIMER_B(int step)
+static INLINE void INTERNAL_TIMER_B(int step)
 {
   if (ym2612.OPN.ST.mode & 0x02)
   {
@@ -800,7 +800,7 @@ INLINE void INTERNAL_TIMER_B(int step)
 }
 
 /* OPN Mode Register Write */
-INLINE void set_timers(int v )
+static INLINE void set_timers(int v )
 {
   /* b7 = CSM MODE */
   /* b6 = 3 slot mode */
@@ -841,7 +841,7 @@ INLINE void set_timers(int v )
 }
 
 /* set algorithm connection */
-INLINE void setup_connection( FM_CH *CH, int ch )
+static INLINE void setup_connection( FM_CH *CH, int ch )
 {
   INT32 *carrier = &out_fm[ch];
 
@@ -928,7 +928,7 @@ INLINE void setup_connection( FM_CH *CH, int ch )
 }
 
 /* set detune & multiple */
-INLINE void set_det_mul(FM_CH *CH,FM_SLOT *SLOT,int v)
+static INLINE void set_det_mul(FM_CH *CH,FM_SLOT *SLOT,int v)
 {
   SLOT->mul = (v&0x0f)? (v&0x0f)*2 : 1;
   SLOT->DT  = ym2612.OPN.ST.dt_tab[(v>>4)&7];
@@ -936,7 +936,7 @@ INLINE void set_det_mul(FM_CH *CH,FM_SLOT *SLOT,int v)
 }
 
 /* set total level */
-INLINE void set_tl(FM_SLOT *SLOT , int v)
+static INLINE void set_tl(FM_SLOT *SLOT , int v)
 {
   SLOT->tl = (v&0x7f)<<(ENV_BITS-7); /* 7bit TL */
 
@@ -948,7 +948,7 @@ INLINE void set_tl(FM_SLOT *SLOT , int v)
 }
 
 /* set attack rate & key scale  */
-INLINE void set_ar_ksr(FM_CH *CH,FM_SLOT *SLOT,int v)
+static INLINE void set_ar_ksr(FM_CH *CH,FM_SLOT *SLOT,int v)
 {
   UINT8 old_KSR = SLOT->KSR;
 
@@ -978,7 +978,7 @@ INLINE void set_ar_ksr(FM_CH *CH,FM_SLOT *SLOT,int v)
  }
 
 /* set decay rate */
-INLINE void set_dr(FM_SLOT *SLOT,int v)
+static INLINE void set_dr(FM_SLOT *SLOT,int v)
 {
   SLOT->d1r = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
 
@@ -988,7 +988,7 @@ INLINE void set_dr(FM_SLOT *SLOT,int v)
 }
 
 /* set sustain rate */
-INLINE void set_sr(FM_SLOT *SLOT,int v)
+static INLINE void set_sr(FM_SLOT *SLOT,int v)
 {
   SLOT->d2r = (v&0x1f) ? 32 + ((v&0x1f)<<1) : 0;
 
@@ -1012,7 +1012,7 @@ static INLINE void set_sl_rr(FM_SLOT *SLOT,int v)
 }
 
 /* advance LFO to next sample */
-INLINE void advance_lfo()
+static INLINE void advance_lfo()
 {
   if (ym2612.OPN.lfo_timer_overflow)   /* LFO enabled ? */
   {
@@ -1041,7 +1041,7 @@ INLINE void advance_lfo()
 }
 
 
-INLINE void advance_eg_channels(FM_CH *CH, unsigned int eg_cnt)
+static INLINE void advance_eg_channels(FM_CH *CH, unsigned int eg_cnt)
 {
   unsigned int i = 6; /* six channels */
   unsigned int j;
@@ -1200,7 +1200,7 @@ INLINE void advance_eg_channels(FM_CH *CH, unsigned int eg_cnt)
 /* SSG-EG update process */
 /* The behavior is based upon Nemesis tests on real hardware */
 /* This is actually executed before each samples */
-INLINE void update_ssg_eg_channels(FM_CH *CH)
+static INLINE void update_ssg_eg_channels(FM_CH *CH)
 {
   unsigned int i = 6; /* six channels */
   unsigned int j;
@@ -1268,7 +1268,7 @@ INLINE void update_ssg_eg_channels(FM_CH *CH)
   } while (--i);
 }
 
-INLINE void update_phase_lfo_slot(FM_SLOT *SLOT, INT32 pms, UINT32 block_fnum)
+static INLINE void update_phase_lfo_slot(FM_SLOT *SLOT, INT32 pms, UINT32 block_fnum)
 {
   INT32 lfo_fn_table_index_offset = lfo_pm_table[(((block_fnum & 0x7f0) >> 4) << 8) + pms + ym2612.OPN.LFO_PM];
   
@@ -1298,7 +1298,7 @@ INLINE void update_phase_lfo_slot(FM_SLOT *SLOT, INT32 pms, UINT32 block_fnum)
   }
 }
 
-INLINE void update_phase_lfo_channel(FM_CH *CH)
+static INLINE void update_phase_lfo_channel(FM_CH *CH)
 {
   UINT32 block_fnum = CH->block_fnum;
   
@@ -1344,7 +1344,7 @@ INLINE void update_phase_lfo_channel(FM_CH *CH)
 }
 
 /* update phase increment and envelope generator */
-INLINE void refresh_fc_eg_slot(FM_SLOT *SLOT , unsigned int fc , unsigned int kc )
+static INLINE void refresh_fc_eg_slot(FM_SLOT *SLOT , unsigned int fc , unsigned int kc )
 {
   /* add detune value */
   fc += SLOT->DT[kc];
@@ -1387,7 +1387,7 @@ INLINE void refresh_fc_eg_slot(FM_SLOT *SLOT , unsigned int fc , unsigned int kc
 }
 
 /* update phase increment counters */
-INLINE void refresh_fc_eg_chan(FM_CH *CH )
+static INLINE void refresh_fc_eg_chan(FM_CH *CH )
 {
   if( CH->SLOT[SLOT1].Incr==-1)
   {
@@ -1402,7 +1402,7 @@ INLINE void refresh_fc_eg_chan(FM_CH *CH )
 
 #define volume_calc(OP) ((OP)->vol_out + (AM & (OP)->AMmask))
 
-INLINE signed int op_calc(UINT32 phase, unsigned int env, unsigned int pm)
+static INLINE signed int op_calc(UINT32 phase, unsigned int env, unsigned int pm)
 {
   UINT32 p = (env<<3) + sin_tab[ ( (phase >> SIN_BITS) + (pm >> 1) ) & SIN_MASK ];
 
@@ -1411,7 +1411,7 @@ INLINE signed int op_calc(UINT32 phase, unsigned int env, unsigned int pm)
   return tl_tab[p];
 }
 
-INLINE signed int op_calc1(UINT32 phase, unsigned int env, unsigned int pm)
+static INLINE signed int op_calc1(UINT32 phase, unsigned int env, unsigned int pm)
 {
   UINT32 p = (env<<3) + sin_tab[ ( (phase + pm ) >> SIN_BITS ) & SIN_MASK ];
 
@@ -1420,7 +1420,7 @@ INLINE signed int op_calc1(UINT32 phase, unsigned int env, unsigned int pm)
   return tl_tab[p];
 }
 
-INLINE void chan_calc(FM_CH *CH, int num)
+static INLINE void chan_calc(FM_CH *CH, int num)
 {
   do
   {
@@ -1498,7 +1498,7 @@ INLINE void chan_calc(FM_CH *CH, int num)
 }
 
 /* write a OPN mode register 0x20-0x2f */
-INLINE void OPNWriteMode(int r, int v)
+static INLINE void OPNWriteMode(int r, int v)
 {
   UINT8 c;
   FM_CH *CH;
@@ -1552,7 +1552,7 @@ INLINE void OPNWriteMode(int r, int v)
 }
 
 /* write a OPN register (0x30-0xff) */
-INLINE void OPNWriteReg(int r, int v)
+static INLINE void OPNWriteReg(int r, int v)
 {
   FM_CH *CH;
   FM_SLOT *SLOT;

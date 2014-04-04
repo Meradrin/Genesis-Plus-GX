@@ -2292,6 +2292,8 @@ static void vdp_bus_w(unsigned int data)
       /* Pack 16-bit bus data (BBB0GGG0RRR0) to 9-bit CRAM data (BBBGGGRRR) */
       data = ((data & 0xE00) >> 3) | ((data & 0x0E0) >> 2) | ((data & 0x00E) >> 1);
 
+      SPY_VDP_CRAM_PRE_WRITE(addr & 0x7E, data, 2);
+
       /* Check if CRAM data is being modified */
       if (data != *p)
       {
@@ -2329,6 +2331,8 @@ static void vdp_bus_w(unsigned int data)
 
     case 0x05:  /* VSRAM */
     {
+      SPY_VDP_VSRAM_PRE_WRITE(addr & 0x7E, data, 2);
+
       *(uint16 *)&vsram[addr & 0x7E] = data;
 
       /* 2-cell Vscroll mode */
@@ -2411,6 +2415,8 @@ static void vdp_68k_data_w_m4(unsigned int data)
 
     /* Pack 16-bit data (xxx000BBGGRR) to 9-bit CRAM data (xxxBBGGRR) */
     data = ((data & 0xE00) >> 3) | (data & 0x3F);
+
+    SPY_VDP_CRAM_PRE_WRITE(index << 1, data, 2);
 
     /* Check if CRAM data is being modified */
     if (data != *p)
@@ -2573,6 +2579,8 @@ static unsigned int vdp_68k_data_r_m5(void)
       /* Read 11-bit word from VSRAM */
       data = *(uint16 *)&vsram[index] & 0x7FF;
 
+      SPY_VDP_VSRAM_PRE_READ(index, 2);
+
       /* Unused bits are set using data from next available FIFO entry */
       data |= (fifo[fifo_idx] & ~0x7FF);
 
@@ -2587,6 +2595,8 @@ static unsigned int vdp_68k_data_r_m5(void)
       /* Read 9-bit word from CRAM */
       data = *(uint16 *)&cram[addr & 0x7E];
 
+      SPY_VDP_CRAM_PRE_READ(addr & 0x7E, 2);
+      
       /* Unpack 9-bit CRAM data (BBBGGGRRR) to 16-bit bus data (BBB0GGG0RRR0) */
       data = ((data & 0x1C0) << 3) | ((data & 0x038) << 2) | ((data & 0x007) << 1);
 
@@ -2650,6 +2660,8 @@ static void vdp_z80_data_w_m4(unsigned int data)
     /* Pointer to CRAM word */
     uint16 *p = (uint16 *)&cram[index << 1];
 
+    SPY_VDP_CRAM_PRE_WRITE(index << 1, data, 2);
+    
     /* Check if CRAM data is being modified */
     if (data != *p)
     {
@@ -2747,6 +2759,8 @@ static void vdp_z80_data_w_m5(unsigned int data)
         data = (*p & 0x1C0) | ((data & 0x0E) >> 1)| ((data & 0xE0) >> 2);
       }
 
+      SPY_VDP_CRAM_PRE_WRITE(addr & 0x7E, data, 2);
+
       /* Check if CRAM data is being modified */
       if (data != *p)
       {
@@ -2774,6 +2788,8 @@ static void vdp_z80_data_w_m5(unsigned int data)
 
     case 0x05: /* VSRAM */
     {
+      SPY_VDP_VSRAM_PRE_WRITE((addr & 0x7F) ^ 1, data, 1);
+
       /* Write low byte to even address & high byte to odd address */
       WRITE_BYTE(vsram, (addr & 0x7F) ^ 1, data);
       break;
@@ -2842,6 +2858,8 @@ static unsigned int vdp_z80_data_r_m5(void)
 
     case 0x04: /* VSRAM */
     {
+      SPY_VDP_VSRAM_PRE_READ((addr & 0x7F) ^ 1, 1);
+
       /* Return low byte from even address & high byte from odd address */
       data = READ_BYTE(vsram, (addr & 0x7F) ^ 1);
       break;
@@ -2851,6 +2869,8 @@ static unsigned int vdp_z80_data_r_m5(void)
     {
       /* Read CRAM data */
       data = *(uint16 *)&cram[addr & 0x7E];
+
+      SPY_VDP_CRAM_PRE_READ(addr & 0x7E, 2);
 
       /* Unpack 9-bit CRAM data (BBBGGGRRR) to 16-bit data (BBB0GGG0RRR0) */
       data = ((data & 0x1C0) << 3) | ((data & 0x038) << 2) | ((data & 0x007) << 1);
@@ -2919,6 +2939,8 @@ static void vdp_z80_data_w_ms(unsigned int data)
 
     /* Pointer to CRAM word */
     uint16 *p = (uint16 *)&cram[index << 1];
+
+    SPY_VDP_CRAM_PRE_WRITE(index << 1, data, 2);
 
     /* Check if CRAM data is being modified */
     if (data != *p)
@@ -2989,6 +3011,8 @@ static void vdp_z80_data_w_gg(unsigned int data)
 
       /* 12-bit data word */
       data = (data << 8) | cached_write;
+
+      SPY_VDP_CRAM_PRE_WRITE(addr & 0x3E, data, 2);
 
       /* Check if CRAM data is being modified */
       if (data != *p)
@@ -3254,6 +3278,8 @@ static void vdp_dma_fill(unsigned int length)
       {
         /* Pointer to CRAM 9-bit word */
         uint16 *p = (uint16 *)&cram[addr & 0x7E];
+
+        SPY_VDP_CRAM_PRE_WRITE(addr & 0x7E, data, 2);
 
         /* Check if CRAM data is being modified */
         if (data != *p)

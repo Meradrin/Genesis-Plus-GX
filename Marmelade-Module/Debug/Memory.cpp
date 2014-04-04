@@ -188,7 +188,7 @@ unsigned GetSize(MemoryHandle _Mem)
         else if ((system_hw & SYSTEM_PBC) == SYSTEM_MD)
             return 0x80;
 
-        return 0x20;
+        return 0x40;
 
     case kMemory_VSRAM:
         return 0x80;

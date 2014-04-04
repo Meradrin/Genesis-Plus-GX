@@ -608,12 +608,13 @@ INLINE void BURNODD(int cycles, int opcodes, int cyclesum)
 /***************************************************************
  * Read a byte from given memory location
  ***************************************************************/
-#define RM(addr) z80_readmem(addr)
+#define RM(addr) z80_readmem(SPY_BUS_Z80_PRE_READ(addr, 1))
 
 /***************************************************************
  * Write a byte to given memory location
  ***************************************************************/
-#define WM(addr,value) z80_writemem(addr,value)
+/* Ugly macro SET_TEMP_VALUE for be sure to evaluate one time (value)*/
+#define WM(addr,value) z80_writemem(SPY_BUS_Z80_PRE_WRITE(addr, SET_TEMP_VALUE(value), 1), GET_TEMP_VALUE(value))
 
 /***************************************************************
  * Read a word from given memory location

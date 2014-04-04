@@ -2313,7 +2313,7 @@ namespace Disasm68000
                     Dbg_RegList_Str[Index++] = '^';
                     Dbg_RegList_Str[Index++] = '}';
 
-                    int iRegIndex = Flip ? 9 + Bit : 1 + (7 - Bit);
+                    int iRegIndex = Flip ? 1 + Bit : 9 + (7 - Bit);
 
                     if (iRegIndex >= 10)
                         Dbg_RegList_Str[Index++] = '0' + (iRegIndex / 10);
@@ -2356,7 +2356,7 @@ namespace Disasm68000
                     Dbg_RegList_Str[Index++] = '^';
                     Dbg_RegList_Str[Index++] = '}';
 
-                    int iRegIndex = Flip ? 1 + Bit : 9 + (7 - Bit);
+                    int iRegIndex = Flip ? 9 + Bit : 1 + (7 - Bit);
 
                     if (iRegIndex >= 10)
                         Dbg_RegList_Str[Index++] = '0' + (iRegIndex / 10);
@@ -2389,34 +2389,34 @@ namespace Disasm68000
             {
             case 0:
                 // 000 rrr  Dr
-                sprintf(Dbg_EA_Str, "?!?REG{^}D%.1d{^}%d?!?", Reg_Num, 9 + Reg_Num);
+                sprintf(Dbg_EA_Str, "?!?REG{^}D%.1d{^}%d?!?", Reg_Num, 1 + Reg_Num);
                 break;
 
             case 1:
                 // 001 rrr  Ar
-                sprintf(Dbg_EA_Str, "?!?REG{^}A%.1d{^}%d?!?", Reg_Num, 1 + Reg_Num);
+                sprintf(Dbg_EA_Str, "?!?REG{^}A%.1d{^}%d?!?", Reg_Num, 9 + Reg_Num);
                 break;
 
             case 2:
                 // 010 rrr  (Ar)
-                sprintf(Dbg_EA_Str, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 1 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
+                sprintf(Dbg_EA_Str, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 9 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
                 break;
 
             case 3:
                 // 011 rrr  (Ar)+
-                sprintf(Dbg_EA_Str, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^})+{^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 1 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
+                sprintf(Dbg_EA_Str, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^})+{^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 9 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
                 break;
 
             case 4:
                 // 100 rrr  -(Ar)
-                sprintf(Dbg_EA_Str, "?!?MEM{^}-({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode, Reg_Num, 1 + Reg_Num, gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode);
+                sprintf(Dbg_EA_Str, "?!?MEM{^}-({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode, Reg_Num, 9 + Reg_Num, gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode);
                 break;
 
             case 5:
                 // 101 rrr  d16(Ar)     dddddddd dddddddd
                 {
                     uint32 uiWord = (uint32)(int32)(int16)Next_Word();
-                    sprintf(Dbg_EA_Str, "?!?MEM{^}$%.4X({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xffff, uiWord + gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 1 + Reg_Num, uiWord + gCurrentCore->dar[Reg_Num + 8], SizeMode);
+                    sprintf(Dbg_EA_Str, "?!?MEM{^}$%.4X({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xffff, uiWord + gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 9 + Reg_Num, uiWord + gCurrentCore->dar[Reg_Num + 8], SizeMode);
                 }
                 break;
 
@@ -2431,13 +2431,13 @@ namespace Disasm68000
                     {
                         uint32 uiIndex = (uiWord & 0x0800 ? gCurrentCore->dar[uiRegIndex + 8] : (uint32)(int32)(int16)gCurrentCore->dar[uiRegIndex + 8]);
                         uint32 uiAddr = gCurrentCore->dar[Reg_Num + 8] + uiDisp + uiIndex;
-                        sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!?,?!?REG{^}A%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, Reg_Num, Reg_Num + 1, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 1, uiAddr, SizeMode);
+                        sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!?,?!?REG{^}A%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, Reg_Num, Reg_Num + 9, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 9, uiAddr, SizeMode);
                     }
                     else
                     {
                         uint32 uiIndex = (uiWord & 0x0800 ? gCurrentCore->dar[uiRegIndex] : (uint32)(int32)(int16)gCurrentCore->dar[uiRegIndex]);
                         uint32 uiAddr = gCurrentCore->dar[Reg_Num + 8] + uiDisp + uiIndex;
-                        sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!?,?!?REG{^}D%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, Reg_Num, Reg_Num + 1, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 9, uiAddr, SizeMode);
+                        sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!?,?!?REG{^}D%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, Reg_Num, Reg_Num + 9, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 1, uiAddr, SizeMode);
                     }
                     break;
                 }
@@ -2488,13 +2488,13 @@ namespace Disasm68000
                         {
                             uint32 uiIndex = (uiWord & 0x0800 ? gCurrentCore->dar[uiRegIndex + 8] : (uint32)(int32)(int16)gCurrentCore->dar[uiRegIndex + 8]);
                             uint32 uiAddr = (Position + 2) + uiDisp + uiIndex;
-                            sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}PC{^}0?!?,?!?REG{^}A%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 1, uiAddr, SizeMode);
+                            sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}PC{^}0?!?,?!?REG{^}A%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 9, uiAddr, SizeMode);
                         }
                         else
                         {
                             uint32 uiIndex = (uiWord & 0x0800 ? gCurrentCore->dar[uiRegIndex] : (uint32)(int32)(int16)gCurrentCore->dar[uiRegIndex]);
                             uint32 uiAddr = (Position + 2) + uiDisp + uiIndex;
-                            sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}PC{^}0?!?,?!?REG{^}D%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 9, uiAddr, SizeMode);
+                            sprintf(Dbg_EA_Str, "?!?MEM{^}$%.2X({^}%d{^}%d?!??!?REG{^}PC{^}0?!?,?!?REG{^}D%.1d.%c{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", uiWord & 0xFF, uiAddr, SizeMode, uiRegIndex, (uiWord & 0x0800 ? 'l' : 'w' ), uiRegIndex + 1, uiAddr, SizeMode);
                         }
                     }
                     break;
@@ -2669,23 +2669,23 @@ namespace Disasm68000
                 else if (_szText[0] == '(' && _szText[1] == 'A' && _szText[2] >= '0' && _szText[2] <= '7' && _szText[3] == ')')
                 {
                     int Reg_Num = (_szText[2] - '0');
-                    iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 1 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
+                    iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 9 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
                     _szText += 4;
                 }
                 else if (_szText[0] == '-' && _szText[1] == '(' && _szText[2] == 'A' && _szText[3] >= '0' && _szText[3] <= '7' && _szText[4] == ')')
                 {
                     int Reg_Num = (_szText[3] - '0');
-                    iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}-({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode, Reg_Num, 1 + Reg_Num, gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode);
+                    iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}-({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode, Reg_Num, 9 + Reg_Num, gCurrentCore->dar[Reg_Num + 8] - TotalSizeMode, SizeMode);
                     _szText += 5;
                 }
                 else if ((_szText[0] == ' ' || _szText[0] == ',') && _szText[1] == 'A' && _szText[2] >= '0' && _szText[2] <= '7')
                 {
-                    iAdd += sprintf(szTemp + iAdd, "%c?!?REG{^}A%c{^}%d?!?", _szText[0], _szText[2], (_szText[2] - '0') + 1);
+                    iAdd += sprintf(szTemp + iAdd, "%c?!?REG{^}A%c{^}%d?!?", _szText[0], _szText[2], (_szText[2] - '0') + 9);
                     _szText += 3;
                 }
                 else if ((_szText[0] == ' ' || _szText[0] == ',') && _szText[1] == 'D' && _szText[2] >= '0' && _szText[2] <= '7')
                 {
-                    iAdd += sprintf(szTemp + iAdd, "%c?!?REG{^}D%c{^}%d?!?", _szText[0], _szText[2], (_szText[2] - '0') + 9);
+                    iAdd += sprintf(szTemp + iAdd, "%c?!?REG{^}D%c{^}%d?!?", _szText[0], _szText[2], (_szText[2] - '0') + 1);
                     _szText += 3;
                 }
                 else
@@ -2723,10 +2723,10 @@ namespace Disasm68000
                     {
                         if (OPC & 0x080)
                             //MOVEP.z Ds,d16(Ad) FIXE ME
-                            sprintf(Dbg_Str, "MOVEP%s ?!?REG{^}D%.1d{^}%d?!?,#$%.4X(A%.1d)", Make_Dbg_Size_Str_2((OPC & 0x40) >> 6), (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 9, Next_Word(), OPC & 0x7);
+                            sprintf(Dbg_Str, "MOVEP%s ?!?REG{^}D%.1d{^}%d?!?,#$%.4X(A%.1d)", Make_Dbg_Size_Str_2((OPC & 0x40) >> 6), (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 1, Next_Word(), OPC & 0x7);
                         else
                             //MOVEP.z d16(As),Dd FIXE ME
-                            sprintf(Dbg_Str, "MOVEP%s #$%.4X(A%.1d),?!?REG{^}D%.1d{^}%d?!?", Make_Dbg_Size_Str_2((OPC & 0x40) >> 6), Next_Word(), OPC & 0x7, (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 9);
+                            sprintf(Dbg_Str, "MOVEP%s #$%.4X(A%.1d),?!?REG{^}D%.1d{^}%d?!?", Make_Dbg_Size_Str_2((OPC & 0x40) >> 6), Next_Word(), OPC & 0x7, (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 1);
                     }
                     else
                     {
@@ -2735,22 +2735,22 @@ namespace Disasm68000
                         {
                         case 0:
                             //BTST  Ds,a
-                            sprintf(Dbg_Str, "BTST ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 9, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
+                            sprintf(Dbg_Str, "BTST ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 1, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
                             break;
 
                         case 1:
                             //BCHG  Ds,a
-                            sprintf(Dbg_Str, "BCHG ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 9, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
+                            sprintf(Dbg_Str, "BCHG ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 1, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
                             break;
 
                         case 2:
                             //BCLR  Ds,a
-                            sprintf(Dbg_Str, "BCLR ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 9, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
+                            sprintf(Dbg_Str, "BCLR ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 1, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
                             break;
 
                         case 3:
                             //BSET  Ds,a
-                            sprintf(Dbg_Str, "BSET ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 9, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
+                            sprintf(Dbg_Str, "BSET ?!?REG{^}D%.1d{^}%d?!?,%s", (OPC & 0xE00) >> 9, ((OPC & 0xE00) >> 9) + 1, Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 7));
                             break;
                         }
                     }
@@ -2978,13 +2978,13 @@ namespace Disasm68000
                     {
                         TotalSizeMode = SizeMode = 4;
                         //LEA  a,Ad
-                        sprintf(Dbg_Str, "LEA %s,?!?REG{^}A%.1d{^}%d?!?", Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 0x7), (OPC >> 9) & 0x7, ((OPC >> 9) & 0x7) + 1);
+                        sprintf(Dbg_Str, "LEA %s,?!?REG{^}A%.1d{^}%d?!?", Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 0x7), (OPC >> 9) & 0x7, ((OPC >> 9) & 0x7) + 9);
                     }
                     else
                     {
                         TotalSizeMode = SizeMode = 2;
                         //CHK.W  a,Dd
-                        sprintf(Dbg_Str, "CHK.W %s,?!?REG{^}D%.1d{^}%d?!?", Make_Dbg_EA_Str(1, (OPC & 0x38) >> 3, OPC & 0x7), (OPC >> 9) & 0x7, ((OPC >> 9) & 0x7) + 9);
+                        sprintf(Dbg_Str, "CHK.W %s,?!?REG{^}D%.1d{^}%d?!?", Make_Dbg_EA_Str(1, (OPC & 0x38) >> 3, OPC & 0x7), (OPC >> 9) & 0x7, ((OPC >> 9) & 0x7) + 1);
                     }
                 }
                 else
@@ -3042,7 +3042,7 @@ namespace Disasm68000
                             sprintf(Dbg_Str, "PEA %s%c", Make_Dbg_EA_Str(2, (OPC & 0x38) >> 3, OPC & 0x7), 0);
                         else
                             //SWAP.w  Dd
-                            sprintf(Dbg_Str, "SWAP.w  ?!?REG{^}D%d{^}%d?!?", OPC & 0x7, (OPC & 0x7) + 9);
+                            sprintf(Dbg_Str, "SWAP.w  ?!?REG{^}D%d{^}%d?!?", OPC & 0x7, (OPC & 0x7) + 1);
 
                         break;
 
@@ -3092,22 +3092,22 @@ namespace Disasm68000
 
                         case 2:
                             //LINK As,#k16
-                            sprintf(Dbg_Str, "LINK ?!?REG{^}A%.1d{^}%d?!?,#$%.4X", OPC & 0x7, (OPC & 0x7) + 1, Next_Word());
+                            sprintf(Dbg_Str, "LINK ?!?REG{^}A%.1d{^}%d?!?,#$%.4X", OPC & 0x7, (OPC & 0x7) + 9, Next_Word());
                             break;
 
                         case 3:
                             //ULNK Ad
-                            sprintf(Dbg_Str, "ULNK ?!?REG{^}A%.1d{^}%d?!?", OPC & 0x7, (OPC & 0x7) + 1);
+                            sprintf(Dbg_Str, "ULNK ?!?REG{^}A%.1d{^}%d?!?", OPC & 0x7, (OPC & 0x7) + 9);
                             break;
 
                         case 4:
                             //MOVE As,USP
-                            sprintf(Dbg_Str, "MOVE ?!?REG{^}A%.1d{^}%d?!?,?!?REG{^}USP{^}17?!?",OPC & 0x7, (OPC & 0x7) + 1);
+                            sprintf(Dbg_Str, "MOVE ?!?REG{^}A%.1d{^}%d?!?,?!?REG{^}USP{^}17?!?",OPC & 0x7, (OPC & 0x7) + 9);
                             break;
 
                         case 5:
                             //MOVE USP,Ad
-                            sprintf(Dbg_Str, "MOVE ?!?REG{^}USP{^}17?!?,?!?REG{^}A%.1d{^}%d?!?",OPC & 0x7, (OPC & 0x7) + 1);
+                            sprintf(Dbg_Str, "MOVE ?!?REG{^}USP{^}17?!?,?!?REG{^}A%.1d{^}%d?!?",OPC & 0x7, (OPC & 0x7) + 9);
                             break;
 
                         case 6:
@@ -3183,7 +3183,7 @@ namespace Disasm68000
                         //DBCC  Ds,label
                         uint32 uiLabelPos = _uiPosition + 2 + ((signed short)Next_Word());
 
-                        sprintf(Dbg_Str, "DB%s ?!?REG{^}D%.1d{^}%d?!?,(?!?LINK{^}$%08X{^}%d?!?).w", Make_Dbg_Cond_Str((OPC >> 8) & 0xF), OPC & 0x7, (OPC & 0x7) + 9, uiLabelPos, uiLabelPos);
+                        sprintf(Dbg_Str, "DB%s ?!?REG{^}D%.1d{^}%d?!?,(?!?LINK{^}$%08X{^}%d?!?).w", Make_Dbg_Cond_Str((OPC >> 8) & 0xF), OPC & 0x7, (OPC & 0x7) + 1, uiLabelPos, uiLabelPos);
                     }
                     else
                     {

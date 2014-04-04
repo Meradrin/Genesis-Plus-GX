@@ -12,6 +12,7 @@ enum CPUTypes_e
 };
 
 extern bool gbNeedBreak[kCPU_Count];
+extern int32 guiStepCount[kCPU_Count];
 
 void SetExecutionBreak(ExecutionBreak _ExecBreakFnc);
 

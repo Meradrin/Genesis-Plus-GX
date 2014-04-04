@@ -14,7 +14,7 @@
 #endif /* M68K_EMULATE_ADDRESS_ERROR */
 
 #include "m68k.h"
-
+#include "..\Marmelade-Module\Debug\DebugMacro.h"
 
 /* ======================================================================== */
 /* ============================ GENERAL DEFINES =========================== */
@@ -521,13 +521,13 @@
 /* ----------------------------- Read / Write ----------------------------- */
 
 /* Read data immediately following the PC */
-#define m68k_read_immediate_16(address) *(uint16 *)(m68ki_cpu.memory_map[((address)>>16)&0xff].base + ((address) & 0xffff))
-#define m68k_read_immediate_32(address) (m68k_read_immediate_16(address) << 16) | (m68k_read_immediate_16(address+2))
+#define m68k_read_immediate_16(address) *(uint16 *)(m68ki_cpu.memory_map[((address)>>16)&0xff].base + ((address) & 0xffff) + SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 2))
+#define m68k_read_immediate_32(address) (m68k_read_immediate_16(address) << 16) | (m68k_read_immediate_16(address+2) + SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 4))
 
 /* Read data relative to the PC */
-#define m68k_read_pcrelative_8(address)  READ_BYTE(m68ki_cpu.memory_map[((address)>>16)&0xff].base, (address) & 0xffff)
-#define m68k_read_pcrelative_16(address) m68k_read_immediate_16(address)
-#define m68k_read_pcrelative_32(address) m68k_read_immediate_32(address)
+#define m68k_read_pcrelative_8(address)  (READ_BYTE(m68ki_cpu.memory_map[((address)>>16)&0xff].base, (address) & 0xffff) + SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 1))
+#define m68k_read_pcrelative_16(address) (m68k_read_immediate_16(address) + SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 2))
+#define m68k_read_pcrelative_32(address) (m68k_read_immediate_32(address) + SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 4))
 
 /* Read from the current address space */
 #define m68ki_read_8(A)  m68ki_read_8_fc (A, FLAG_S | m68ki_get_address_space())
@@ -868,6 +868,8 @@ INLINE uint m68ki_read_8_fc(uint address, uint fc)
 {
   cpu_memory_map *temp = &m68ki_cpu.memory_map[((address)>>16)&0xff];;
 
+  SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 1);
+
   m68ki_set_fc(fc) /* auto-disable (see m68kcpu.h) */
 
   if (temp->read8) return (*temp->read8)(ADDRESS_68K(address));
@@ -878,9 +880,11 @@ INLINE uint m68ki_read_16_fc(uint address, uint fc)
 {
   cpu_memory_map *temp;
 
+  SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 2);
+
   m68ki_set_fc(fc) /* auto-disable (see m68kcpu.h) */
   m68ki_check_address_error(address, MODE_READ, fc) /* auto-disable (see m68kcpu.h) */
-  
+
   temp = &m68ki_cpu.memory_map[((address)>>16)&0xff];
   if (temp->read16) return (*temp->read16)(ADDRESS_68K(address));
   else return *(uint16 *)(temp->base + ((address) & 0xffff));
@@ -889,6 +893,8 @@ INLINE uint m68ki_read_16_fc(uint address, uint fc)
 INLINE uint m68ki_read_32_fc(uint address, uint fc)
 {
   cpu_memory_map *temp;
+
+  SPY_BUS_68K_PRE_READ(&m68ki_cpu, address, 4);
 
   m68ki_set_fc(fc) /* auto-disable (see m68kcpu.h) */
   m68ki_check_address_error(address, MODE_READ, fc) /* auto-disable (see m68kcpu.h) */
@@ -902,6 +908,8 @@ INLINE void m68ki_write_8_fc(uint address, uint fc, uint value)
 {
   cpu_memory_map *temp;
 
+  SPY_BUS_68K_PRE_WRITE(&m68ki_cpu, address, value, 1);
+
   m68ki_set_fc(fc) /* auto-disable (see m68kcpu.h) */
 
   temp = &m68ki_cpu.memory_map[((address)>>16)&0xff];
@@ -912,6 +920,8 @@ INLINE void m68ki_write_8_fc(uint address, uint fc, uint value)
 INLINE void m68ki_write_16_fc(uint address, uint fc, uint value)
 {
   cpu_memory_map *temp;
+
+  SPY_BUS_68K_PRE_WRITE(&m68ki_cpu, address, value, 2);
 
   m68ki_set_fc(fc) /* auto-disable (see m68kcpu.h) */
   m68ki_check_address_error(address, MODE_WRITE, fc); /* auto-disable (see m68kcpu.h) */
@@ -927,6 +937,8 @@ INLINE void m68ki_write_32_fc(uint address, uint fc, uint value)
 
   m68ki_set_fc(fc) /* auto-disable (see m68kcpu.h) */
   m68ki_check_address_error(address, MODE_WRITE, fc) /* auto-disable (see m68kcpu.h) */
+
+  SPY_BUS_68K_PRE_WRITE(&m68ki_cpu, address, value, 4);
 
   temp = &m68ki_cpu.memory_map[((address)>>16)&0xff];
   if (temp->write16) (*temp->write16)(ADDRESS_68K(address),value>>16);

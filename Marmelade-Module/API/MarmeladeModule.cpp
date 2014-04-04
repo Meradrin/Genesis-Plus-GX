@@ -619,6 +619,44 @@ BreakpointMgrHandle GetBreakpointMgr(EmulatorHandle _hData)
     return GetBreakHandle();
 }
 
+uint32 GetSaveStateMode(EmulatorHandle _hData)
+{
+    return SAVESTATEMODE_SAVE_SUPPORT | SAVESTATEMODE_LOAD_SUPPORT | SAVESTATEMODE_REWINDER_SUPPORT;
+}          
+
+uint8* GetSaveState(EmulatorHandle _hData, uint32* _puiSize)
+{
+    uint8* data = new uint8[STATE_SIZE];
+
+    state_save(data);
+
+    if (_puiSize != NULL)
+        *_puiSize = STATE_SIZE;
+
+    return data;
+}
+
+bool SetSaveState(EmulatorHandle _hData, uint8* _pData, uint32 _uiSize)
+{
+    if (_uiSize != STATE_SIZE)
+        return false;
+
+    if (!state_load((uint8_t*)_pData))
+        return false;
+
+    return true;
+}
+
+void DeleteSaveState(EmulatorHandle _hData, uint8* _pData)
+{
+    delete [] _pData;
+}
+
+const char* GetSaveStateExt(EmulatorHandle _hData)
+{
+    return "gpg";
+}
+
 Status ModuleIsSupportedVersion(uint32 _uiVersion)
 {
     if (_uiVersion == CURRENT_EMU_MODULE_API_VERSION)
@@ -631,6 +669,7 @@ Status ModuleGetAPI(uint32 _uiVersion, EmulatorModuleAPI* _pAPI)
 {
     if (_uiVersion != CURRENT_EMU_MODULE_API_VERSION)
         return STATUS_INVALID;
+
     _pAPI->Emu.SetVideoRenderCallback = SetRenderFnc;
     _pAPI->Emu.SetAudioSampleCallback = SetAudioFnc;
     _pAPI->Emu.SetInputCallback = SetInputFnc;
@@ -657,11 +696,11 @@ Status ModuleGetAPI(uint32 _uiVersion, EmulatorModuleAPI* _pAPI)
     _pAPI->Emu.GetCPU = GetCPU;
     _pAPI->Emu.SetExecutionBreak = SetExecutionBreak;
     _pAPI->Emu.GetBreakpointMgr = GetBreakpointMgr;
-//    _pAPI->Emu.GetSaveStateMode = GetSaveStateMode;
-//    _pAPI->Emu.GetSaveState = GetSaveState;
-//    _pAPI->Emu.SetSaveState = SetSaveState;
-//    _pAPI->Emu.DeleteSaveState = DeleteSaveState;
-//    _pAPI->Emu.GetSaveStateExt = GetSaveStateExt;
+    _pAPI->Emu.GetSaveStateMode = GetSaveStateMode;
+    _pAPI->Emu.GetSaveState = GetSaveState;
+    _pAPI->Emu.SetSaveState = SetSaveState;
+    _pAPI->Emu.DeleteSaveState = DeleteSaveState;
+    _pAPI->Emu.GetSaveStateExt = GetSaveStateExt;
 
     // Input
     _pAPI->Inputs.GetPortCount = GetPortCount;
