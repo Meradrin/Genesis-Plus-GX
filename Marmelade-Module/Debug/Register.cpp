@@ -33,7 +33,6 @@ const char* gszRegisterZ80[] =
    "SP",
    "IX",
    "IY",
-   "WZ",
    "AF'",
    "BC'",
    "DE'",
@@ -42,7 +41,6 @@ const char* gszRegisterZ80[] =
 
 const char* gszRegisterFormatZ80[] =
 {
-    "%04x",
     "%04x",
     "%04x",
     "%04x",
@@ -67,7 +65,6 @@ PAIR* gRegisterZ80[] =
     &(Z80.sp),
     &(Z80.ix),
     &(Z80.iy),
-    &(Z80.wz),
     &(Z80.af2),
     &(Z80.bc2),
     &(Z80.de2),

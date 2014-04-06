@@ -2670,8 +2670,7 @@ namespace Disasm68000
                 {
                     int Reg_Num = (_szText[2] - '0');
                     iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}A%.1d{^}%d?!??!?MEM{^}){^}%d{^}%d?!?", gCurrentCore->dar[Reg_Num + 8], SizeMode, Reg_Num, 9 + Reg_Num, gCurrentCore->dar[Reg_Num + 8], SizeMode);
-                    _szText += 4;
-                }
+                    _szText += 4;}
                 else if (_szText[0] == '-' && _szText[1] == '(' && _szText[2] == 'A' && _szText[3] >= '0' && _szText[3] <= '7' && _szText[4] == ')')
                 {
                     int Reg_Num = (_szText[3] - '0');
@@ -3656,151 +3655,173 @@ namespace DisasmZ80
 
     char Mnemonics[256][16] =
     {
-        "NOP","LD BC,$#","LD (BC),A","INC BC","INC B","DEC B","LD B,$*","RLCA",
-        "EX AF,AF'","ADD HL,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,$*","RRCA",
-        "DJNZ $*","LD DE,$#","LD (DE),A","INC DE","INC D","DEC D","LD D,$*","RLA",
-        "JR $*","ADD HL,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,$*","RRA",
-        "JR NZ,$*","LD HL,$#","LD ($#),HL","INC HL","INC H","DEC H","LD H,$*","DAA",
-        "JR Z,$*","ADD HL,HL","LD HL,($#)","DEC HL","INC L","DEC L","LD L,$*","CPL",
-        "JR NC,$*","LD SP,$#","LD ($#),A","INC SP","INC (HL)","DEC (HL)","LD (HL),$*","SCF",
-        "JR C,$*","ADD HL,SP","LD A,($#)","DEC SP","INC A","DEC A","LD A,$*","CCF",
-        "LD B,B","LD B,C","LD B,D","LD B,E","LD B,H","LD B,L","LD B,(HL)","LD B,A",
-        "LD C,B","LD C,C","LD C,D","LD C,E","LD C,H","LD C,L","LD C,(HL)","LD C,A",
-        "LD D,B","LD D,C","LD D,D","LD D,E","LD D,H","LD D,L","LD D,(HL)","LD D,A",
-        "LD E,B","LD E,C","LD E,D","LD E,E","LD E,H","LD E,L","LD E,(HL)","LD E,A",
-        "LD H,B","LD H,C","LD H,D","LD H,E","LD H,H","LD H,L","LD H,(HL)","LD H,A",
-        "LD L,B","LD L,C","LD L,D","LD L,E","LD L,H","LD L,L","LD L,(HL)","LD L,A",
-        "LD (HL),B","LD (HL),C","LD (HL),D","LD (HL),E","LD (HL),H","LD (HL),L","HALT","LD (HL),A",
-        "LD A,B","LD A,C","LD A,D","LD A,E","LD A,H","LD A,L","LD A,(HL)","LD A,A",
-        "ADD B","ADD C","ADD D","ADD E","ADD H","ADD L","ADD (HL)","ADD A",
-        "ADC B","ADC C","ADC D","ADC E","ADC H","ADC L","ADC (HL)","ADC,A",
-        "SUB B","SUB C","SUB D","SUB E","SUB H","SUB L","SUB (HL)","SUB A",
-        "SBC B","SBC C","SBC D","SBC E","SBC H","SBC L","SBC (HL)","SBC A",
-        "AND B","AND C","AND D","AND E","AND H","AND L","AND (HL)","AND A",
-        "XOR B","XOR C","XOR D","XOR E","XOR H","XOR L","XOR (HL)","XOR A",
-        "OR B","OR C","OR D","OR E","OR H","OR L","OR (HL)","OR A",
-        "CP B","CP C","CP D","CP E","CP H","CP L","CP (HL)","CP A",
-        "RET NZ","POP BC","JP NZ,$#","JP $#","CALL NZ,$#","PUSH BC","ADD $*","RST 00h",
-        "RET Z","RET","JP Z,$#","PFX_CB","CALL Z,$#","CALL $#","ADC $*","RST 08h",
-        "RET NC","POP DE","JP NC,$#","OUTA ($*)","CALL NC,$#","PUSH DE","SUB $*","RST 10h",
-        "RET C","EXX","JP C,$#","INA ($*)","CALL C,$#","PFX_DD","SBC $*","RST 18h",
-        "RET PO","POP HL","JP PO,$#","EX HL,(SP)","CALL PO,$#","PUSH HL","AND $*","RST 20h",
-        "RET PE","LD PC,HL","JP PE,$#","EX DE,HL","CALL PE,$#","PFX_ED","XOR $*","RST 28h",
-        "RET P","POP AF","JP P,$#","DI","CALL P,$#","PUSH AF","OR $*","RST 30h",
-        "RET M","LD SP,HL","JP M,$#","EI","CALL M,$#","PFX_FD","CP $*","RST 38h"
+        /* 00 */ "NOP","LD BC,#","LD (BC),A","INC BC","INC B","DEC B","LD B,*","RLCA",
+        /* 08 */ "EX AF,AF'","ADD HL,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,*","RRCA",
+        /* 10 */ "DJNZ *","LD DE,#","LD (DE),A","INC DE","INC D","DEC D","LD D,*","RLA",
+        /* 18 */ "JR *","ADD HL,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,*","RRA",
+        /* 20 */ "JR NZ,*","LD HL,#","LD (#),HL","INC HL","INC H","DEC H","LD H,*","DAA",
+        /* 28 */ "JR Z,*","ADD HL,HL","LD HL,(#)","DEC HL","INC L","DEC L","LD L,*","CPL",
+        /* 30 */ "JR NC,*","LD SP,#","LD (#),A","INC SP","INC (HL)","DEC (HL)","LD (HL),*","SCF",
+        /* 38 */ "JR C,*","ADD HL,SP","LD A,(#)","DEC SP","INC A","DEC A","LD A,*","CCF",
+        /* 40 */ "LD B,B","LD B,C","LD B,D","LD B,E","LD B,H","LD B,L","LD B,(HL)","LD B,A",
+        /* 48 */ "LD C,B","LD C,C","LD C,D","LD C,E","LD C,H","LD C,L","LD C,(HL)","LD C,A",
+        /* 50 */ "LD D,B","LD D,C","LD D,D","LD D,E","LD D,H","LD D,L","LD D,(HL)","LD D,A",
+        /* 58 */ "LD E,B","LD E,C","LD E,D","LD E,E","LD E,H","LD E,L","LD E,(HL)","LD E,A",
+        /* 60 */ "LD H,B","LD H,C","LD H,D","LD H,E","LD H,H","LD H,L","LD H,(HL)","LD H,A",
+        /* 68 */ "LD L,B","LD L,C","LD L,D","LD L,E","LD L,H","LD L,L","LD L,(HL)","LD L,A",
+        /* 70 */ "LD (HL),B","LD (HL),C","LD (HL),D","LD (HL),E","LD (HL),H","LD (HL),L","HALT","LD (HL),A",
+        /* 78 */ "LD A,B","LD A,C","LD A,D","LD A,E","LD A,H","LD A,L","LD A,(HL)","LD A,A",
+        /* 80 */ "ADD B","ADD C","ADD D","ADD E","ADD H","ADD L","ADD (HL)","ADD A",
+        /* 88 */ "ADC B","ADC C","ADC D","ADC E","ADC H","ADC L","ADC (HL)","ADC,A",
+        /* 90 */ "SUB B","SUB C","SUB D","SUB E","SUB H","SUB L","SUB (HL)","SUB A",
+        /* 98 */ "SBC B","SBC C","SBC D","SBC E","SBC H","SBC L","SBC (HL)","SBC A",
+        /* A0 */ "AND B","AND C","AND D","AND E","AND H","AND L","AND (HL)","AND A",
+        /* A8 */ "XOR B","XOR C","XOR D","XOR E","XOR H","XOR L","XOR (HL)","XOR A",
+        /* B0 */ "OR B","OR C","OR D","OR E","OR H","OR L","OR (HL)","OR A",
+        /* B8 */ "CP B","CP C","CP D","CP E","CP H","CP L","CP (HL)","CP A",
+        /* C0 */ "RET NZ","POP BC","JP NZ,#","JP #","CALL NZ,#","PUSH BC","ADD *","RST 00h",
+        /* C8 */ "RET Z","RET","JP Z,#","PFX_CB","CALL Z,#","CALL #","ADC *","RST 08h",
+        /* D0 */ "RET NC","POP DE","JP NC,#","OUTA (*)","CALL NC,#","PUSH DE","SUB *","RST 10h",
+        /* D8 */ "RET C","EXX","JP C,#","INA (*)","CALL C,#","PFX_DD","SBC *","RST 18h",
+        /* E0 */ "RET PO","POP HL","JP PO,#","EX HL,(SP)","CALL PO,#","PUSH HL","AND *","RST 20h",
+        /* E8 */ "RET PE","LD PC,HL","JP PE,#","EX DE,HL","CALL PE,#","PFX_ED","XOR *","RST 28h",
+        /* F0 */ "RET P","POP AF","JP P,#","DI","CALL P,#","PUSH AF","OR *","RST 30h",
+        /* F8 */ "RET M","LD SP,HL","JP M,#","EI","CALL M,#","PFX_FD","CP *","RST 38h"
     };
 
 
     char MnemonicsCB[256][16] =
     {
-        "RLC B","RLC C","RLC D","RLC E","RLC H","RLC L","RLC xHL","RLC A",
-        "RRC B","RRC C","RRC D","RRC E","RRC H","RRC L","RRC xHL","RRC A",
-        "RL B","RL C","RL D","RL E","RL H","RL L","RL xHL","RL A",
-        "RR B","RR C","RR D","RR E","RR H","RR L","RR xHL","RR A",
-        "SLA B","SLA C","SLA D","SLA E","SLA H","SLA L","SLA xHL","SLA A",
-        "SRA B","SRA C","SRA D","SRA E","SRA H","SRA L","SRA xHL","SRA A",
-        "SLL B","SLL C","SLL D","SLL E","SLL H","SLL L","SLL xHL","SLL A",
-        "SRL B","SRL C","SRL D","SRL E","SRL H","SRL L","SRL xHL","SRL A",
-        "BIT 0,B","BIT 0,C","BIT 0,D","BIT 0,E","BIT 0,H","BIT 0,L","BIT 0,(HL)","BIT 0,A",
-        "BIT 1,B","BIT 1,C","BIT 1,D","BIT 1,E","BIT 1,H","BIT 1,L","BIT 1,(HL)","BIT 1,A",
-        "BIT 2,B","BIT 2,C","BIT 2,D","BIT 2,E","BIT 2,H","BIT 2,L","BIT 2,(HL)","BIT 2,A",
-        "BIT 3,B","BIT 3,C","BIT 3,D","BIT 3,E","BIT 3,H","BIT 3,L","BIT 3,(HL)","BIT 3,A",
-        "BIT 4,B","BIT 4,C","BIT 4,D","BIT 4,E","BIT 4,H","BIT 4,L","BIT 4,(HL)","BIT 4,A",
-        "BIT 5,B","BIT 5,C","BIT 5,D","BIT 5,E","BIT 5,H","BIT 5,L","BIT 5,(HL)","BIT 5,A",
-        "BIT 6,B","BIT 6,C","BIT 6,D","BIT 6,E","BIT 6,H","BIT 6,L","BIT 6,(HL)","BIT 6,A",
-        "BIT 7,B","BIT 7,C","BIT 7,D","BIT 7,E","BIT 7,H","BIT 7,L","BIT 7,(HL)","BIT 7,A",
-        "RES 0,B","RES 0,C","RES 0,D","RES 0,E","RES 0,H","RES 0,L","RES 0,(HL)","RES 0,A",
-        "RES 1,B","RES 1,C","RES 1,D","RES 1,E","RES 1,H","RES 1,L","RES 1,(HL)","RES 1,A",
-        "RES 2,B","RES 2,C","RES 2,D","RES 2,E","RES 2,H","RES 2,L","RES 2,(HL)","RES 2,A",
-        "RES 3,B","RES 3,C","RES 3,D","RES 3,E","RES 3,H","RES 3,L","RES 3,(HL)","RES 3,A",
-        "RES 4,B","RES 4,C","RES 4,D","RES 4,E","RES 4,H","RES 4,L","RES 4,(HL)","RES 4,A",
-        "RES 5,B","RES 5,C","RES 5,D","RES 5,E","RES 5,H","RES 5,L","RES 5,(HL)","RES 5,A",
-        "RES 6,B","RES 6,C","RES 6,D","RES 6,E","RES 6,H","RES 6,L","RES 6,(HL)","RES 6,A",
-        "RES 7,B","RES 7,C","RES 7,D","RES 7,E","RES 7,H","RES 7,L","RES 7,(HL)","RES 7,A",
-        "SET 0,B","SET 0,C","SET 0,D","SET 0,E","SET 0,H","SET 0,L","SET 0,(HL)","SET 0,A",
-        "SET 1,B","SET 1,C","SET 1,D","SET 1,E","SET 1,H","SET 1,L","SET 1,(HL)","SET 1,A",
-        "SET 2,B","SET 2,C","SET 2,D","SET 2,E","SET 2,H","SET 2,L","SET 2,(HL)","SET 2,A",
-        "SET 3,B","SET 3,C","SET 3,D","SET 3,E","SET 3,H","SET 3,L","SET 3,(HL)","SET 3,A",
-        "SET 4,B","SET 4,C","SET 4,D","SET 4,E","SET 4,H","SET 4,L","SET 4,(HL)","SET 4,A",
-        "SET 5,B","SET 5,C","SET 5,D","SET 5,E","SET 5,H","SET 5,L","SET 5,(HL)","SET 5,A",
-        "SET 6,B","SET 6,C","SET 6,D","SET 6,E","SET 6,H","SET 6,L","SET 6,(HL)","SET 6,A",
-        "SET 7,B","SET 7,C","SET 7,D","SET 7,E","SET 7,H","SET 7,L","SET 7,(HL)","SET 7,A"
+        /* 00 */ "RLC B","RLC C","RLC D","RLC E","RLC H","RLC L","RLC xHL","RLC A",
+        /* 08 */ "RRC B","RRC C","RRC D","RRC E","RRC H","RRC L","RRC xHL","RRC A",
+        /* 10 */ "RL B","RL C","RL D","RL E","RL H","RL L","RL xHL","RL A",
+        /* 18 */ "RR B","RR C","RR D","RR E","RR H","RR L","RR xHL","RR A",
+        /* 20 */ "SLA B","SLA C","SLA D","SLA E","SLA H","SLA L","SLA xHL","SLA A",
+        /* 28 */ "SRA B","SRA C","SRA D","SRA E","SRA H","SRA L","SRA xHL","SRA A",
+        /* 30 */ "SLL B","SLL C","SLL D","SLL E","SLL H","SLL L","SLL xHL","SLL A",
+        /* 38 */ "SRL B","SRL C","SRL D","SRL E","SRL H","SRL L","SRL xHL","SRL A",
+        /* 40 */ "BIT 0,B","BIT 0,C","BIT 0,D","BIT 0,E","BIT 0,H","BIT 0,L","BIT 0,(HL)","BIT 0,A",
+        /* 48 */ "BIT 1,B","BIT 1,C","BIT 1,D","BIT 1,E","BIT 1,H","BIT 1,L","BIT 1,(HL)","BIT 1,A",
+        /* 50 */ "BIT 2,B","BIT 2,C","BIT 2,D","BIT 2,E","BIT 2,H","BIT 2,L","BIT 2,(HL)","BIT 2,A",
+        /* 58 */ "BIT 3,B","BIT 3,C","BIT 3,D","BIT 3,E","BIT 3,H","BIT 3,L","BIT 3,(HL)","BIT 3,A",
+        /* 60 */ "BIT 4,B","BIT 4,C","BIT 4,D","BIT 4,E","BIT 4,H","BIT 4,L","BIT 4,(HL)","BIT 4,A",
+        /* 68 */ "BIT 5,B","BIT 5,C","BIT 5,D","BIT 5,E","BIT 5,H","BIT 5,L","BIT 5,(HL)","BIT 5,A",
+        /* 70 */ "BIT 6,B","BIT 6,C","BIT 6,D","BIT 6,E","BIT 6,H","BIT 6,L","BIT 6,(HL)","BIT 6,A",
+        /* 78 */ "BIT 7,B","BIT 7,C","BIT 7,D","BIT 7,E","BIT 7,H","BIT 7,L","BIT 7,(HL)","BIT 7,A",
+        /* 80 */ "RES 0,B","RES 0,C","RES 0,D","RES 0,E","RES 0,H","RES 0,L","RES 0,(HL)","RES 0,A",
+        /* 88 */ "RES 1,B","RES 1,C","RES 1,D","RES 1,E","RES 1,H","RES 1,L","RES 1,(HL)","RES 1,A",
+        /* 90 */ "RES 2,B","RES 2,C","RES 2,D","RES 2,E","RES 2,H","RES 2,L","RES 2,(HL)","RES 2,A",
+        /* 98 */ "RES 3,B","RES 3,C","RES 3,D","RES 3,E","RES 3,H","RES 3,L","RES 3,(HL)","RES 3,A",
+        /* A0 */ "RES 4,B","RES 4,C","RES 4,D","RES 4,E","RES 4,H","RES 4,L","RES 4,(HL)","RES 4,A",
+        /* A8 */ "RES 5,B","RES 5,C","RES 5,D","RES 5,E","RES 5,H","RES 5,L","RES 5,(HL)","RES 5,A",
+        /* B0 */ "RES 6,B","RES 6,C","RES 6,D","RES 6,E","RES 6,H","RES 6,L","RES 6,(HL)","RES 6,A",
+        /* B8 */ "RES 7,B","RES 7,C","RES 7,D","RES 7,E","RES 7,H","RES 7,L","RES 7,(HL)","RES 7,A",
+        /* C0 */ "SET 0,B","SET 0,C","SET 0,D","SET 0,E","SET 0,H","SET 0,L","SET 0,(HL)","SET 0,A",
+        /* C8 */ "SET 1,B","SET 1,C","SET 1,D","SET 1,E","SET 1,H","SET 1,L","SET 1,(HL)","SET 1,A",
+        /* D0 */ "SET 2,B","SET 2,C","SET 2,D","SET 2,E","SET 2,H","SET 2,L","SET 2,(HL)","SET 2,A",
+        /* D8 */ "SET 3,B","SET 3,C","SET 3,D","SET 3,E","SET 3,H","SET 3,L","SET 3,(HL)","SET 3,A",
+        /* E0 */ "SET 4,B","SET 4,C","SET 4,D","SET 4,E","SET 4,H","SET 4,L","SET 4,(HL)","SET 4,A",
+        /* E8 */ "SET 5,B","SET 5,C","SET 5,D","SET 5,E","SET 5,H","SET 5,L","SET 5,(HL)","SET 5,A",
+        /* F0 */ "SET 6,B","SET 6,C","SET 6,D","SET 6,E","SET 6,H","SET 6,L","SET 6,(HL)","SET 6,A",
+        /* F8 */ "SET 7,B","SET 7,C","SET 7,D","SET 7,E","SET 7,H","SET 7,L","SET 7,(HL)","SET 7,A"
     };
 
 
     char MnemonicsED[256][16] =
     {
-        "FUCK00","FUCK01","FUCK02","FUCK03","FUCK04","FUCK05","FUCK06","FUCK07",
-        "FUCK08","FUCK09","FUCK0A","FUCK0B","FUCK0C","FUCK0D","FUCK0E","FUCK0F",
-        "FUCK10","FUCK11","FUCK12","FUCK13","FUCK14","FUCK15","FUCK16","FUCK17",
-        "FUCK18","FUCK19","FUCK1A","FUCK1B","FUCK1C","FUCK1D","FUCK1E","FUCK1F",
-        "FUCK20","FUCK21","FUCK22","FUCK23","FUCK24","FUCK25","FUCK26","FUCK27",
-        "FUCK28","FUCK29","FUCK2A","FUCK2B","FUCK2C","FUCK2D","FUCK2E","FUCK2F",
-        "FUCK30","FUCK31","FUCK32","FUCK33","FUCK34","FUCK35","FUCK36","FUCK37",
-        "FUCK38","FUCK39","FUCK3A","FUCK3B","FUCK3C","FUCK3D","FUCK3E","FUCK3F",
-        "IN B,(C)","OUT (C),B","SBC HL,BC","FUCK43","FUCK44","RETN","IM 0","LD I,A",
-        "IN C,(C)","OUT (C),C","ADC HL,BC","FUCK4B","FUCK4C","RETI","FUCK","LD R,A",
-        "IN D,(C)","OUT (C),D","SBC HL,DE","FUCK53","FUCK54","FUCK55","IM 1","LD A,I",
-        "IN E,(C)","OUT (C),E","ADC HL,DE","FUCK5B","FUCK5C","FUCK5D","IM 2","LD A,R",
-        "IN H,(C)","OUT (C),H","SBC HL,HL","FUCK63","FUCK64","FUCK65","FUCK66","RRD",
-        "IN L,(C)","OUT (C),L","ADC HL,HL","FUCK6B","FUCK6C","FUCK6D","FUCK6E","RLD",
-        "IN F,(C)","FUCK","SBC HL,SP","FUCK73","FUCK74","FUCK75","FUCK76","FUCK77",
-        "IN A,(C)","OUT (C),A","ADC HL,SP","FUCK7B","FUCK7C","FUCK7D","FUCK7E","FUCK7F",
-        "FUCK80","FUCK81","FUCK82","FUCK83","FUCK84","FUCK85","FUCK86","FUCK87",
-        "FUCK88","FUCK89","FUCK8A","FUCK8B","FUCK8C","FUCK8D","FUCK8E","FUCK8F",
-        "FUCK90","FUCK91","FUCK92","FUCK93","FUCK94","FUCK95","FUCK96","FUCK97",
-        "FUCK98","FUCK99","FUCK9A","FUCK9B","FUCK9C","FUCK9D","FUCK9E","FUCK9F",
-        "LDI","CPI","INI","OUTI","FUCKA4","FUCKA5","FUCKA6","FUCKA7",
-        "LDD","CPD","IND","OUTD","FUCKAC","FUCKAD","FUCKAE","FUCKAF",
-        "LDIR","CPIR","INIR","OTIR","FUCKB4","FUCKB5","FUCKB6","FUCKB7",
-        "LDDR","CPDR","INDR","OTDR","FUCKBC","FUCKBD","FUCKBE","FUCKBF",
-        "FUCKC0","FUCKC1","FUCKC2","FUCKC3","FUCKC4","FUCKC5","FUCKC6","FUCKC7",
-        "FUCKC8","FUCKC9","FUCKCA","FUCKCB","FUCKCC","FUCKCD","FUCKCE","FUCKCF",
-        "FUCKD0","FUCKD1","FUCKD2","FUCKD3","FUCKD4","FUCKD5","FUCKD6","FUCKD7",
-        "FUCKD8","FUCKD9","FUCKDA","FUCKDB","FUCKDC","FUCKDD","FUCKDE","FUCKDF",
-        "FUCKE0","FUCKE1","FUCKE2","FUCKE3","FUCKE4","FUCKE5","FUCKE6","FUCKE7",
-        "FUCKE8","FUCKE9","FUCKEA","FUCKEB","FUCKEC","FUCKED","FUCKEE","FUCKEF",
-        "FUCKF0","FUCKF1","FUCKF2","FUCKF3","FUCKF4","FUCKF5","FUCKF6","FUCKF7",
-        "FUCKF8","FUCKF9","FUCKFA","FUCKFB","FUCKFC","FUCKFD","FUCKFE","FUCKFF"
+        /* 00 */ "FUCK00","FUCK01","FUCK02","FUCK03","FUCK04","FUCK05","FUCK06","FUCK07",
+        /* 08 */ "FUCK08","FUCK09","FUCK0A","FUCK0B","FUCK0C","FUCK0D","FUCK0E","FUCK0F",
+        /* 10 */ "FUCK10","FUCK11","FUCK12","FUCK13","FUCK14","FUCK15","FUCK16","FUCK17",
+        /* 18 */ "FUCK18","FUCK19","FUCK1A","FUCK1B","FUCK1C","FUCK1D","FUCK1E","FUCK1F",
+        /* 20 */ "FUCK20","FUCK21","FUCK22","FUCK23","FUCK24","FUCK25","FUCK26","FUCK27",
+        /* 28 */ "FUCK28","FUCK29","FUCK2A","FUCK2B","FUCK2C","FUCK2D","FUCK2E","FUCK2F",
+        /* 30 */ "FUCK30","FUCK31","FUCK32","FUCK33","FUCK34","FUCK35","FUCK36","FUCK37",
+        /* 38 */ "FUCK38","FUCK39","FUCK3A","FUCK3B","FUCK3C","FUCK3D","FUCK3E","FUCK3F",
+        /* 40 */ "IN B,(C)","OUT (C),B","SBC HL,BC","FUCK43","FUCK44","RETN","IM 0","LD I,A",
+        /* 48 */ "IN C,(C)","OUT (C),C","ADC HL,BC","FUCK4B","FUCK4C","RETI","FUCK","LD R,A",
+        /* 50 */ "IN D,(C)","OUT (C),D","SBC HL,DE","FUCK53","FUCK54","FUCK55","IM 1","LD A,I",
+        /* 58 */ "IN E,(C)","OUT (C),E","ADC HL,DE","FUCK5B","FUCK5C","FUCK5D","IM 2","LD A,R",
+        /* 60 */ "IN H,(C)","OUT (C),H","SBC HL,HL","FUCK63","FUCK64","FUCK65","FUCK66","RRD",
+        /* 68 */ "IN L,(C)","OUT (C),L","ADC HL,HL","FUCK6B","FUCK6C","FUCK6D","FUCK6E","RLD",
+        /* 70 */ "IN F,(C)","FUCK","SBC HL,SP","FUCK73","FUCK74","FUCK75","FUCK76","FUCK77",
+        /* 78 */ "IN A,(C)","OUT (C),A","ADC HL,SP","FUCK7B","FUCK7C","FUCK7D","FUCK7E","FUCK7F",
+        /* 80 */ "FUCK80","FUCK81","FUCK82","FUCK83","FUCK84","FUCK85","FUCK86","FUCK87",
+        /* 88 */ "FUCK88","FUCK89","FUCK8A","FUCK8B","FUCK8C","FUCK8D","FUCK8E","FUCK8F",
+        /* 90 */ "FUCK90","FUCK91","FUCK92","FUCK93","FUCK94","FUCK95","FUCK96","FUCK97",
+        /* 98 */ "FUCK98","FUCK99","FUCK9A","FUCK9B","FUCK9C","FUCK9D","FUCK9E","FUCK9F",
+        /* A0 */ "LDI","CPI","INI","OUTI","FUCKA4","FUCKA5","FUCKA6","FUCKA7",
+        /* A8 */ "LDD","CPD","IND","OUTD","FUCKAC","FUCKAD","FUCKAE","FUCKAF",
+        /* B0 */ "LDIR","CPIR","INIR","OTIR","FUCKB4","FUCKB5","FUCKB6","FUCKB7",
+        /* B8 */ "LDDR","CPDR","INDR","OTDR","FUCKBC","FUCKBD","FUCKBE","FUCKBF",
+        /* C0 */ "FUCKC0","FUCKC1","FUCKC2","FUCKC3","FUCKC4","FUCKC5","FUCKC6","FUCKC7",
+        /* C8 */ "FUCKC8","FUCKC9","FUCKCA","FUCKCB","FUCKCC","FUCKCD","FUCKCE","FUCKCF",
+        /* D0 */ "FUCKD0","FUCKD1","FUCKD2","FUCKD3","FUCKD4","FUCKD5","FUCKD6","FUCKD7",
+        /* D8 */ "FUCKD8","FUCKD9","FUCKDA","FUCKDB","FUCKDC","FUCKDD","FUCKDE","FUCKDF",
+        /* E0 */ "FUCKE0","FUCKE1","FUCKE2","FUCKE3","FUCKE4","FUCKE5","FUCKE6","FUCKE7",
+        /* E8 */ "FUCKE8","FUCKE9","FUCKEA","FUCKEB","FUCKEC","FUCKED","FUCKEE","FUCKEF",
+        /* F0 */ "FUCKF0","FUCKF1","FUCKF2","FUCKF3","FUCKF4","FUCKF5","FUCKF6","FUCKF7",
+        /* F8 */ "FUCKF8","FUCKF9","FUCKFA","FUCKFB","FUCKFC","FUCKFD","FUCKFE","FUCKFF"
     };
 
 
     char MnemonicsXX[256][16] =
     {
-        "NOP","LD BC,$#","LD (BC),A","INC BC","INC B","DEC B","LD B,$*","RLCA",
-        "EX AF,AF'","ADD I%,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,$*","RRCA",
-        "DJNZ $*","LD DE,$#","LD (DE),A","INC DE","INC D","DEC D","LD D,$*","RLA",
-        "JR $*","ADD I%,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,$*","RRA",
-        "JR NZ,$*","LD I%,$#","LD ($#),I%","INC I%","INC I%h","DEC I%h","LD I%Xh,$*","DAA",
-        "JR Z,$*","ADD I%,I%","LD I%,($#)","DEC I%","INC I%l","DEC I%l","LD I%l,$*","CPL",
-        "JR NC,$*","LD SP,$#","LD ($#),A","INC SP","INC (I%+$*)","DEC (I%+$*)","LD (I%+$*),$*","SCF",
-        "JR C,$*","ADD I%,SP","LD A,($#)","DEC SP","INC A","DEC A","LD A,$*","CCF",
-        "LD B,B","LD B,C","LD B,D","LD B,E","LD B,I%h","LD B,I%l","LD B,(I%+$*)","LD B,A",
-        "LD C,B","LD C,C","LD C,D","LD C,E","LD C,I%h","LD C,I%l","LD C,(I%+$*)","LD C,A",
-        "LD D,B","LD D,C","LD D,D","LD D,E","LD D,I%h","LD D,I%l","LD D,(I%+$*)","LD D,A",
-        "LD E,B","LD E,C","LD E,D","LD E,E","LD E,I%h","LD E,I%l","LD E,(I%+$*)","LD E,A",
-        "LD I%h,B","LD I%h,C","LD I%h,D","LD I%h,E","LD I%h,I%h","LD I%h,I%l","LD H,(I%+$*)","LD I%h,A",
-        "LD I%l,B","LD I%l,C","LD I%l,D","LD I%l,E","LD I%l,I%h","LD I%l,I%l","LD L,(I%+$*)","LD I%l,A",
-        "LD (I%+$*),B","LD (I%+$*),C","LD (I%+$*),D","LD (I%+$*),E","LD (I%+$*),H","LD (I%+$*),L","HALT","LD (I%+$*),A",
-        "LD A,B","LD A,C","LD A,D","LD A,E","LD A,I%h","LD A,L","LD A,(I%+$*)","LD A,A",
-        "ADD B","ADD C","ADD D","ADD E","ADD I%h","ADD I%l","ADD (I%+$*)","ADD A",
-        "ADC B","ADC C","ADC D","ADC E","ADC I%h","ADC I%l","ADC (I%+$*)","ADC,A",
-        "SUB B","SUB C","SUB D","SUB E","SUB I%h","SUB I%l","SUB (I%+$*)","SUB A",
-        "SBC B","SBC C","SBC D","SBC E","SBC I%h","SBC I%l","SBC (I%+$*)","SBC A",
-        "AND B","AND C","AND D","AND E","AND I%h","AND I%l","AND (I%+$*)","AND A",
-        "XOR B","XOR C","XOR D","XOR E","XOR I%h","XOR I%l","XOR (I%+$*)","XOR A",
-        "OR B","OR C","OR D","OR E","OR I%h","OR I%l","OR (I%+$*)","OR A",
-        "CP B","CP C","CP D","CP E","CP I%h","CP I%l","CP (I%+$*)","CP A",
-        "RET NZ","POP BC","JP NZ,$#","JP $#","CALL NZ,$#","PUSH BC","ADD $*","RST 00h",
-        "RET Z","RET","JP Z,$#","PFX_CB","CALL Z,$#","CALL $#","ADC $*","RST 08h",
-        "RET NC","POP DE","JP NC,$#","OUTA ($*)","CALL NC,$#","PUSH DE","SUB $*","RST 10h",
-        "RET C","EXX","JP C,$#","INA ($*)","CALL C,$#","PFX_DD","SBC $*","RST 18h",
-        "RET PO","POP I%","JP PO,$#","EX I%,(SP)","CALL PO,$#","PUSH I%","AND $*","RST 20h",
-        "RET PE","LD PC,I%","JP PE,$#","EX DE,I%","CALL PE,$#","PFX_ED","XOR $*","RST 28h",
-        "RET P","POP AF","JP P,$#","DI","CALL P,$#","PUSH AF","OR $*","RST 30h",
-        "RET M","LD SP,I%","JP M,$#","EI","CALL M,$#","PFX_FD","CP $*","RST 38h"
+        /* 00 */ "NOP","LD BC,#","LD (BC),A","INC BC","INC B","DEC B","LD B,*","RLCA",
+        /* 08 */ "EX AF,AF'","ADD I%,BC","LD A,(BC)","DEC BC","INC C","DEC C","LD C,*","RRCA",
+        /* 10 */ "DJNZ *","LD DE,#","LD (DE),A","INC DE","INC D","DEC D","LD D,*","RLA",
+        /* 18 */ "JR *","ADD I%,DE","LD A,(DE)","DEC DE","INC E","DEC E","LD E,*","RRA",
+        /* 20 */ "JR NZ,*","LD I%,#","LD (#),I%","INC I%","INC I%h","DEC I%h","LD I%Xh,*","DAA",
+        /* 28 */ "JR Z,*","ADD I%,I%","LD I%,(#)","DEC I%","INC I%l","DEC I%l","LD I%l,*","CPL",
+        /* 30 */ "JR NC,*","LD SP,#","LD (#),A","INC SP","INC (I%+*)","DEC (I%+*)","LD (I%+*),*","SCF",
+        /* 38 */ "JR C,*","ADD I%,SP","LD A,(#)","DEC SP","INC A","DEC A","LD A,*","CCF",
+        /* 40 */ "LD B,B","LD B,C","LD B,D","LD B,E","LD B,I%h","LD B,I%l","LD B,(I%+*)","LD B,A",
+        /* 48 */ "LD C,B","LD C,C","LD C,D","LD C,E","LD C,I%h","LD C,I%l","LD C,(I%+*)","LD C,A",
+        /* 50 */ "LD D,B","LD D,C","LD D,D","LD D,E","LD D,I%h","LD D,I%l","LD D,(I%+*)","LD D,A",
+        /* 58 */ "LD E,B","LD E,C","LD E,D","LD E,E","LD E,I%h","LD E,I%l","LD E,(I%+*)","LD E,A",
+        /* 60 */ "LD I%h,B","LD I%h,C","LD I%h,D","LD I%h,E","LD I%h,I%h","LD I%h,I%l","LD H,(I%+*)","LD I%h,A",
+        /* 68 */ "LD I%l,B","LD I%l,C","LD I%l,D","LD I%l,E","LD I%l,I%h","LD I%l,I%l","LD L,(I%+*)","LD I%l,A",
+        /* 70 */ "LD (I%+*),B","LD (I%+*),C","LD (I%+*),D","LD (I%+*),E","LD (I%+*),H","LD (I%+*),L","HALT","LD (I%+*),A",
+        /* 78 */ "LD A,B","LD A,C","LD A,D","LD A,E","LD A,I%h","LD A,L","LD A,(I%+*)","LD A,A",
+        /* 80 */ "ADD B","ADD C","ADD D","ADD E","ADD I%h","ADD I%l","ADD (I%+*)","ADD A",
+        /* 88 */ "ADC B","ADC C","ADC D","ADC E","ADC I%h","ADC I%l","ADC (I%+*)","ADC,A",
+        /* 90 */ "SUB B","SUB C","SUB D","SUB E","SUB I%h","SUB I%l","SUB (I%+*)","SUB A",
+        /* 98 */ "SBC B","SBC C","SBC D","SBC E","SBC I%h","SBC I%l","SBC (I%+*)","SBC A",
+        /* A0 */ "AND B","AND C","AND D","AND E","AND I%h","AND I%l","AND (I%+*)","AND A",
+        /* A8 */ "XOR B","XOR C","XOR D","XOR E","XOR I%h","XOR I%l","XOR (I%+*)","XOR A",
+        /* B0 */ "OR B","OR C","OR D","OR E","OR I%h","OR I%l","OR (I%+*)","OR A",
+        /* B8 */ "CP B","CP C","CP D","CP E","CP I%h","CP I%l","CP (I%+*)","CP A",
+        /* C0 */ "RET NZ","POP BC","JP NZ,#","JP #","CALL NZ,#","PUSH BC","ADD *","RST 00h",
+        /* C8 */ "RET Z","RET","JP Z,#","PFX_CB","CALL Z,#","CALL #","ADC *","RST 08h",
+        /* D0 */ "RET NC","POP DE","JP NC,#","OUTA (*)","CALL NC,#","PUSH DE","SUB *","RST 10h",
+        /* D8 */ "RET C","EXX","JP C,#","INA (*)","CALL C,#","PFX_DD","SBC *","RST 18h",
+        /* E0 */ "RET PO","POP I%","JP PO,#","EX I%,(SP)","CALL PO,#","PUSH I%","AND *","RST 20h",
+        /* E8 */ "RET PE","LD PC,I%","JP PE,#","EX DE,I%","CALL PE,#","PFX_ED","XOR *","RST 28h",
+        /* F0 */ "RET P","POP AF","JP P,#","DI","CALL P,#","PUSH AF","OR *","RST 30h",
+        /* F8 */ "RET M","LD SP,I%","JP M,#","EI","CALL M,#","PFX_FD","CP *","RST 38h"
     };
 
+
+
+    int LabelFlag[256] =
+    {
+      //0  1  2  3  4  5  6  7  8  9  A  B  C  D  E  F
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 0
+        1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, // 1
+        1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, // 2
+        1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, // 3
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 4
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 5
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 6
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 7
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 8
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // 9
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // A
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, // B
+        0, 0, 1, 1, 2, 0, 0, 0, 0, 0, 1, 0, 2, 2, 0, 0, // C
+        0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, // D
+        0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, // E
+        0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 1, 0, 2, 0, 0, 0, // F
+    };
 
     int z80dis(unsigned char *buf, int *Counter, char str[128])
     {
@@ -3968,14 +3989,14 @@ namespace DisasmZ80
             sprintf(U, "%s%.2X",U, I);
             *P++='\0';
             addr++;
-            sprintf(T,"%s%hX",S,I);
+            sprintf(T,"%s$%hX",S,I);
             if(R=strchr(P,'*'))
             {
                 I = z80_readmap[(addr & 0xffff) >> 10][(addr & 0xffff) & 0x03FF];
                 sprintf(U, "%s%.2X",U, I);
                 *R++='\0';
                 addr++;
-                sprintf(strchr(T,'\0'),"%s%02X%s",P,I,R);
+                sprintf(strchr(T,'\0'),"%s$%02X%s",P,I,R);
             }
             else
             {
@@ -3990,7 +4011,7 @@ namespace DisasmZ80
             sprintf(U, "%s%.02X%.02X",U, I, J);
             *P++='\0';
             addr++;
-            sprintf(T,"%s%04X%s",S,(J << 8 | I),P);
+            sprintf(T,"%s$%04X%s",S,(J << 8 | I),P);
         }
         else
             strcpy(T,S);
@@ -4002,6 +4023,284 @@ namespace DisasmZ80
             str[i] = tolower(str[i]);
 
         return addr - iStartAddr;
+    }
+
+    uint32 SizeMode = 1;
+
+    void FixZ80Result(char* _szText)
+    {
+        char* szOut = _szText;
+        char szTemp[512];
+        int iAdd = 0;
+
+        while (*_szText != ' ' && *_szText != '\0')
+            szTemp[iAdd++] = *_szText++;
+
+        while (*_szText != '\0')
+        {
+            if (_szText[0] == '(' && _szText[1] == 'A' && _szText[2] == 'F' && _szText[3] == ')')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}AF{^}1?!??!?MEM{^}){^}%d{^}%d?!?", Z80.af, SizeMode, Z80.af, SizeMode);
+                _szText += 4;
+            }
+            else if (_szText[0] == '(' && _szText[1] == 'B' && _szText[2] == 'C' && _szText[3] == ')')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}BC{^}2?!??!?MEM{^}){^}%d{^}%d?!?", Z80.bc, SizeMode, Z80.bc, SizeMode);
+                _szText += 4;
+            }
+
+            else if (_szText[0] == '(' && _szText[1] == 'D' && _szText[2] == 'E' && _szText[3] == ')')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}DE{^}3?!??!?MEM{^}){^}%d{^}%d?!?", Z80.de, SizeMode, Z80.de, SizeMode);
+                _szText += 4;
+            }
+            else if (_szText[0] == '(' && _szText[1] == 'H' && _szText[2] == 'L' && _szText[3] == ')')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?MEM{^}({^}%d{^}%d?!??!?REG{^}HL{^}4?!??!?MEM{^}){^}%d{^}%d?!?", Z80.hl, SizeMode, Z80.hl, SizeMode);
+                _szText += 4;
+            }
+            else if (_szText[0] == 'A' && _szText[1] == 'F' && _szText[2] == '\'')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}AF'{^}8?!?");
+                _szText += 3;
+            }
+            else if (_szText[0] == 'B' && _szText[1] == 'C' && _szText[2] == '\'')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}BC'{^}9?!?");
+                _szText += 3;
+            }
+            else if (_szText[0] == 'D' && _szText[1] == 'E' && _szText[2] == '\'')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}DE'{^}10?!?");
+                _szText += 3;
+            }
+            else if (_szText[0] == 'H' && _szText[1] == 'L' && _szText[2] == '\'')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}HL'{^}11?!?");
+                _szText += 3;
+            }
+            else if (_szText[0] == 'A' && _szText[1] == 'F')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}AF{^}1?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'B' && _szText[1] == 'C')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}BC{^}2?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'D' && _szText[1] == 'E')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}DE{^}3?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'H' && _szText[1] == 'L')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}HL{^}4?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'S' && _szText[1] == 'P')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}SP{^}5?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'I' && _szText[1] == 'X')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}IX{^}6?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'I' && _szText[1] == 'Y')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}IY{^}7?!?");
+                _szText += 2;
+            }
+            else if (_szText[0] == 'A')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}A{^}1?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'F')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}F{^}1?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'B')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}B{^}2?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'C')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}C{^}2?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'D')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}D{^}3?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'E')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}E{^}3?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'H')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}H{^}4?!?");
+                _szText += 1;
+            }
+            else if (_szText[0] == 'L')
+            {
+                iAdd += sprintf(szTemp + iAdd, "?!?REG{^}L{^}4?!?");
+                _szText += 1;
+            }
+            else
+            {
+                szTemp[iAdd++] = *_szText++;
+            }
+        }
+
+        szTemp[iAdd] = '\0';
+
+        strcpy(szOut, szTemp);
+    }
+
+    int Z80DisFormated(int32 _iAddr, char _szStr[512])
+    {
+        char szOpcode[512] = "";
+        char* pFind;
+        int32 iByte = 0;
+        int32 iStartAddr = _iAddr;
+
+        iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+        _iAddr++;
+
+        bool bUseFlag = true;
+
+        switch(iByte)
+        {
+        case 0xcb:
+            bUseFlag = false;
+            iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+            strcpy(szOpcode, MnemonicsCB[iByte]);
+            _iAddr++;
+            break;
+        case 0xed:
+            bUseFlag = false;
+            iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+            strcpy(szOpcode, MnemonicsED[iByte]);
+            _iAddr++;
+            break;
+        case 0xfd:
+            iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+
+            if(iByte == 0xcb)
+            {
+                bUseFlag = false;
+                _iAddr++;
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                _iAddr++;
+                sprintf(szOpcode,"%s, (IY+%.2X)", MnemonicsCB[z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff]], iByte);
+            }
+            else
+            {
+                strcpy(szOpcode, MnemonicsXX[iByte]);
+
+                if(pFind = strchr(szOpcode,'%'))
+                    *pFind = 'Y';
+            }
+            _iAddr++;
+            break;
+        case 0xDD:
+            iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+
+            if(iByte == 0xcb)
+            {
+                bUseFlag = false;
+                iByte++;
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                iByte++;
+                sprintf(szOpcode,"%s, (IX+%.2X)", MnemonicsCB[z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff]], iByte);
+            }
+            else
+            {
+                strcpy(szOpcode, MnemonicsXX[iByte]);
+                
+                if(pFind = strchr(szOpcode,'%'))
+                    *pFind = 'X';
+            }
+            _iAddr++;
+            break;
+
+        default:
+            strcpy(szOpcode, Mnemonics[iByte]);
+            break;
+        }
+
+        if (!bUseFlag || (bUseFlag && !LabelFlag[iByte]))
+            FixZ80Result(szOpcode);
+
+        if(pFind = strchr(szOpcode, '*'))
+        {
+            *pFind++ = '\0';
+
+            if (bUseFlag && LabelFlag[iByte])
+            {
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                _iAddr++;
+
+                int8 iOffset = (int8)iByte;
+                uint32 uiPos = iStartAddr + 2 + iOffset;
+                sprintf(_szStr, "%s?!?LINK{^}%s{^}%d?!?", szOpcode, GetLabel(GetZ80MemMap(), uiPos), uiPos);
+            }
+            else
+            {
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                _iAddr++;
+
+                sprintf(_szStr,"%s$%02X", szOpcode, iByte);
+            }
+
+            char* pFindNext;
+
+            if(pFindNext = strchr(pFind, '*'))
+            {
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                *pFindNext++ = '\0';
+                sprintf(strchr(_szStr, '\0'), "%s$%02X%s", pFind, iByte, pFindNext);
+            }
+            else
+            {
+                strcat(_szStr, pFind);  
+            }
+        }
+        else if(pFind = strchr(szOpcode, '#'))
+        {
+            *pFind++ = '\0';
+
+            if (bUseFlag && LabelFlag[iByte])
+            {
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                _iAddr++;
+                uint32 uiPos = (z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff] << 8) | iByte;
+                sprintf(_szStr, "%s?!?LINK{^}%s{^}%d?!?%s", szOpcode, GetLabel(GetZ80MemMap(), uiPos), uiPos, pFind);
+            }
+            else
+            {
+                iByte = z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff];
+                _iAddr++;
+                sprintf(_szStr, "%s$%04X%s", szOpcode, (z80_readmap[(_iAddr & 0xffff) >> 10][(_iAddr & 0xffff) & 0x03ff] << 8 | iByte), pFind);
+            }
+        }
+        else
+        {
+            strcpy(_szStr, szOpcode);
+        }
+
+        for (uint32 i = 0; _szStr[i] != '\0'; ++i)
+            _szStr[i] = tolower(_szStr[i]);
+
+        return _iAddr - iStartAddr;
     }
 
     int z80opsize(int addr)
@@ -4047,7 +4346,7 @@ void GetOpcodeFormatedText(DiassemblerHandle _Disasm, MemoryHandle _Mem, uint32 
 
     if (_Disasm == GetZ80Disasm())
     {
-        DisasmZ80::z80dis2(_uiPosition, _szOutput);
+        DisasmZ80::Z80DisFormated(_uiPosition, _szOutput);
     }
 }
 

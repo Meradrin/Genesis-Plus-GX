@@ -416,6 +416,62 @@ void CheckLabel68000(MemoryHandle _Mem, uint32 _uiPosition)
         SetLabel(GetMap(_Mem), uiLabelPos, szLabelName);
 }
 
+void CheckLabelZ80(MemoryHandle _Mem, uint32 _uiPosition)
+{
+    uint32 uiLabelPos = 0x1000000;
+    char szLabelName[80] = "";
+
+    switch((uint8)GetByte(_Mem, _uiPosition))
+    {
+    case 0x10:
+    case 0x18:
+    case 0x20:
+    case 0x28:
+    case 0x30:
+    case 0x38:
+        {
+            int8 iOffset = (int8)GetByte(_Mem, _uiPosition + 1);
+            uiLabelPos = _uiPosition + 2 + iOffset;
+            sprintf(szLabelName, "Lbl_%04x", uiLabelPos);
+            break;
+        }
+    case 0xc2:
+    case 0xc3:
+    case 0xca:
+    case 0xd2:
+    case 0xda:
+    case 0xe2:
+    case 0xea:
+    case 0xf2:
+    case 0xfa:
+        {
+            uiLabelPos = (GetByte(_Mem, _uiPosition + 2) << 8) | GetByte(_Mem, _uiPosition + 1);
+            sprintf(szLabelName, "Lbl_%04x", uiLabelPos);
+            break;
+        }
+
+    case 0xc4:
+    case 0xcc:
+    case 0xcd:
+    case 0xd4:
+    case 0xdc:
+    case 0xe4:
+    case 0xec:
+    case 0xf4:
+    case 0xfc:
+        {
+            uiLabelPos = (GetByte(_Mem, _uiPosition + 2) << 8) | GetByte(_Mem, _uiPosition + 1);
+            sprintf(szLabelName, "Sbr_%04x", uiLabelPos);
+            break;
+        }
+    default:
+        return;
+    }
+
+    if (szLabelName[0] != '\0')
+        SetLabel(GetMap(_Mem), uiLabelPos, szLabelName);
+}
+
 void SetMapType(MemoryMapHandle _Map, uint32 _uiPosition, uint32 _uiDataType)
 {
     if (_Map == NULL)
@@ -439,6 +495,7 @@ void SetMapType(MemoryMapHandle _Map, uint32 _uiPosition, uint32 _uiDataType)
 
         if (pMapData == &gMapZ80)
         {
+            CheckLabelZ80((MemoryHandle)(kMemory_Z80 + 1), _uiPosition);
             uiOpcodeSize = GetOpcodeSize((DiassemblerHandle)1, 0, _uiPosition, 0);
         }
         else if (pMapData == &gMapM68000)
