@@ -3,7 +3,7 @@
  *
  *  Genesis Plus GX audio support
  *
- *  Copyright Eke-Eke (2007-2014), based on original work from Softdev (2006)
+ *  Copyright Eke-Eke (2007-2015), based on original work from Softdev (2006)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -40,13 +40,12 @@
 #ifndef _GC_AUDIO_H_
 #define _GC_AUDIO_H_
 
-extern u32 audioStarted;
 extern u32 audioSync;
 
 extern void gx_audio_Init(void);
 extern void gx_audio_Shutdown(void);
 extern void gx_audio_Start(void);
 extern void gx_audio_Stop(void);
-extern int gx_audio_Update(void);
+extern int gx_audio_Update(int status);
 
 #endif

@@ -19,22 +19,28 @@
 # -D16BPP_RENDERING - configure for 16-bit pixels (RGB565)
 # -D32BPP_RENDERING - configure for 32-bit pixels (RGB888)
 
-NAME	  = gen_sdl.exe
+NAME	  = gen_vita
+PSP_APP_NAME=GENPLUSGXVITA
+PSP_APP_VER=1.7.5
 
-CC        = gcc
-CFLAGS    = `sdl-config --cflags` -march=i686 -O6 -fomit-frame-pointer -Wall -Wno-strict-aliasing -ansi -std=c89 -pedantic-errors
+CC        = arm-vita-eabi-gcc
+CFLAGS    = -O3 -fomit-frame-pointer -Wall -Wno-strict-aliasing -ansi -std=c11 \
+-pedantic-errors -fno-unwind-tables -fno-asynchronous-unwind-tables -ftree-vectorize \
+-mfloat-abi=hard -ffast-math -fsingle-precision-constant -ftree-vectorizer-verbose=2 -fopt-info-vec-optimized -funroll-loops
 #-g -ggdb -pg
 #-fomit-frame-pointer
-#LDFLAGS   = -pg
-DEFINES   = -DLSB_FIRST -DUSE_16BPP_RENDERING -DUSE_LIBTREMOR
-
+LDFLAGS   = -Wl,-q
+DEFINES   = -DPSP_APP_NAME=\"$(PSP_APP_NAME)\" -DPSP_APP_VER=\"$(PSP_APP_VER)\" \
+						-DLSB_FIRST -DUSE_15BPP_RENDERING -DUSE_LIBTREMOR -DALT_RENDERER -DALIGN_LONG -DHAVE_ALLOCA_H -DUSE_ABGR
 SRCDIR    = ../core
-INCLUDES  = -I$(SRCDIR) -I$(SRCDIR)/z80 -I$(SRCDIR)/m68k -I$(SRCDIR)/sound -I$(SRCDIR)/input_hw -I$(SRCDIR)/cart_hw -I$(SRCDIR)/cart_hw/svp -I$(SRCDIR)/cd_hw -I$(SRCDIR)/ntsc -I$(SRCDIR)/tremor -I$(SRCDIR)/../sdl
-LIBS	  = `sdl-config --libs` -lz -lm
+INCLUDES  = -I$(SRCDIR) -I$(SRCDIR)/z80 -I$(SRCDIR)/m68k -I$(SRCDIR)/sound -I$(SRCDIR)/input_hw -I$(SRCDIR)/cart_hw -I$(SRCDIR)/cart_hw/svp -I$(SRCDIR)/cd_hw -I$(SRCDIR)/ntsc -I$(SRCDIR)/tremor -I$(SRCDIR)/../psp2
+LIBS	  = -lpsplib -lvita2d  -lfreetype -lpng -lz -lm -lSceDisplay_stub -lSceGxm_stub 	\
+	-lSceCtrl_stub -lSceAudio_stub -lSceRtc_stub -lScePower_stub -lSceAppUtil_stub
+#-ldebugnet -lSceNet_stub -lSceNetCtl_stub
 
-OBJDIR = ./build_sdl
+OBJDIR = ./build_vita
 
-OBJECTS	=       $(OBJDIR)/z80.o	
+OBJECTS	=       $(OBJDIR)/z80.o
 
 OBJECTS	+=     	$(OBJDIR)/m68kcpu.o \
 		$(OBJDIR)/s68kcpu.o
@@ -48,27 +54,28 @@ OBJECTS	+=     	$(OBJDIR)/genesis.o	 \
 		$(OBJDIR)/memz80.o	 \
 		$(OBJDIR)/membnk.o	 \
 		$(OBJDIR)/state.o        \
-		$(OBJDIR)/loadrom.o	
+		$(OBJDIR)/loadrom.o
 
-OBJECTS	+=      $(OBJDIR)/input.o	 \
-		$(OBJDIR)/gamepad.o	 \
-		$(OBJDIR)/lightgun.o	 \
-		$(OBJDIR)/mouse.o	 \
-		$(OBJDIR)/activator.o	 \
-		$(OBJDIR)/xe_a1p.o	 \
-		$(OBJDIR)/teamplayer.o   \
-		$(OBJDIR)/paddle.o	 \
-		$(OBJDIR)/sportspad.o    \
-		$(OBJDIR)/terebi_oekaki.o
+OBJECTS	+=      $(OBJDIR)/input.o	  \
+		$(OBJDIR)/gamepad.o	  \
+		$(OBJDIR)/lightgun.o	  \
+		$(OBJDIR)/mouse.o	  \
+		$(OBJDIR)/activator.o	  \
+		$(OBJDIR)/xe_1ap.o	  \
+		$(OBJDIR)/teamplayer.o    \
+		$(OBJDIR)/paddle.o	  \
+		$(OBJDIR)/sportspad.o     \
+		$(OBJDIR)/terebi_oekaki.o \
+		$(OBJDIR)/graphic_board.o
 
 OBJECTS	+=      $(OBJDIR)/sound.o	\
 		$(OBJDIR)/sn76489.o     \
 		$(OBJDIR)/ym2413.o      \
-		$(OBJDIR)/ym2612.o    
+		$(OBJDIR)/ym2612.o
 
-OBJECTS	+=	$(OBJDIR)/blip_buf.o 
+OBJECTS	+=	$(OBJDIR)/blip_buf.o
 
-OBJECTS	+=	$(OBJDIR)/eq.o 
+OBJECTS	+=	$(OBJDIR)/eq.o
 
 OBJECTS	+=      $(OBJDIR)/sram.o        \
 		$(OBJDIR)/svp.o	        \
@@ -79,8 +86,8 @@ OBJECTS	+=      $(OBJDIR)/sram.o        \
 		$(OBJDIR)/eeprom_i2c.o  \
 		$(OBJDIR)/eeprom_spi.o  \
 		$(OBJDIR)/md_cart.o	\
-		$(OBJDIR)/sms_cart.o	
-		
+		$(OBJDIR)/sms_cart.o
+
 OBJECTS	+=      $(OBJDIR)/scd.o	\
 		$(OBJDIR)/cdd.o	\
 		$(OBJDIR)/cdc.o	\
@@ -92,10 +99,12 @@ OBJECTS	+=	$(OBJDIR)/sms_ntsc.o	\
 		$(OBJDIR)/md_ntsc.o
 
 OBJECTS	+=	$(OBJDIR)/main.o	\
+		$(OBJDIR)/emumain.o	\
+		$(OBJDIR)/menu.o	\
 		$(OBJDIR)/config.o	\
 		$(OBJDIR)/error.o	\
 		$(OBJDIR)/unzip.o       \
-		$(OBJDIR)/fileio.o	
+		$(OBJDIR)/fileio.o
 
 OBJECTS	+=	$(OBJDIR)/bitwise.o	 \
 		$(OBJDIR)/block.o      \
@@ -113,61 +122,59 @@ OBJECTS	+=	$(OBJDIR)/bitwise.o	 \
 		$(OBJDIR)/vorbisfile.o \
 		$(OBJDIR)/window.o
 
-OBJECTS	+=	$(OBJDIR)/icon.o
 
-all: $(NAME)
+all: $(NAME).velf
 
-$(NAME): $(OBJDIR) $(OBJECTS)
+$(NAME).velf: $(NAME).elf
+	#advice from xyzz strip before create elf
+		arm-vita-eabi-strip -g $<
+	#i put db.json there use your location
+		vita-elf-create  $< $@ db.json
+
+$(NAME).elf: $(OBJDIR) $(OBJECTS)
 		$(CC) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 
 $(OBJDIR) :
 		@[ -d $@ ] || mkdir -p $@
-		
+
 $(OBJDIR)/%.o : $(SRCDIR)/%.c $(SRCDIR)/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
-	        	        
-$(OBJDIR)/%.o :	$(SRCDIR)/sound/%.c $(SRCDIR)/sound/%.h	        
+
+$(OBJDIR)/%.o :	$(SRCDIR)/sound/%.c $(SRCDIR)/sound/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/input_hw/%.c $(SRCDIR)/input_hw/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/input_hw/%.c $(SRCDIR)/input_hw/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/cart_hw/%.c $(SRCDIR)/cart_hw/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/cart_hw/%.c $(SRCDIR)/cart_hw/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/cart_hw/svp/%.c      
+$(OBJDIR)/%.o :	$(SRCDIR)/cart_hw/svp/%.c
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/cart_hw/svp/%.c $(SRCDIR)/cart_hw/svp/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/cart_hw/svp/%.c $(SRCDIR)/cart_hw/svp/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/cd_hw/%.c $(SRCDIR)/cd_hw/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/cd_hw/%.c $(SRCDIR)/cd_hw/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/z80/%.c $(SRCDIR)/z80/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/z80/%.c $(SRCDIR)/z80/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/m68k/%.c       
+$(OBJDIR)/%.o :	$(SRCDIR)/m68k/%.c
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/ntsc/%.c $(SRCDIR)/ntsc/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/ntsc/%.c $(SRCDIR)/ntsc/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/tremor/%.c $(SRCDIR)/tremor/%.h	        
-		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
-     
-$(OBJDIR)/%.o :	$(SRCDIR)/tremor/%.c 	        
+$(OBJDIR)/%.o :	$(SRCDIR)/tremor/%.c $(SRCDIR)/tremor/%.h
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/%.o :	$(SRCDIR)/../sdl/%.c $(SRCDIR)/../sdl/%.h	        
+$(OBJDIR)/%.o :	$(SRCDIR)/tremor/%.c
 		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
-$(OBJDIR)/icon.o :	
-		windres $(SRCDIR)/../sdl/icon.rc $@
-
-pack	:
-		strip $(NAME)
-		upx -9 $(NAME)	        
+$(OBJDIR)/%.o :	$(SRCDIR)/../psp2/%.c $(SRCDIR)/../psp2/%.h
+		$(CC) -c $(CFLAGS) $(INCLUDES) $(DEFINES) $< -o $@
 
 clean:
-	rm -f $(OBJECTS) $(NAME)
+	rm -f $(OBJECTS) $(NAME).velf $(NAME).elf

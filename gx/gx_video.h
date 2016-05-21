@@ -3,7 +3,7 @@
  *
  *  Genesis Plus GX video support
  *
- *  Copyright Eke-Eke (2007-2014), based on original work from Softdev (2006)
+ *  Copyright Eke-Eke (2007-2016), based on original work from Softdev (2006)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -52,21 +52,39 @@
 /* One tile is 32 byte = 4x4 pixels */
 /* Tiles are stored continuously in texture memory */
 #define CUSTOM_BLITTER(line, width, table, in)  \
+{ \
   width >>= 2;  \
   u16 *out = (u16 *) (bitmap.data + (((width << 5) * (line >> 2)) + ((line & 3) << 3))); \
-  do  \
-  { \
-    *out++ = table[*in++];  \
-    *out++ = table[*in++];  \
-    *out++ = table[*in++];  \
-    *out++ = table[*in++];  \
-    out += 12;  \
-  } \
-  while (--width);
+  if (config.lcd)  \
+  {  \
+    do  \
+    {  \
+      RENDER_PIXEL_LCD(in,out,table,config.lcd);  \
+      RENDER_PIXEL_LCD(in,out,table,config.lcd);  \
+      RENDER_PIXEL_LCD(in,out,table,config.lcd);  \
+      RENDER_PIXEL_LCD(in,out,table,config.lcd);  \
+      out += 12;  \
+    }  \
+    while (--width);  \
+  }  \
+  else  \
+  {  \
+    do  \
+    { \
+      *out++ = table[*in++];  \
+      *out++ = table[*in++];  \
+      *out++ = table[*in++];  \
+      *out++ = table[*in++];  \
+      out += 12;  \
+    } \
+    while (--width); \
+  }  \
+}
 
 /* image texture */
 typedef struct
 {
+  GXTexObj texObj;
   u8 *data;
   u16 width;
   u16 height;
@@ -99,6 +117,6 @@ extern void gx_video_Init(void);
 extern void gx_video_Shutdown(void);
 extern void gx_video_Start(void);
 extern void gx_video_Stop(void);
-extern int gx_video_Update(u32 done);
+extern int gx_video_Update(int status);
 
 #endif

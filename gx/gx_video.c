@@ -3,7 +3,7 @@
  *
  *  Genesis Plus GX video & rendering support
  *
- *  Copyright Eke-Eke (2007-2014), based on original work from Softdev (2006)
+ *  Copyright Eke-Eke (2007-2016), based on original work from Softdev (2006)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -77,10 +77,11 @@ static u8 gp_fifo[GX_FIFO_MINSIZE] ATTRIBUTE_ALIGN(32);
 static u32 vwidth, vheight;
 static gx_texture *crosshair[2];
 static gx_texture *cd_leds[2][2];
+static GXTexObj screenTexObj;
 
 /*** Framebuffers ***/
-static u32 *xfb;
-static u32 drawDone;
+static u32 *xfb[2];
+static u8 fbCurrent;
 
 /*** Frame Sync ***/
 u32 videoSync;
@@ -342,7 +343,7 @@ static camera cam =
 };
 
 /*** GX Display List ***/
-static u8 d_list[32] ATTRIBUTE_ALIGN(32) =
+static u8 screenDisplayList[32] ATTRIBUTE_ALIGN(32) =
 {
   GX_QUADS | GX_VTXFMT0,        /* textured quad rendering (Vertex Format 0) */
   0x00, 0x04,                   /* one quad = 4x vertex */
@@ -357,26 +358,50 @@ static u8 d_list[32] ATTRIBUTE_ALIGN(32) =
 /* VSYNC callback */
 static void vi_callback(u32 cnt)
 {
+  /* get audio DMA remaining length */
+  vu16* const _dspReg = (u16*)0xCC005000;
+  u16 remain = _dspReg[29];
+
+  /* adjust desired output samplerate if audio playback is not perfectly in sync with video */
+  if (remain > 0)
+  {
+    int samplerate;
+
+    /* check current audio DMA position (from testing, delta keeps limited to +/- one 32-bit block i.e 8 samples) */
+    if (remain < 5)
+    {
+      /* previous frame DMA is not yet finished (real output rate is slightly slower than expected value) */
+      samplerate = 47950;
+    }
+    else
+    {
+      /* current frame DMA is already started (real output rate is slightly faster than expected value) */
+      samplerate = 48050;
+    }
+
+    /* update resampler ratios if output samplerate has changed */
+    if (samplerate != snd.sample_rate)
+    {
+      /* this will adjust the number of samples returned on next frame(s) */
+      audio_set_rate(samplerate, snd.frame_rate);
+    }
+  }
+
   /* clear VSYNC flag */
   videoWait = 0;
-
-  /* check if EFB rendering is finished */
-  if (drawDone)
-  {
-    /* clear GX draw end flag */
-    drawDone = 0;
-
-    /* copy EFB to XFB */
-    GX_CopyDisp(xfb, GX_FALSE);
-    GX_Flush();
-  }
 }
 
 /* GX draw callback */
 static void gx_callback(void)
 {
-  /* set GX draw end flag */
-  drawDone = 1;
+  /* swap framebuffers */
+  fbCurrent ^= 1;
+  VIDEO_SetNextFramebuffer(xfb[fbCurrent]);
+  VIDEO_Flush();
+
+  /* copy EFB to XFB */
+  GX_CopyDisp(xfb[fbCurrent], GX_FALSE);
+  GX_Flush();
 }
 
 /* Initialize GX */
@@ -401,9 +426,6 @@ static void gxStart(void)
   guLookAt(view, &cam.pos, &cam.up, &cam.view);
   GX_LoadPosMtxImm(view, GX_PNMTX0);
   GX_Flush();
-
-  /* GX rendering callback */
-  GX_SetDrawDoneCallback(gx_callback);
 }
 
 /* Reset GX rendering */
@@ -429,6 +451,9 @@ static void gxResetRendering(u8 type)
     GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
     GX_SetNumTexGens(1);
     GX_SetNumChans(1);
+
+    /* disable GX rendering callback */
+    GX_SetDrawDoneCallback(NULL);
   }
   else
   {
@@ -447,6 +472,9 @@ static void gxResetRendering(u8 type)
     GX_SetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLORNULL);
     GX_SetNumTexGens(1);
     GX_SetNumChans(0);
+
+    /* enable GX rendering callback */
+    GX_SetDrawDoneCallback(gx_callback);
   }
 
   GX_Flush();
@@ -493,8 +521,8 @@ static void gxSetAspectRatio(int *xscale, int *yscale)
 
     /* Horizontal Scaling */
     /* Wii/Gamecube pixel clock = 13.5 Mhz */
-    /* "H32" pixel clock = Master Clock / 10 = 5.3693175 Mhz (NTSC) or 5.3203424 (PAL) */
-    /* "H40" pixel clock = Master Clock / 8 = 6,711646875 Mhz (NTSC) or 6,650428 Mhz (PAL) */
+    /* "H32" pixel clock = Master Clock / 10 = 5.3693175 Mhz (NTSC) or 5.3203424 Mhz (PAL) */
+    /* "H40" pixel clock = Master Clock / 8 = 6.711646875 Mhz (NTSC) or 6.650428 Mhz (PAL) */
     if (config.overscan & 2)
     {
       /* Horizontal borders are emulated */
@@ -505,7 +533,7 @@ static void gxSetAspectRatio(int *xscale, int *yscale)
       }
       else
       {
-        /* 284 "H32" pixels = 284 * Wii/GC pixel clock / "H40" pixel clock = approx. 714 (NTSC) or 721 (PAL) Wii/GC pixels */
+        /* 284 "H32" pixels = 284 * Wii/GC pixel clock / "H32" pixel clock = approx. 714 (NTSC) or 721 (PAL) Wii/GC pixels */
         *xscale = (system_clock == MCLOCK_NTSC) ? 357 : 361; 
       }
     }
@@ -649,7 +677,7 @@ static void gxResetScaler(u32 width)
   square[2] = square[4] = xshift + xscale;
   square[1] = square[3] = yshift + yscale;
   square[5] = square[7] = yshift - yscale;
-  DCFlushRange(square, 32);
+  DCStoreRange(square, 32);
   GX_InvVtxCache();
 }
 
@@ -667,14 +695,11 @@ static void gxDrawCrosshair(gx_texture *texture, int x, int y)
   int ywidth = square[3] - square[7];
 
   /* adjust texture coordinates to EFB */
-  x = (((x + bitmap.viewport.x) * xwidth) / vwidth) + square[6] - w/2;
-  y = (((y + bitmap.viewport.y) * ywidth) / vheight) + square[7] - h/2;
+  x = (((x + bitmap.viewport.x) * xwidth) / (bitmap.viewport.w+2*bitmap.viewport.x)) + square[6] - w/2;
+  y = (((y + bitmap.viewport.y) * ywidth) / (bitmap.viewport.h+2*bitmap.viewport.y)) + square[7] - h/2;
 
   /* load texture object */
-  GXTexObj texObj;
-  GX_InitTexObj(&texObj, texture->data, texture->width, texture->height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
-  GX_InitTexObjLOD(&texObj,GX_LINEAR,GX_LIN_MIP_LIN,0.0,10.0,0.0,GX_FALSE,GX_TRUE,GX_ANISO_4);
-  GX_LoadTexObj(&texObj, GX_TEXMAP0);
+  GX_LoadTexObj(&texture->texObj, GX_TEXMAP0);
   GX_InvalidateTexAll();
 
   /* Draw textured quad */
@@ -713,10 +738,7 @@ static void gxDrawCdLeds(gx_texture *texture_l, gx_texture *texture_r)
   int y = (((bitmap.viewport.y + bitmap.viewport.h - 4) * ywidth) / vheight) + square[7] - h;
 
   /* load left screen texture */
-  GXTexObj texObj;
-  GX_InitTexObj(&texObj, texture_l->data, texture_l->width, texture_l->height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
-  GX_InitTexObjLOD(&texObj,GX_LINEAR,GX_LIN_MIP_LIN,0.0,10.0,0.0,GX_FALSE,GX_TRUE,GX_ANISO_4);
-  GX_LoadTexObj(&texObj, GX_TEXMAP0);
+  GX_LoadTexObj(&texture_l->texObj, GX_TEXMAP0);
   GX_InvalidateTexAll();
 
   /* Draw textured quad */
@@ -736,9 +758,7 @@ static void gxDrawCdLeds(gx_texture *texture_l, gx_texture *texture_r)
   GX_End();
 
   /* load right screen texture */
-  GX_InitTexObj(&texObj, texture_r->data, texture_r->width, texture_r->height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
-  GX_InitTexObjLOD(&texObj,GX_LINEAR,GX_LIN_MIP_LIN,0.0,10.0,0.0,GX_FALSE,GX_TRUE,GX_ANISO_4);
-  GX_LoadTexObj(&texObj, GX_TEXMAP0);
+  GX_LoadTexObj(&texture_r->texObj, GX_TEXMAP0);
   GX_InvalidateTexAll();
 
   /* Draw textured quad */
@@ -806,10 +826,7 @@ void gxDrawTexture(gx_texture *texture, s32 x, s32 y, s32 w, s32 h, u8 alpha)
   if (texture->data)
   {
     /* load texture object */
-    GXTexObj texObj;
-    GX_InitTexObj(&texObj, texture->data, texture->width, texture->height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
-    GX_InitTexObjLOD(&texObj,GX_LINEAR,GX_LIN_MIP_LIN,0.0,10.0,0.0,GX_FALSE,GX_TRUE,GX_ANISO_4); /* does this really change anything ? */
-    GX_LoadTexObj(&texObj, GX_TEXMAP0);
+    GX_LoadTexObj(&texture->texObj, GX_TEXMAP0);
     GX_InvalidateTexAll();
 
     /* vertex coordinate */
@@ -841,10 +858,7 @@ void gxDrawTextureRotate(gx_texture *texture, s32 x, s32 y, s32 w, s32 h, f32 an
   if (texture->data)
   {
     /* load texture object */
-    GXTexObj texObj;
-    GX_InitTexObj(&texObj, texture->data, texture->width, texture->height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
-    GX_InitTexObjLOD(&texObj,GX_LINEAR,GX_LIN_MIP_LIN,0.0,10.0,0.0,GX_FALSE,GX_TRUE,GX_ANISO_4);
-    GX_LoadTexObj(&texObj, GX_TEXMAP0);
+    GX_LoadTexObj(&texture->texObj, GX_TEXMAP0);
     GX_InvalidateTexAll();
 
     /* vertex coordinate */
@@ -928,9 +942,7 @@ void gxDrawScreenshot(u8 alpha)
   if (!rmode) return;
 
   /* get current game screen texture */
-  GXTexObj texobj;
-  GX_InitTexObj(&texobj, bitmap.data, vwidth, vheight, GX_TF_RGB565, GX_CLAMP, GX_CLAMP, GX_FALSE);
-  GX_LoadTexObj(&texobj, GX_TEXMAP0);
+  GX_LoadTexObj(&screenTexObj, GX_TEXMAP0);
   GX_InvalidateTexAll();
 
   /* get current aspect ratio */
@@ -977,9 +989,7 @@ void gxDrawScreenshot(u8 alpha)
 void gxCopyScreenshot(gx_texture *texture)
 {
   /* retrieve gamescreen texture */
-  GXTexObj texobj;
-  GX_InitTexObj(&texobj, bitmap.data, vwidth, vheight, GX_TF_RGB565, GX_CLAMP, GX_CLAMP, GX_FALSE);
-  GX_LoadTexObj(&texobj, GX_TEXMAP0);
+  GX_LoadTexObj(&screenTexObj, GX_TEXMAP0);
   GX_InvalidateTexAll();
 
   /* scale texture to EFB width */
@@ -1021,10 +1031,10 @@ void gxCopyScreenshot(gx_texture *texture)
   /* GX_PixModeSync is only useful if GX_ command follows */
   /* we use dummy GX commands to stall CPU execution */
   GX_PixModeSync();
-  GX_LoadTexObj(&texobj, GX_TEXMAP0);
+  GX_LoadTexObj(&screenTexObj, GX_TEXMAP0);
   GX_InvalidateTexAll();
   GX_Flush();
-  DCFlushRange(texture->data, texture->width * texture->height * 4);
+  DCStoreRange(texture->data, texture->width * texture->height * 4);
 }
 
 /* Take Screenshot */
@@ -1057,7 +1067,7 @@ void gxSaveScreenshot(char *filename)
 void gxSetScreen(void)
 {
   VIDEO_WaitVSync();
-  GX_CopyDisp(xfb, GX_FALSE);
+  GX_CopyDisp(xfb[fbCurrent], GX_FALSE);
   GX_Flush();
   gx_input_UpdateMenu();
 }
@@ -1195,7 +1205,7 @@ gx_texture *gxTextureOpenPNG(const u8 *png_data, FILE *png_file)
   png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
   free(row_pointers);
 
-  /* initialize texture */
+  /* allocate texture */
   gx_texture *texture = (gx_texture *)memalign(32, sizeof(gx_texture));
   if (!texture)
   {
@@ -1203,7 +1213,7 @@ gx_texture *gxTextureOpenPNG(const u8 *png_data, FILE *png_file)
     return NULL;
   }
 
-  /* initialize texture data */
+  /* allocate texture data */
   texture->data = memalign(32, stride * height);
   if (!texture->data)
   {
@@ -1212,10 +1222,14 @@ gx_texture *gxTextureOpenPNG(const u8 *png_data, FILE *png_file)
     return NULL;
   }
 
+  /* initialize texture */
   memset(texture->data, 0, stride * height);
   texture->width  = width;
   texture->height = height;
   texture->format = GX_TF_RGBA8;
+
+  /* initialize GX texture object */
+  GX_InitTexObj(&texture->texObj, texture->data, width, height, GX_TF_RGBA8, GX_CLAMP, GX_CLAMP, GX_FALSE);
 
   /* encode to GX_TF_RGBA8 format (4x4 pixels paired titles) */
   u16 *dst_ar = (u16 *)(texture->data);
@@ -1277,8 +1291,8 @@ gx_texture *gxTextureOpenPNG(const u8 *png_data, FILE *png_file)
   /* release memory */
   free(img_data);
 
-  /* flush texture data from cache */
-  DCFlushRange(texture->data, height * stride);
+  /* force texture data update in memory */
+  DCStoreRange(texture->data, height * stride);
 
   return texture;
 }
@@ -1424,15 +1438,14 @@ void gxTextureClose(gx_texture **p_texture)
 /* Emulation mode -> Menu mode */
 void gx_video_Stop(void)
 {
-  /* disable VSYNC callback */
+  /* disable VSYNC callbacks */
   VIDEO_SetPostRetraceCallback(NULL);
-
+  
   /* wait for next even field */
   /* this prevents screen artefacts when switching between interlaced & non-interlaced modes */
   do VIDEO_WaitVSync();
   while (!VIDEO_GetNextField());
    
-
   /* adjust TV width */
   vmode->viWidth = config.screen_w;
   vmode->viXOrigin = (VI_MAX_WIDTH_NTSC - vmode->viWidth)/2;
@@ -1478,11 +1491,6 @@ void gx_video_Stop(void)
 /* Menu mode -> Emulation mode */
 void gx_video_Start(void)
 {
-#ifdef HW_RVL
-  VIDEO_SetTrapFilter(config.trap);
-  VIDEO_SetGamma((int)(config.gamma * 10.0));
-#endif
-
   /* TV mode */
   if ((config.tv_mode == 1) || ((config.tv_mode == 2) && vdp_pal))
   {
@@ -1493,16 +1501,6 @@ void gx_video_Start(void)
   {
     /* 60 Hz */
     gc_pal = 0;
-  }
-
-  /* When VSYNC is set to AUTO & console TV mode matches emulated video mode, emulation is synchronized with video hardware as well */
-  if (config.vsync && (gc_pal == vdp_pal))
-  {
-    videoSync = audioSync;
-  }
-  else
-  {
-    videoSync = 0;
   }
 
   /* Enable progressive or interlaced video mode */
@@ -1557,17 +1555,37 @@ void gx_video_Start(void)
     switch (config.ntsc)
     {
       case 1:
+      {
         sms_ntsc_init(sms_ntsc, &sms_ntsc_composite);
         md_ntsc_init(md_ntsc, &md_ntsc_composite);
         break;
+      }
+
       case 2:
+      {
         sms_ntsc_init(sms_ntsc, &sms_ntsc_svideo);
         md_ntsc_init(md_ntsc, &md_ntsc_svideo);
         break;
+      }
+
       case 3:
+      {
         sms_ntsc_init(sms_ntsc, &sms_ntsc_rgb);
         md_ntsc_init(md_ntsc, &md_ntsc_rgb);
+      }
+
+      case 4:
+      {
+        md_ntsc_setup_t ntsc_custom = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        ntsc_custom.sharpness  = config.ntsc_sharpness;
+        ntsc_custom.resolution = config.ntsc_resolution;
+        ntsc_custom.artifacts  = config.ntsc_artifacts;
+        ntsc_custom.fringing   = config.ntsc_fringing;
+        ntsc_custom.bleed      = config.ntsc_bleed;
+        sms_ntsc_init(sms_ntsc, (sms_ntsc_setup_t *)&ntsc_custom);
+        md_ntsc_init(md_ntsc, &ntsc_custom);
         break;
+      }
     }
   }
 
@@ -1630,14 +1648,28 @@ void gx_video_Start(void)
   }
 
   /* GX emulation rendering */
+  gxClearScreen((GXColor)BLACK);
   gxResetRendering(0);
 
   /* resynchronize emulation with VSYNC */
   do VIDEO_WaitVSync();
   while (!VIDEO_GetNextField());
 
-  /* VSYNC callback */
-  VIDEO_SetPostRetraceCallback(vi_callback);
+#ifdef HW_RVL
+  VIDEO_SetTrapFilter(config.trap);
+  VIDEO_SetGamma((int)(config.gamma * 10.0));
+#endif
+
+  /* Emulation is synchronized with video hardware if VSYNC is set to AUTO & TV mode matches emulated video mode */
+  if (config.vsync && (gc_pal == vdp_pal))
+  {
+    VIDEO_SetPostRetraceCallback(vi_callback);
+    videoSync =  VIDEO_WAIT;
+  }
+  else
+  {
+    videoSync = 0;
+  }
 
   /* restart frame sync */
   videoWait  = 0;
@@ -1646,177 +1678,180 @@ void gx_video_Start(void)
 }
 
 /* GX render update */
-int gx_video_Update(u32 done)
+int gx_video_Update(int status)
 {
-  if (videoWait || done) return SYNC_WAIT;
-
-  videoWait = videoSync;
-
-  /* check if display has changed during frame */
-  if (bitmap.viewport.changed & 1)
+  /* make sure current video frame has not already been updated */
+  if (status & VIDEO_UPDATE)
   {
-    /* update texture size */
-    vwidth = bitmap.viewport.w + (2 * bitmap.viewport.x);
-    vheight = bitmap.viewport.h + (2 * bitmap.viewport.y);
+    /* set video wait flag if VSYNC is enabled */
+    videoWait = videoSync;
 
-    /* interlaced mode */
-    if (config.render && interlaced)
+    /* check if display has changed during frame */
+    if (bitmap.viewport.changed & 1)
     {
-      vheight = vheight << 1;
-    }
+      /* update texture size */
+      vwidth = bitmap.viewport.w + (2 * bitmap.viewport.x);
+      vheight = bitmap.viewport.h + (2 * bitmap.viewport.y);
 
-    /* ntsc filter */
-    if (config.ntsc)
-    {
-      vwidth = (reg[12] & 1) ? MD_NTSC_OUT_WIDTH(vwidth) : SMS_NTSC_OUT_WIDTH(vwidth);
-
-      /* texel width must remain multiple of 4 */
-      vwidth  = (vwidth >> 2) << 2;
-    }
-
-    /* initialize texture object */
-    GXTexObj texobj;
-    GX_InitTexObj(&texobj, bitmap.data, vwidth, vheight, GX_TF_RGB565, GX_CLAMP, GX_CLAMP, GX_FALSE);
-
-    /* configure texture filtering */
-    if (!config.bilinear)
-    {
-      GX_InitTexObjLOD(&texobj,GX_NEAR,GX_NEAR_MIP_NEAR,0.0,10.0,0.0,GX_FALSE,GX_FALSE,GX_ANISO_1);
-    }
-
-    /* load texture object */
-    GX_LoadTexObj(&texobj, GX_TEXMAP0);
-
-    /* update rendering mode */
-    if (config.render)
-    {
-      rmode = tvmodes[gc_pal*3 + 2];
-    }
-    else
-    {
-      rmode = tvmodes[gc_pal*3 + interlaced];
-    }
-
-    /* update aspect ratio */
-    gxResetScaler(vwidth);
-
-    /* update GX rendering mode */
-    gxResetMode(rmode, config.vfilter);
-
-    /* update VI mode */
-    VIDEO_Configure(rmode);
-    VIDEO_Flush();
-  }
-
-  /* texture is now directly mapped by the line renderer */
-
-  /* force texture cache update */
-  DCFlushRange(bitmap.data, vwidth*vheight*2);
-  GX_InvalidateTexAll();
-
-  /* disable EFB copy until rendering is done */
-  drawDone = 0;
-
-  /* render textured quad */
-  GX_CallDispList(d_list, 32);
-
-  /* on-screen display */
-  if (osd)
-  {
-    /* reset GX rendering */
-    gxResetRendering(1);
-
-    /* lightgun # 1 screen mark */
-    if (crosshair[0])
-    {
-      if (input.system[0] == SYSTEM_LIGHTPHASER)
+      /* interlaced mode */
+      if (config.render && interlaced)
       {
-        gxDrawCrosshair(crosshair[0], input.analog[0][0],input.analog[0][1]);
+        vheight = vheight << 1;
+      }
+
+      /* ntsc filter */
+      if (config.ntsc)
+      {
+        vwidth = (reg[12] & 1) ? MD_NTSC_OUT_WIDTH(vwidth) : SMS_NTSC_OUT_WIDTH(vwidth);
+
+        /* texel width must remain multiple of 4 */
+        vwidth  = (vwidth >> 2) << 2;
+      }
+
+      /* initialize texture object */
+      GX_InitTexObj(&screenTexObj, bitmap.data, vwidth, vheight, GX_TF_RGB565, GX_CLAMP, GX_CLAMP, GX_FALSE);
+
+      /* configure texture filtering */
+      if (!config.bilinear)
+      {
+        GX_InitTexObjLOD(&screenTexObj,GX_NEAR,GX_NEAR_MIP_NEAR,0.0,10.0,0.0,GX_FALSE,GX_FALSE,GX_ANISO_1);
+      }
+
+      /* load texture object */
+      GX_LoadTexObj(&screenTexObj, GX_TEXMAP0);
+
+      /* update rendering mode */
+      if (config.render)
+      {
+        rmode = tvmodes[gc_pal*3 + 2];
       }
       else
       {
-        gxDrawCrosshair(crosshair[0], input.analog[4][0],input.analog[4][1]);
-      }
-    }
-
-    /* lightgun #2 screen mark */
-    if (crosshair[1])
-    {
-      if (input.system[1] == SYSTEM_LIGHTPHASER)
-      {
-        gxDrawCrosshair(crosshair[1], input.analog[4][0],input.analog[4][1]);
-      }
-      else
-      {
-        gxDrawCrosshair(crosshair[1], input.analog[5][0],input.analog[5][1]);
-      }
-    }
-
-    /* CD LEDS */
-    if (cd_leds[1][1])
-    {
-      /* CD LEDS status */
-      u8 mode = scd.regs[0x06 >> 1].byte.h;
-      gxDrawCdLeds(cd_leds[1][(mode >> 1) & 1], cd_leds[0][mode & 1]);
-    }
-
-    /* FPS counter */
-    if (config.fps)
-    {
-      u32 delta = diff_usec(starttime, gettime());
-      frameCount++;
-      if (delta > 1000000)
-      {
-        sprintf(msg,"%3.2f FPS", (float)frameCount * 1000000.0 / (float)delta);
-        frameCount = 0;
-        starttime = gettime();
+        rmode = tvmodes[gc_pal*3 + interlaced];
       }
 
-      /* disable EFB alpha blending for text background */
-      GX_SetBlendMode(GX_BM_NONE,GX_BL_SRCALPHA,GX_BL_INVSRCALPHA,GX_LO_CLEAR);
-      GX_Flush();
+      /* update aspect ratio */
+      gxResetScaler(vwidth);
 
-      gxDrawOnScreenText(msg);
+      /* update GX rendering mode */
+      gxResetMode(rmode, config.vfilter);
+
+      /* update VI mode */
+      VIDEO_Configure(rmode);
+      VIDEO_Flush();
     }
 
-    /* restore texture object */
-    GXTexObj texobj;
-    GX_InitTexObj(&texobj, bitmap.data, vwidth, vheight, GX_TF_RGB565, GX_CLAMP, GX_CLAMP, GX_FALSE);
-    if (!config.bilinear)
-    {
-      GX_InitTexObjLOD(&texobj,GX_NEAR,GX_NEAR_MIP_NEAR,0.0,10.0,0.0,GX_FALSE,GX_FALSE,GX_ANISO_1);
-    }
-    GX_LoadTexObj(&texobj, GX_TEXMAP0);
+    /* texture is now directly mapped by the line renderer */
+
+    /* force texture cache update */
+    DCStoreRange(bitmap.data, vwidth*vheight*2);
     GX_InvalidateTexAll();
 
-    /* restore GX rendering */
-    gxResetRendering(0);
+    /* render textured quad */
+    GX_CallDispList(screenDisplayList, 32);
+
+    /* on-screen display */
+    if (osd)
+    {
+      /* reset GX rendering mode */
+      gxResetRendering(1);
+
+      /* lightgun # 1 screen mark */
+      if (crosshair[0])
+      {
+        if (input.system[0] == SYSTEM_LIGHTPHASER)
+        {
+          gxDrawCrosshair(crosshair[0], input.analog[0][0],input.analog[0][1]);
+        }
+        else
+        {
+          gxDrawCrosshair(crosshair[0], input.analog[4][0],input.analog[4][1]);
+        }
+      }
+
+      /* lightgun #2 screen mark */
+      if (crosshair[1])
+      {
+        if (input.system[1] == SYSTEM_LIGHTPHASER)
+        {
+          gxDrawCrosshair(crosshair[1], input.analog[4][0],input.analog[4][1]);
+        }
+        else
+        {
+          gxDrawCrosshair(crosshair[1], input.analog[5][0],input.analog[5][1]);
+        }
+      }
+
+      /* CD LEDS */
+      if (cd_leds[1][1])
+      {
+        /* CD LEDS status */
+        u8 mode = scd.regs[0x06 >> 1].byte.h;
+        gxDrawCdLeds(cd_leds[1][(mode >> 1) & 1], cd_leds[0][mode & 1]);
+      }
+
+      /* FPS counter */
+      if (config.fps)
+      {
+        u32 delta = diff_usec(starttime, gettime());
+        frameCount++;
+        if (delta > 1000000)
+        {
+          sprintf(msg,"%3.2f FPS", (float)frameCount * 1000000.0 / (float)delta);
+          frameCount = 0;
+          starttime = gettime();
+        }
+
+        /* disable EFB alpha blending for text background */
+        GX_SetBlendMode(GX_BM_NONE,GX_BL_SRCALPHA,GX_BL_INVSRCALPHA,GX_LO_CLEAR);
+        GX_Flush();
+
+        /* display on-screen message */
+        gxDrawOnScreenText(msg);
+      }
+
+      /* restore texture object */
+      GX_LoadTexObj(&screenTexObj, GX_TEXMAP0);
+
+      /* restore GX rendering mode */
+      gxResetRendering(0);
+    }
+
+    /* Do not wait for EFB rendering, GX draw interrupt will be triggered when it is finished */
+    GX_SetDrawDone();
+
+    /* check interlaced mode change */
+    if (bitmap.viewport.changed & 4)
+    {
+      /* "original" mode */
+      if (!config.render && config.vsync && (gc_pal == vdp_pal))
+      {
+        /* framerate has changed, reinitialize audio timings */
+        audio_set_rate(snd.sample_rate, get_framerate());
+      }
+
+      /* clear flag */
+      bitmap.viewport.changed &= ~4;
+    }
+
+    /* Check if video mode has changed */
+    if (bitmap.viewport.changed & 1)
+    {
+      /* clear viewport update flags */
+      bitmap.viewport.changed &= ~1;
+
+      /* field synchronization */
+      do VIDEO_WaitVSync();
+      while (VIDEO_GetNextField() != odd_frame);
+
+      /* resynchronize audio playback with video */                    
+      AUDIO_StopDMA();
+      AUDIO_StartDMA();
+    }
   }
 
-  /* GX draw interrupt will be triggered when EFB rendering is finished */
-  GX_SetDrawDone();
-
-  if (bitmap.viewport.changed & 1)
-  {
-    /* clear update flags */
-    bitmap.viewport.changed &= ~1;
-
-    /* field synchronization */
-    VIDEO_WaitVSync();
-    if (rmode->viTVMode & VI_NON_INTERLACE)
-    {
-      VIDEO_WaitVSync();
-    }
-    else while (VIDEO_GetNextField() != odd_frame)
-    {
-      VIDEO_WaitVSync();
-    }
-
-    /* Audio DMA need to be resynchronized with VSYNC */                    
-    audioStarted = 0;
-  }
-
-  return SYNC_VIDEO;
+  /* wait until current video frame starts before emulating next frame */
+  return ((status & ~(VIDEO_WAIT|VIDEO_UPDATE)) | videoWait);
 }
 
 /* Initialize VIDEO subsystem */
@@ -1853,17 +1888,19 @@ void gx_video_Init(void)
   /* Configure VI */
   VIDEO_Configure(vmode);
 
-  /* Allocate framebuffer */
-  xfb = (u32 *) MEM_K0_TO_K1((u32 *) SYS_AllocateFramebuffer(&TV50hz_576i));
+  /* Allocate framebuffers */
+  xfb[0] = (u32 *) MEM_K0_TO_K1((u32 *) SYS_AllocateFramebuffer(&TV50hz_576i));
+  xfb[1] = (u32 *) MEM_K0_TO_K1((u32 *) SYS_AllocateFramebuffer(&TV50hz_576i));
 
   /* Define a console */
-  console_init(xfb, 20, 64, 640, 574, 574 * 2);
+  console_init(xfb[0], 20, 64, 640, 574, 574 * 2);
 
   /* Clear framebuffer to black */
-  VIDEO_ClearFrameBuffer(vmode, xfb, COLOR_BLACK);
+  VIDEO_ClearFrameBuffer(vmode, xfb[0], COLOR_BLACK);
 
   /* Set the framebuffer to be displayed at next VBlank */
-  VIDEO_SetNextFramebuffer(xfb);
+  VIDEO_SetNextFramebuffer(xfb[0]);
+  fbCurrent = 0;
 
   /* Enable Video Interface */
   VIDEO_SetBlack(FALSE);
@@ -1887,7 +1924,7 @@ void gx_video_Init(void)
 void gx_video_Shutdown(void)
 {
   FONT_Shutdown();
-  VIDEO_ClearFrameBuffer(vmode, xfb, COLOR_BLACK);
+  VIDEO_ClearFrameBuffer(vmode, xfb[fbCurrent], COLOR_BLACK);
   VIDEO_Flush();
   VIDEO_WaitVSync();
 }
@@ -2014,7 +2051,7 @@ void md_ntsc_blit( md_ntsc_t const* ntsc, MD_NTSC_IN_T const* table, unsigned ch
     MD_NTSC_RGB_OUT( 7, *line_out++ );
 
     line_out += 12;
-}
+  }
 
   /* finish final pixels */
   MD_NTSC_COLOR_IN( 0, ntsc, MD_NTSC_ADJ_IN( table[*input++] ) );

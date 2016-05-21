@@ -33,6 +33,8 @@ void set_config_defaults(void)
   config.addr_error     = 1;
   config.bios           = 0;
   config.lock_on        = 0; /* = OFF (can be TYPE_SK, TYPE_GG & TYPE_AR) */
+  config.ntsc           = 0;
+  config.lcd            = 0; /* 0.8 fixed point */
 
   /* display options */
   config.overscan = 0;       /* 3 = all borders (0 = no borders , 1 = vertical borders only, 2 = horizontal borders only) */
@@ -40,13 +42,14 @@ void set_config_defaults(void)
   config.render   = 0;       /* 1 = double resolution output (only when interlaced mode 2 is enabled) */
 
   /* controllers options */
-  input.system[0]       = SYSTEM_MD_GAMEPAD;
-  input.system[1]       = SYSTEM_MD_GAMEPAD;
+  input.system[0]       = SYSTEM_GAMEPAD;
+  input.system[1]       = SYSTEM_GAMEPAD;
   config.gun_cursor[0]  = 1;
   config.gun_cursor[1]  = 1;
   config.invert_mouse   = 0;
   for (i=0;i<MAX_INPUTS;i++)
   {
-    config.input[i].padtype = DEVICE_PAD3B;
+    /* autodetected control pad type */
+    config.input[i].padtype = DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B;
   }
 }

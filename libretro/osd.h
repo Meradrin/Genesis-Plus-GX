@@ -27,6 +27,8 @@ typedef unsigned char bool;
 #define M_PI 3.1415926535897932385
 #endif
 
+#define CHEATS_UPDATE() ROMCheatUpdate()
+
 typedef struct 
 {
   int8 device;
@@ -61,9 +63,12 @@ struct
   uint8 lock_on;
   uint8 overscan;
   uint8 ntsc;
+  uint8 lcd;
   uint8 gg_extra;
   uint8 render;
   t_input_config input[MAX_INPUTS];
+  uint8 invert_mouse;
+  uint8 gun_cursor;
 } config;
 
 extern char GG_ROM[256];
@@ -71,6 +76,7 @@ extern char AR_ROM[256];
 extern char SK_ROM[256];
 extern char SK_UPMEM[256];
 extern char GG_BIOS[256];
+extern char MD_BIOS[256];
 extern char CD_BIOS_EU[256];
 extern char CD_BIOS_US[256];
 extern char CD_BIOS_JP[256];
@@ -78,7 +84,8 @@ extern char MS_BIOS_US[256];
 extern char MS_BIOS_EU[256];
 extern char MS_BIOS_JP[256];
 
-void osd_input_update(void);
-int load_archive(char *filename, unsigned char *buffer, int maxsize, char *extension);
+extern void osd_input_update(void);
+extern int load_archive(char *filename, unsigned char *buffer, int maxsize, char *extension);
+extern void ROMCheatUpdate(void);
 
 #endif /* _OSD_H */

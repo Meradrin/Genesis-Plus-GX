@@ -575,7 +575,7 @@ int sdl_input_update(void)
       break;
     }
 
-    case DEVICE_XE_A1P:
+    case DEVICE_XE_1AP:
     {
       /* A,B,C,D,Select,START,E1,E2 buttons -> E1(?) E2(?) START SELECT(?) A B C D */
       if(keystate[SDLK_a])  input.pad[joynum] |= INPUT_START;
@@ -645,6 +645,24 @@ int sdl_input_update(void)
    
       /* Map mouse buttons to player #1 inputs */
       if(state & SDL_BUTTON_RMASK) input.pad[0] |= INPUT_B;
+
+      break;
+    }
+
+    case DEVICE_GRAPHIC_BOARD:
+    {
+      /* get mouse (absolute values) */
+      int x,y;
+      int state = SDL_GetMouseState(&x,&y);
+
+      /* Calculate X Y axis values */
+      input.analog[0][0] = (x * 255) / VIDEO_WIDTH;
+      input.analog[0][1] = (y * 255) / VIDEO_HEIGHT;
+   
+      /* Map mouse buttons to player #1 inputs */
+      if(state & SDL_BUTTON_LMASK) input.pad[0] |= INPUT_GRAPHIC_PEN;
+      if(state & SDL_BUTTON_RMASK) input.pad[0] |= INPUT_GRAPHIC_MENU;
+      if(state & SDL_BUTTON_MMASK) input.pad[0] |= INPUT_GRAPHIC_DO;
 
       break;
     }

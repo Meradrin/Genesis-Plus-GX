@@ -3,7 +3,7 @@
  *
  *  Genesis Plus GX configuration file support
  *
- *  Copyright Eke-Eke (2007-2013)
+ *  Copyright Eke-Eke (2007-2015)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -57,12 +57,12 @@ typedef struct
   uint8 mono;
   int16 psg_preamp;
   int16 fm_preamp;
-  uint32 lp_range;
   int16 low_freq;
   int16 high_freq;
   int16 lg;
   int16 mg;
   int16 hg;
+  uint32 lp_range;
   uint8 system;
   uint8 region_detect;
   uint8 master_clock;
@@ -76,6 +76,7 @@ typedef struct
   uint8 gun_cursor[2];
   uint8 overscan;
   uint8 gg_extra;
+  uint8 lcd;
   uint8 ntsc;
   uint8 vsync;
   uint8 render;
@@ -88,7 +89,7 @@ typedef struct
   int16 xscale;
   int16 yscale;
 #ifdef HW_RVL
-  uint32 trap;
+  uint8 trap;
   float gamma;
 #else
   uint8 v_prog;
@@ -97,6 +98,9 @@ typedef struct
   uint16 pad_keymap[4][MAX_KEYS+1];
 #ifdef HW_RVL
   uint32 wpad_keymap[4*3][MAX_KEYS];
+  uint8 autosleep;
+  int32 calx;
+  int32 caly;
 #endif
   uint8 autoload;
   uint8 autocheat;
@@ -111,11 +115,15 @@ typedef struct
   float bgm_volume;
   float sfx_volume;
   char lastdir[FILETYPE_MAX][TYPE_RECENT][MAXPATHLEN];
+  float ntsc_sharpness;
+  float ntsc_resolution;
+  float ntsc_artifacts;
+  float ntsc_fringing;
+  float ntsc_bleed;
+  char sys_rom[12][256];
 } t_config;
 
-/* Global data */
-t_config config;
-
+extern t_config config;
 
 extern void config_save(void);
 extern void config_default(void);

@@ -3,7 +3,7 @@
  *
  *  Genesis Plus GX menu
  *
- *  Copyright Eke-Eke (2009-2014)
+ *  Copyright Eke-Eke (2009-2015)
  *
  *  Redistribution and use of this code or any derivative works are permitted
  *  provided that the following conditions are met:
@@ -97,18 +97,21 @@ extern const u8 Button_delete_over_png[];
 
 /* Controller Settings */
 extern const u8 Ctrl_4wayplay_png[];
-extern const u8 Ctrl_gamepad_md_png[];
-extern const u8 Ctrl_gamepad_ms_png[];
+extern const u8 Ctrl_gamepad_png[];
 extern const u8 Ctrl_justifiers_png[];
 extern const u8 Ctrl_menacer_png[];
 extern const u8 Ctrl_mouse_png[];
-extern const u8 Ctrl_xe_a1p_png[];
+extern const u8 Ctrl_xe_1ap_png[];
 extern const u8 Ctrl_activator_png[];
 extern const u8 Ctrl_lightphaser_png[];
 extern const u8 Ctrl_paddle_png[];
 extern const u8 Ctrl_sportspad_png[];
 extern const u8 Ctrl_none_png[];
 extern const u8 Ctrl_teamplayer_png[];
+extern const u8 Ctrl_mastertap_png[];
+extern const u8 Ctrl_graphic_board_png[];
+extern const u8 Ctrl_pad_auto_png[];
+extern const u8 Ctrl_pad2b_png[];
 extern const u8 Ctrl_pad3b_png[];
 extern const u8 Ctrl_pad6b_png[];
 extern const u8 Ctrl_config_png[];
@@ -222,7 +225,7 @@ static gui_item action_select =
 /*****************************************************************************/
 /* GUI backgrounds images                                                    */
 /*****************************************************************************/
-static gui_image bg_main[4] =
+static gui_image bg_main[] =
 {
   {NULL,Bg_layer_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
   {NULL,Bg_overlay_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
@@ -230,7 +233,7 @@ static gui_image bg_main[4] =
   {NULL,Main_logo_png,IMAGE_VISIBLE|IMAGE_SLIDE_BOTTOM,202,362,232,56,255}
 };
 
-static gui_image bg_misc[5] =
+static gui_image bg_misc[] =
 {
   {NULL,Bg_layer_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
   {NULL,Bg_overlay_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
@@ -239,7 +242,7 @@ static gui_image bg_misc[5] =
   {NULL,Main_logo_png,IMAGE_VISIBLE|IMAGE_SLIDE_TOP,466,40,152,44,255}
 };
 
-static gui_image bg_ctrls[8] =
+static gui_image bg_ctrls[] =
 {
   {NULL,Bg_layer_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
   {NULL,Bg_overlay_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
@@ -251,7 +254,7 @@ static gui_image bg_ctrls[8] =
   {NULL,Frame_s3_png,IMAGE_SLIDE_RIGHT,400,134,292,248,128}
 };
 
-static gui_image bg_list[6] =
+static gui_image bg_list[] =
 {
   {NULL,Bg_layer_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
   {NULL,Bg_overlay_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
@@ -261,7 +264,7 @@ static gui_image bg_list[6] =
   {NULL,Frame_s1_png,IMAGE_VISIBLE,8,70,372,336,76}
 };
 
-static gui_image bg_saves[8] =
+static gui_image bg_saves[] =
 {
   {NULL,NULL,0,0,0,0,0,255},
   {NULL,Bg_layer_png,IMAGE_VISIBLE|IMAGE_REPEAT,0,0,640,480,255},
@@ -278,7 +281,7 @@ static gui_image bg_saves[8] =
 /*****************************************************************************/
 
 /* Main menu */
-static gui_item items_main[10] =
+static gui_item items_main[] =
 {
   {NULL,Main_load_png    ,"","",114,162,80,92},
   {NULL,Main_options_png ,"","",290,166,60,88},
@@ -297,7 +300,7 @@ static gui_item items_main[10] =
 };
 
 /* Controllers menu */
-static gui_item items_ctrls[13] =
+static gui_item items_ctrls[] =
 {
   {NULL,NULL,"","",  0,  0,  0,  0},
   {NULL,NULL,"","",  0,  0,  0,  0},
@@ -315,7 +318,7 @@ static gui_item items_ctrls[13] =
 };
 
 /* Load menu */
-static gui_item items_load[6] =
+static gui_item items_load[] =
 {
   {NULL,Load_recent_png,"","Load recently played games",    119,144,72, 92},
   {NULL,Load_md_png,    "","Load Mega Drive/Genesis games", 278,141,84, 92},
@@ -326,7 +329,7 @@ static gui_item items_load[6] =
 };
 
 /* Option menu */
-static gui_item items_options[5] =
+static gui_item items_options[] =
 {
   {NULL,Option_system_png,"","System settings",       114,142,80,92},
   {NULL,Option_video_png, "","Video settings",        288,150,64,84},
@@ -336,7 +339,7 @@ static gui_item items_options[5] =
 };
 
 /* Audio options */
-static gui_item items_audio[13] =
+static gui_item items_audio[] =
 {
   {NULL,NULL,"Master System FM: AUTO", "Enable/disable YM2413 chip",              56,132,276,48},
   {NULL,NULL,"High-Quality FM: ON",    "Adjust YM2612/YM2413 resampling quality", 56,132,276,48},
@@ -353,8 +356,25 @@ static gui_item items_audio[13] =
   {NULL,NULL,"High Freq: 20000 Hz",    "Adjust EQ Highest Frequency",             56,132,276,48}
 };
 
+/* System ROM paths */
+static gui_item items_rompaths[] =
+{
+  {NULL,NULL,"CD BIOS (USA): NOT FOUND",  "Select Sega CD (USA) BIOS",            56,132,276,48},
+  {NULL,NULL,"CD BIOS (PAL): NOT FOUND",  "Select Mega CD (PAL) BIOS",            56,132,276,48},
+  {NULL,NULL,"CD BIOS (JAP): NOT FOUND",  "Select Mega CD (JAP) BIOS",            56,132,276,48},
+  {NULL,NULL,"MD BIOS (TMSS): NOT FOUND", "Select Mega Drive / Genesis BootROM",  56,132,276,48},
+  {NULL,NULL,"MS BIOS (USA): NOT FOUND",  "Select Master System (USA) BootROM",   56,132,276,48},
+  {NULL,NULL,"MS BIOS (PAL): NOT FOUND",  "Select Master System (PAL) BootROM",   56,132,276,48},
+  {NULL,NULL,"MS BIOS (JAP): NOT FOUND",  "Select Master System (JAP) BootROM",   56,132,276,48},
+  {NULL,NULL,"Game Gear BIOS: NOT FOUND", "Select Game Gear BootROM",             56,132,276,48},
+  {NULL,NULL,"Game Genie: NOT FOUND",     "Select Game Genie ROM",                56,132,276,48},
+  {NULL,NULL,"Action Replay: NOT FOUND",  "Select Action Replay (Pro) ROM",       56,132,276,48},
+  {NULL,NULL,"S&K (2MB ROM): NOT FOUND",  "Select Sonic & Knuckle main ROM",      56,132,276,48},
+  {NULL,NULL,"S2&K (256K ROM): NOT FOUND","Select Sonic 2 & Knuckle upmem ROM",   56,132,276,48},
+};
+
 /* System options */
-static gui_item items_system[10] =
+static gui_item items_system[] =
 {
   {NULL,NULL,"Console Hardware: AUTO",  "Select system hardware model",                56,132,276,48},
   {NULL,NULL,"Console Region: AUTO",    "Select system region",                        56,132,276,48},
@@ -365,35 +385,38 @@ static gui_item items_system[10] =
   {NULL,NULL,"68k Address Error: ON",   "Enable/disable 68k address error exceptions", 56,132,276,48},
   {NULL,NULL,"Lock-on: OFF",            "Select Lock-On cartridge type",               56,132,276,48},
   {NULL,NULL,"Cartridge Swap: OFF",     "Enable/disable cartridge hot swap",           56,132,276,48},
+  {NULL,NULL,"BIOS & Lock-On ROM paths","Configure BIOS & Lock-On ROM paths",          56,132,276,48},
   {NULL,NULL,"SVP Cycles: 1500",        "Adjust SVP chip emulation speed",             56,132,276,48}
 };
 
 /* Video options */
-#ifdef HW_RVL
-static gui_item items_video[13] =
-#else
-static gui_item items_video[11] =
-#endif
+static gui_item items_video[] =
 {
-  {NULL,NULL,"Display: PROGRESSIVE",     "Select video mode",                          56,132,276,48},
-  {NULL,NULL,"TV mode: 50/60Hz",         "Select video refresh rate",                  56,132,276,48},
-  {NULL,NULL,"VSYNC: AUTO",              "Enable/disable sync with Video Hardware",    56,132,276,48},
-  {NULL,NULL,"GX Bilinear Filter: OFF",  "Enable/disable texture hardware filtering",  56,132,276,48},
-  {NULL,NULL,"GX Deflickering Filter: OFF","Enable/disable GX hardware filtering",     56,132,276,48},
+  {NULL,NULL,"Display: PROGRESSIVE",        "Select video mode",                                 56,132,276,48},
+  {NULL,NULL,"TV mode: 50/60HZ",            "Select video refresh rate",                         56,132,276,48},
+  {NULL,NULL,"VSYNC: AUTO",                 "Enable/disable sync with video hardware",           56,132,276,48},
+  {NULL,NULL,"Bilinear Filter: OFF",        "Enable/disable GX hardware texture filtering",      56,132,276,48},
+  {NULL,NULL,"Deflickering Filter: AUTO",   "Enable/disable GX hardware framebuffer filtering",  56,132,276,48},
 #ifdef HW_RVL
-  {NULL,NULL,"VI Trap Filter: ON",       "Enable/disable video hardware filtering",    56,132,276,48},
-  {NULL,NULL,"VI Gamma Correction: 1.0", "Adjust video hardware gamma correction",     56,132,276,48},
+  {NULL,NULL,"Trap Filter: ON",             "Enable/disable VI hardware composite out filtering",56,132,276,48},
+  {NULL,NULL,"Gamma Correction: 1.0",       "Adjust VI hardware gamma correction",               56,132,276,48},
 #endif
-  {NULL,NULL,"NTSC Filter: COMPOSITE",   "Enable/disable NTSC software filtering",     56,132,276,48},
-  {NULL,NULL,"Borders: OFF",             "Enable/disable overscan emulation",          56,132,276,48},
-  {NULL,NULL,"GG screen: ORIGINAL",      "Enable/disable Game Gear extended screen",   56,132,276,48},
-  {NULL,NULL,"Aspect: ORIGINAL (4:3)",   "Select display aspect ratio",                56,132,276,48},
-  {NULL,NULL,"Screen Position (+0,+0)",  "Adjust display position",                    56,132,276,48},
-  {NULL,NULL,"Screen Scaling (+0,+0)",   "Adjust display scaling",                     56,132,276,48}
+  {NULL,NULL,"LCD Ghosting Filter: OFF",    "Enable/disable software LCD image persistence",     56,132,276,48},
+  {NULL,NULL,"NTSC Filter: COMPOSITE",      "Enable/disable software NTSC filtering",            56,132,276,48},
+  {NULL,NULL,"NTSC Sharpness: 0.0",         "Adjust edge contrast enhancement/blurring",         56,132,276,48},
+  {NULL,NULL,"NTSC Resolution: 0.0",        "Adjust image resolution",                           56,132,276,48},
+  {NULL,NULL,"NTSC Artifacts: 0.0",         "Adjust artifacts caused by color changes",          56,132,276,48},
+  {NULL,NULL,"NTSC Color Bleed: 0.0",       "Adjust color resolution reduction",                 56,132,276,48},
+  {NULL,NULL,"NTSC Color Fringing: 0.0",    "Adjust artifacts caused by brightness changes",     56,132,276,48},
+  {NULL,NULL,"Borders: OFF",                "Enable/disable overscan emulation",                 56,132,276,48},
+  {NULL,NULL,"GG screen: ORIGINAL",         "Enable/disable Game Gear extended screen",          56,132,276,48},
+  {NULL,NULL,"Aspect: ORIGINAL (4:3)",      "Select display aspect ratio",                       56,132,276,48},
+  {NULL,NULL,"Screen Position (+0,+0)",     "Adjust display position",                           56,132,276,48},
+  {NULL,NULL,"Screen Scaling (+0,+0)",      "Adjust display scaling",                            56,132,276,48}
 };
 
 /* Menu options */
-static gui_item items_prefs[11] =
+static gui_item items_prefs[] =
 {
   {NULL,NULL,"Auto ROM Load: OFF",  "Enable/disable automatic ROM loading on startup", 56,132,276,48},
   {NULL,NULL,"Auto Cheats: OFF",    "Enable/disable automatic cheats activation",      56,132,276,48},
@@ -406,10 +429,14 @@ static gui_item items_prefs[11] =
   {NULL,NULL,"Screen Width: 658",   "Adjust menu screen width in pixels",              56,132,276,48},
   {NULL,NULL,"Show CD Leds: OFF",   "Enable/disable CD leds display",                  56,132,276,48},
   {NULL,NULL,"Show FPS: OFF",       "Enable/disable FPS counter",                      56,132,276,48},
+#ifdef HW_RVL
+  {NULL,NULL,"Wiimote Timeout: OFF","Enable/disable Wii remote automatic shutodwn",    56,132,276,48},
+  {NULL,NULL,"Wiimote Calibration: AUTO","Calibrate Wii remote pointer",               56,132,276,48},
+#endif
 };
 
 /* Save Manager */
-static gui_item items_saves[9] =
+static gui_item items_saves[] =
 {
   {NULL,NULL,"",""                   ,0,0,0,0},
   {NULL,NULL,"",""                   ,0,0,0,0},
@@ -431,7 +458,7 @@ static gui_butn arrow_up = {&arrow_up_data,BUTTON_ACTIVE|BUTTON_OVER_SFX,{0,0,0,
 static gui_butn arrow_down = {&arrow_down_data,BUTTON_ACTIVE|BUTTON_OVER_SFX,{0,0,0,0},14,368,360,32};
 
 /* Generic list menu */
-static gui_butn buttons_list[4] =
+static gui_butn buttons_list[] =
 {
   {&button_text_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX,{1,1,0,0},56,132,276,48},
   {&button_text_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX,{1,1,0,0},56,188,276,48},
@@ -440,7 +467,7 @@ static gui_butn buttons_list[4] =
 };
 
 /* Main menu */
-static gui_butn buttons_main[10] =
+static gui_butn buttons_main[] =
 {
   {&button_icon_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX|BUTTON_SELECT_SFX,{0,0,0,1}, 80,140,148,132},
   {&button_icon_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX|BUTTON_SELECT_SFX,{0,0,1,1},246,140,148,132},
@@ -455,7 +482,7 @@ static gui_butn buttons_main[10] =
 };
 
 /* Controllers Menu */
-static gui_butn buttons_ctrls[13] =
+static gui_butn buttons_ctrls[] =
 {
   {&button_icon_data    ,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX                  ,{0,1,0,2}, 60, 88,148,132},
   {&button_icon_data    ,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX                  ,{1,0,0,5}, 60,258,148,132},
@@ -473,7 +500,7 @@ static gui_butn buttons_ctrls[13] =
 };
 
 /* Load Game menu */
-static gui_butn buttons_load[6] =
+static gui_butn buttons_load[] =
 {
   {&button_icon_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX|BUTTON_SELECT_SFX,{0,3,0,1}, 80,120,148,132},
   {&button_icon_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX|BUTTON_SELECT_SFX,{0,3,1,1},246,120,148,132},
@@ -484,7 +511,7 @@ static gui_butn buttons_load[6] =
 };
 
 /* Options menu */
-static gui_butn buttons_options[5] =
+static gui_butn buttons_options[] =
 {
   {&button_icon_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX|BUTTON_SELECT_SFX,{0,3,0,1}, 80,120,148,132},
   {&button_icon_data,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX|BUTTON_SELECT_SFX,{0,3,1,1},246,120,148,132},
@@ -494,7 +521,7 @@ static gui_butn buttons_options[5] =
 };
 
 /* Save Manager Menu */
-static gui_butn buttons_saves[9] =
+static gui_butn buttons_saves[] =
 {
   {&button_text_data   ,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX,{0,1,0,0}, 56,102,276,48},
   {&button_text_data   ,BUTTON_VISIBLE|BUTTON_ACTIVE|BUTTON_OVER_SFX,{1,1,0,0}, 56,158,276,48},
@@ -567,12 +594,26 @@ static gui_menu menu_options =
   NULL
 };
 
+/* System ROM Path submenu */
+static gui_menu menu_rompaths =
+{
+  "System ROM Paths",
+  0,0,
+  12,4,6,0,
+  items_rompaths,
+  buttons_list,
+  bg_list,
+  {&action_cancel, &action_select},
+  {&arrow_up,&arrow_down},
+  NULL
+};
+
 /* System Options menu */
 static gui_menu menu_system =
 {
   "System Settings",
   0,0,
-  10,4,6,0,
+  0,4,6,0,
   items_system,
   buttons_list,
   bg_list,
@@ -586,7 +627,7 @@ static gui_menu menu_video =
 {
   "Video Settings",
   0,0,
-  10,4,6,0,
+  0,4,6,0,
   items_video,
   buttons_list,
   bg_list,
@@ -600,7 +641,7 @@ static gui_menu menu_audio =
 {
   "Audio Settings",
   0,0,
-  9,4,6,0,
+  0,4,6,0,
   items_audio,
   buttons_list,
   bg_list,
@@ -614,7 +655,7 @@ static gui_menu menu_prefs =
 {
   "Menu Settings",
   0,0,
-  11,4,6,0,
+  0,4,6,0,
   items_prefs,
   buttons_list,
   bg_list,
@@ -683,6 +724,14 @@ static void prefmenu ()
   sprintf (items[8].text, "Screen Width: %d", config.screen_w);
   sprintf (items[9].text, "Show CD Leds: %s", config.cd_leds ? "ON":"OFF");
   sprintf (items[10].text, "Show FPS: %s", config.fps ? "ON":"OFF");
+#ifdef HW_RVL
+  sprintf (items[11].text, "Wiimote Timeout: %s", config.autosleep ? "5 MIN":"30 MIN");
+  sprintf (items[12].text, "Wiimote Calibration: %s", ((config.calx * config.caly) != 0) ? "MANUAL":"AUTO");
+  sprintf (items[12].comment, "%s", ((config.calx * config.caly) != 0) ? "Reset default Wii remote pointer calibration":"Calibrate Wii remote pointer");
+  m->max_items = 13;
+#else
+  m->max_items = 11;
+#endif
 
   GUI_InitMenu(m);
   GUI_SlideMenuTitle(m,strlen("Menu "));
@@ -776,6 +825,35 @@ static void prefmenu ()
         config.fps ^= 1;
         sprintf (items[10].text, "Show FPS: %s", config.fps ? "ON":"OFF");
         break;
+
+#ifdef HW_RVL
+      case 11:   /*** Wii remote auto switch-off ***/
+        config.autosleep ^= 1;
+        sprintf (items[11].text, "Wiimote Timeout: %s", config.autosleep ? "5min":"30min");
+        WPAD_SetIdleTimeout(config.autosleep ? 300 : 1800);
+        break;
+
+      case 12:   /*** Wii remote pointer calibration ***/
+        if ((config.calx * config.caly) == 0)
+        {
+          if (GUI_WaitConfirm("Pointer Calibration","Aim center of TV screen"))
+          {
+            sprintf (items[12].text, "Wiimote Calibration: MANUAL");
+            sprintf (items[12].comment, "Reset default Wii remote pointer calibration");
+            config.calx = 320 - m_input.ir.x;
+            config.caly = 240 - m_input.ir.y;
+            m_input.ir.x = 320;
+            m_input.ir.y = 240;
+          }
+        }
+        else
+        {
+          sprintf (items[12].text, "Wiimote Calibration: AUTO");
+          sprintf (items[12].comment, "Calibrate Wii remote pointer");
+          config.calx = config.caly = 0;
+        }
+        break;
+#endif
 
       case -1:
         quit = 1;
@@ -993,7 +1071,7 @@ static void soundmenu ()
         if (config.filter == 1)
         {
           int16 lp_range = (config.lp_range * 100 + 0xffff) / 0x10000;
-          GUI_OptionBox(m,0,"Low-Pass Rate",(void *)&lp_range,1,0,100,1);
+          GUI_OptionBox(m,0,"Low-Pass Rate (%)",(void *)&lp_range,1,0,100,1);
           sprintf (items[8].text, "Low-Pass Rate: %d %%", lp_range);
           config.lp_range = (lp_range * 0x10000) / 100;
         }
@@ -1056,6 +1134,125 @@ static void soundmenu ()
 }
 
 /****************************************************************************
+ * System ROM paths menu
+ *
+ ****************************************************************************/
+
+static void rompathmenu ()
+{
+  FILE *f;
+  int i, ret;
+  gui_menu *m = &menu_rompaths;
+  gui_item *items = m->items;
+  
+  for (i=0; i<12; i++)
+  {
+    f = fopen(config.sys_rom[i],"rb");
+    if (f)
+    {
+      strcpy(strstr(items[i].text,":") + 2, "FOUND");
+      fclose(f);
+    }
+    else
+    {
+      strcpy(strstr(items[i].text,":") + 2, "NOT FOUND");
+    }
+  }
+
+  GUI_InitMenu(m);
+
+  while (1)
+  {
+    ret = GUI_RunMenu(m);
+
+    if (ret < 0)
+    {
+      GUI_DeleteMenu(m);
+      return;
+    }
+    
+    /* Initialize System ROM browser */
+    if (OpenDirectory(config.l_device, ret + FILETYPE_MAX))
+    {
+      /* Get current System ROM path */
+      char *dir = GetCurrentDirectory();
+
+      /* Open System ROM browser */
+      GUI_DeleteMenu(m);
+      i = FileSelector(ret + FILETYPE_MAX);
+
+      /* System ROM selected ? */
+      if (i >= 0)
+      {
+        /* full System ROM pathname */
+        sprintf(config.sys_rom[ret],"%s%s",dir,filelist[i].filename);
+
+        /* mark System ROM as found */
+        strcpy(strstr(items[ret].text,":") + 2, "FOUND");
+
+        /* BOOT ROM special cases */
+        switch (ret)
+        {
+          case 0:
+          case 1:
+          case 2:
+          {
+            /* force CD BOOT ROM reloading */
+            system_bios &= ~0x10;
+            break;
+          }
+
+          case 3:
+          {
+            /* Genesis BOOT ROM must be reloaded */
+            if (load_archive(MD_BIOS, boot_rom, 0x800, NULL) > 0)
+            {
+              /* check if BOOT ROM header is valid */
+              if (!memcmp((char *)(boot_rom + 0x120),"GENESIS OS", 10))
+              {
+                /* mark Genesis BOOT ROM as loaded */
+                system_bios |= SYSTEM_MD;
+              }
+              else
+              {
+                /* mark Genesis BOOT ROM as unloaded */
+                system_bios &= ~SYSTEM_MD;
+              }
+            }
+            break;
+          }
+
+          case 4:
+          case 5:
+          case 6:
+          {
+            /* force Master System BOOT ROM reloading */
+            system_bios &= ~SYSTEM_SMS;
+            break;
+          }
+
+          case 7:
+          {
+            /* force Game Gear BOOT ROM reloading */
+            system_bios &= ~SYSTEM_GG;
+            break;
+          }
+
+          default:
+          {
+            /* not a BOOT ROM */
+            break;
+          }
+        }
+      }
+
+      free(dir);
+      GUI_InitMenu(m);
+    }
+  }
+}
+
+/****************************************************************************
  * System Settings menu
  *
  ****************************************************************************/
@@ -1097,9 +1294,9 @@ static void systemmenu ()
   else if (config.region_detect == 1)
     sprintf (items[1].text, "Console Region: USA");
   else if (config.region_detect == 2)
-    sprintf (items[1].text, "Console Region: EUROPE");
+    sprintf (items[1].text, "Console Region: PAL");
   else if (config.region_detect == 3)
-    sprintf (items[1].text, "Console Region: JAPAN");
+    sprintf (items[1].text, "Console Region: JAP");
 
   if (config.vdp_mode == 0)
     sprintf (items[2].text, "VDP Mode: AUTO");
@@ -1132,12 +1329,12 @@ static void systemmenu ()
 
   if (svp)
   {
-    sprintf (items[9].text, "SVP Cycles: %d", SVP_cycles);
-    m->max_items = 10;
+    sprintf (items[10].text, "SVP Cycles: %d", SVP_cycles);
+    m->max_items = 11;
   }
   else
   {
-    m->max_items = 9;
+    m->max_items = 10;
   }
 
   GUI_InitMenu(m);
@@ -1158,7 +1355,7 @@ static void systemmenu ()
 
           /* Default system hardware (auto) */
           if (system_hw) system_hw = romtype;
-       }
+        }
         else if (config.system == 0)
         {
           config.system = SYSTEM_SG;
@@ -1256,9 +1453,9 @@ static void systemmenu ()
         else if (config.region_detect == 1)
           sprintf (items[1].text, "Console Region: USA");
         else if (config.region_detect == 2)
-          sprintf (items[1].text, "Console Region: EUR");
+          sprintf (items[1].text, "Console Region: PAL");
         else if (config.region_detect == 3)
-          sprintf (items[1].text, "Console Region: JAPAN");
+          sprintf (items[1].text, "Console Region: JAP");
 
         /* force system reinitialization + region BIOS */
         reinit = 2;
@@ -1379,10 +1576,18 @@ static void systemmenu ()
         break;
       }
 
-      case 9:  /*** SVP cycles per line ***/
+      case 9:  /*** System ROM paths ***/
+      {
+        GUI_DeleteMenu(m);
+        rompathmenu();
+        GUI_InitMenu(m);
+        break;
+      }
+
+      case 10:  /*** SVP cycles per line ***/
       {
         GUI_OptionBox(m,0,"SVP Cycles",(void *)&SVP_cycles,1,1,1500,1);
-        sprintf (items[9].text, "SVP Cycles: %d", SVP_cycles);
+        sprintf (items[10].text, "SVP Cycles: %d", SVP_cycles);
         break;
       }
 
@@ -1480,6 +1685,7 @@ static void videomenu ()
   int reinit = 0;
   gui_menu *m = &menu_video;
   gui_item *items = m->items;
+  int ntsc_offset = 0;
 
   if (config.render == 1)
     sprintf (items[0].text,"Display: INTERLACED");
@@ -1500,53 +1706,83 @@ static void videomenu ()
   else
     sprintf (items[2].text, "VSYNC: OFF");
 
-  sprintf (items[3].text, "GX Bilinear Filter: %s", config.bilinear ? " ON" : "OFF");
-  sprintf (items[4].text, "GX Deflickering Filter: %s", config.vfilter ? " ON" : "OFF");
+  sprintf (items[3].text, "Bilinear Filter: %s", config.bilinear ? " ON" : "OFF");
+  sprintf (items[4].text, "Deflickering Filter: %s", config.vfilter ? "AUTO" : "OFF");
 
 #ifdef HW_RVL
-  sprintf (items[5].text, "VI Trap Filter: %s", config.trap ? " ON" : "OFF");
-  sprintf (items[6].text, "VI Gamma Correction: %1.1f", config.gamma);
+  sprintf (items[5].text, "Trap Filter: %s", config.trap ? " ON" : "OFF");
+  sprintf (items[6].text, "Gamma Correction: %1.1f", config.gamma);
 #endif
 
-  if (config.ntsc == 1)
-    sprintf (items[VI_OFFSET].text, "NTSC Filter: COMPOSITE");
-  else if (config.ntsc == 2)
-    sprintf (items[VI_OFFSET].text, "NTSC Filter: S-VIDEO");
-  else if (config.ntsc == 3)
-    sprintf (items[VI_OFFSET].text, "NTSC Filter: RGB");
+  if (config.lcd > 0)
+  {
+    int ratio = ((config.lcd * 100) + 254) / 255;
+    sprintf (items[VI_OFFSET].text, "LCD Ghosting Filter: %d%%", ratio);
+  }
   else
-    sprintf (items[VI_OFFSET].text, "NTSC Filter: OFF");
+  {
+    sprintf (items[VI_OFFSET].text, "LCD Ghosting Filter: OFF");
+  }
+  
+  if (config.ntsc == 1)
+    sprintf (items[VI_OFFSET+1].text, "NTSC Filter: COMPOSITE");
+  else if (config.ntsc == 2)
+    sprintf (items[VI_OFFSET+1].text, "NTSC Filter: S-VIDEO");
+  else if (config.ntsc == 3)
+    sprintf (items[VI_OFFSET+1].text, "NTSC Filter: RGB");
+  else if (config.ntsc == 4)
+  {
+    sprintf (items[VI_OFFSET+1].text, "NTSC Filter: MANUAL");
+    sprintf(items[VI_OFFSET+2].text, "NTSC Sharpness: %1.2f", config.ntsc_sharpness);
+    sprintf(items[VI_OFFSET+3].text, "NTSC Resolution: %1.2f", config.ntsc_resolution);
+    sprintf(items[VI_OFFSET+4].text, "NTSC Artifacts: %1.2f", config.ntsc_artifacts);
+    sprintf(items[VI_OFFSET+5].text, "NTSC Color Bleed: %1.2f", config.ntsc_bleed);
+    sprintf(items[VI_OFFSET+6].text, "NTSC Color Fringing: %1.2f", config.ntsc_fringing);
+    strcpy(items[VI_OFFSET+2].comment, "Adjust edge contrast enhancement/blurring");
+    strcpy(items[VI_OFFSET+3].comment, "Adjust image resolution");
+    strcpy(items[VI_OFFSET+4].comment, "Adjust artifacts caused by color changes");
+    strcpy(items[VI_OFFSET+5].comment, "Adjust color resolution reduction");
+    strcpy(items[VI_OFFSET+6].comment, "Adjust artifacts caused by brightness changes");
+    ntsc_offset = 5;
+  }
+  else
+    sprintf (items[VI_OFFSET+1].text, "NTSC Filter: OFF");
+
+  strcpy(items[VI_OFFSET+2+ntsc_offset].comment, "Enable/disable overscan emulation");
+  strcpy(items[VI_OFFSET+3+ntsc_offset].comment, "Enable/disable Game Gear extended screen");
+  strcpy(items[VI_OFFSET+4+ntsc_offset].comment, "Select display aspect ratio");
+  strcpy(items[VI_OFFSET+5+ntsc_offset].comment, "Adjust display position");
+  strcpy(items[VI_OFFSET+6+ntsc_offset].comment, "Adjust display scaling");
 
   if (config.overscan == 3)
-    sprintf (items[VI_OFFSET+1].text, "Borders: FULL");
+    sprintf (items[VI_OFFSET+2+ntsc_offset].text, "Borders: FULL");
   else if (config.overscan == 2)
-    sprintf (items[VI_OFFSET+1].text, "Borders: H ONLY");
+    sprintf (items[VI_OFFSET+2+ntsc_offset].text, "Borders: H ONLY");
   else if (config.overscan == 1)
-    sprintf (items[VI_OFFSET+1].text, "Borders: V ONLY");
+    sprintf (items[VI_OFFSET+2+ntsc_offset].text, "Borders: V ONLY");
   else
-    sprintf (items[VI_OFFSET+1].text, "Borders: NONE");
+    sprintf (items[VI_OFFSET+2+ntsc_offset].text, "Borders: NONE");
 
-  sprintf(items[VI_OFFSET+2].text, "GG Screen: %s", config.gg_extra ? "EXTENDED":"ORIGINAL");
+  sprintf(items[VI_OFFSET+3+ntsc_offset].text, "GG Screen: %s", config.gg_extra ? "EXTENDED":"ORIGINAL");
 
   if (config.aspect == 1)
-    sprintf (items[VI_OFFSET+3].text,"Aspect: ORIGINAL (4:3)");
+    sprintf (items[VI_OFFSET+4+ntsc_offset].text,"Aspect: ORIGINAL (4:3)");
   else if (config.aspect == 2)
-    sprintf (items[VI_OFFSET+3].text, "Aspect: ORIGINAL (16:9)");
+    sprintf (items[VI_OFFSET+4+ntsc_offset].text, "Aspect: ORIGINAL (16:9)");
   else
-    sprintf (items[VI_OFFSET+3].text, "Aspect: SCALED");
+  {
+    sprintf (items[VI_OFFSET+4+ntsc_offset].text, "Aspect: SCALED");
+  }
 
-  sprintf (items[VI_OFFSET+4].text, "Screen Position: (%s%02d,%s%02d)",
+  sprintf (items[VI_OFFSET+5+ntsc_offset].text, "Screen Position: (%s%02d,%s%02d)",
     (config.xshift < 0) ? "":"+", config.xshift,
     (config.yshift < 0) ? "":"+", config.yshift);
 
-  sprintf (items[VI_OFFSET+5].text, "Screen Scaling: (%s%02d,%s%02d)",
+  sprintf (items[VI_OFFSET+6+ntsc_offset].text, "Screen Scaling: (%s%02d,%s%02d)",
     (config.xscale < 0) ? "":"+", config.xscale,
     (config.yscale < 0) ? "":"+", config.yscale);
 
-  if (config.aspect)
-    m->max_items  = VI_OFFSET+5;
-  else
-    m->max_items  = VI_OFFSET+6;
+  m->max_items  = VI_OFFSET + 6 + ntsc_offset + (config.aspect == 0);
 
   GUI_InitMenu(m);
   GUI_SlideMenuTitle(m,strlen("Video "));
@@ -1555,9 +1791,15 @@ static void videomenu ()
   {
     ret = GUI_RunMenu(m);
 
+    if (ret > (VI_OFFSET + 1))
+    {
+      ret += (5 - ntsc_offset);
+    }
+
     switch (ret)
     {
       case 0:  /*** rendering ***/
+      {
         config.render = (config.render + 1) % 3;
         if (config.render == 2)
         {
@@ -1573,10 +1815,13 @@ static void videomenu ()
           sprintf (items[0].text, "Display: PROGRESSIVE");
         else
           sprintf (items[0].text, "Display: ORIGINAL");
+
         reinit = 1;
         break;
+      }
 
       case 1: /*** tv mode ***/
+      {
         config.tv_mode = (config.tv_mode + 1) % 3;
         if (config.tv_mode == 0)
           sprintf (items[1].text, "TV Mode: 60HZ");
@@ -1586,8 +1831,10 @@ static void videomenu ()
           sprintf (items[1].text, "TV Mode: 50/60HZ");
         reinit = 1;
         break;
-    
+      }
+
       case 2: /*** VSYNC ***/
+      {
         config.vsync ^= 1;
         if (config.vsync)
           sprintf (items[2].text, "VSYNC: AUTO");
@@ -1595,24 +1842,32 @@ static void videomenu ()
           sprintf (items[2].text, "VSYNC: OFF");
         reinit = 1;
         break;
+      }
 
       case 3: /*** GX Texture filtering ***/
+      {
         config.bilinear ^= 1;
-        sprintf (items[3].text, "GX Bilinear Filter: %s", config.bilinear ? " ON" : "OFF");
+        sprintf (items[3].text, "Bilinear Filter: %s", config.bilinear ? " ON" : "OFF");
         break;
+      }
 
       case 4: /*** GX Copy filtering (deflickering filter) ***/
+      {
         config.vfilter ^= 1;
-        sprintf (items[4].text, "GX Deflicker Filter: %s", config.vfilter ? " ON" : "OFF");
+        sprintf (items[4].text, "Deflickering Filter: %s", config.vfilter ? "AUTO" : "OFF");
         break;
+      }
 
 #ifdef HW_RVL
       case 5: /*** VIDEO Trap filtering ***/
+      {
         config.trap ^= 1;
-        sprintf (items[5].text, "VI Trap Filter: %s", config.trap ? " ON" : "OFF");
+        sprintf (items[5].text, "Trap Filter: %s", config.trap ? " ON" : "OFF");
         break;
+      }
 
       case 6: /*** VIDEO Gamma correction ***/
+      {
         if (system_hw) 
         {
           update_gamma();
@@ -1624,14 +1879,14 @@ static void videomenu ()
           m->arrows[1]->state = 0;
           m->screenshot = 255;
           strcpy(m->title,"");
-          GUI_OptionBox(m,update_gamma,"VI Gamma Correction",(void *)&config.gamma,0.1,0.1,3.0,0);
+          GUI_OptionBox(m,update_gamma,"Gamma Correction",(void *)&config.gamma,0.1,0.1,3.0,0);
           m->max_buttons = 4;
           m->max_images = 6;
           m->arrows[0]->state = state[0];
           m->arrows[1]->state = state[1];
           m->screenshot = 0;
           strcpy(m->title,"Video Settings");
-          sprintf (items[6].text, "VI Gamma Correction: %1.1f", config.gamma);
+          sprintf (items[6].text, "Gamma Correction: %1.1f", config.gamma);
           VIDEO_SetGamma(VI_GM_1_0);
           VIDEO_Flush();
         }
@@ -1640,67 +1895,175 @@ static void videomenu ()
           GUI_WaitPrompt("Error","Please load a game first !\n");
         }
         break;
+      }
 #endif
 
-      case VI_OFFSET: /*** NTSC filter ***/
-        config.ntsc = (config.ntsc + 1) & 3;
-        if (config.ntsc == 1)
-          sprintf (items[VI_OFFSET].text, "NTSC Filter: COMPOSITE");
-        else if (config.ntsc == 2)
-          sprintf (items[VI_OFFSET].text, "NTSC Filter: S-VIDEO");
-        else if (config.ntsc == 3)
-          sprintf (items[VI_OFFSET].text, "NTSC Filter: RGB");
+      case VI_OFFSET: /*** LCD filter (soft) ***/
+      {
+        if (config.ntsc)
+        {
+          GUI_WaitPrompt("Error","NTSC filter must be disabled\n");
+          break;
+        }
+
+        int16 ratio = ((config.lcd * 100) + 254) / 255;
+        GUI_OptionBox(m,0,"LCD Ghosting Ratio (%)",(void *)&ratio,1,0,100,1);
+        if (ratio > 0)
+        {
+          sprintf (items[VI_OFFSET].text, "LCD Ghosting Filter: %d%%", ratio);
+        }
         else
-          sprintf (items[VI_OFFSET].text, "NTSC Filter: OFF");
+        {
+          sprintf (items[VI_OFFSET].text, "LCD Ghosting Filter: OFF");
+        }
+        config.lcd = (ratio * 255) / 100;
+        break;
+      }
+
+      case VI_OFFSET+1: /*** NTSC filter (soft) ***/
+      {
+        if (config.lcd)
+        {
+          GUI_WaitPrompt("Error","LCD filter must be disabled\n");
+          break;
+        }
+
+        config.ntsc = (config.ntsc + 1) % 5;
+        if (config.ntsc == 1)
+        {
+          sprintf (items[VI_OFFSET+1].text, "NTSC Filter: COMPOSITE");
+        }
+        else if (config.ntsc == 2)
+        {
+          sprintf (items[VI_OFFSET+1].text, "NTSC Filter: S-VIDEO");
+        }
+        else if (config.ntsc == 3)
+        {
+          sprintf (items[VI_OFFSET+1].text, "NTSC Filter: RGB");
+        }
+        else if (config.ntsc == 4)
+        {
+          sprintf (items[VI_OFFSET+1].text, "NTSC Filter: MANUAL");
+          strcpy(items[VI_OFFSET+5+2].text, items[VI_OFFSET+2].text);
+          strcpy(items[VI_OFFSET+5+3].text, items[VI_OFFSET+3].text);
+          strcpy(items[VI_OFFSET+5+4].text, items[VI_OFFSET+4].text);
+          strcpy(items[VI_OFFSET+5+5].text, items[VI_OFFSET+5].text);
+          strcpy(items[VI_OFFSET+5+6].text, items[VI_OFFSET+6].text);
+          strcpy(items[VI_OFFSET+5+2].comment, items[VI_OFFSET+2].comment);
+          strcpy(items[VI_OFFSET+5+3].comment, items[VI_OFFSET+3].comment);
+          strcpy(items[VI_OFFSET+5+4].comment, items[VI_OFFSET+4].comment);
+          strcpy(items[VI_OFFSET+5+5].comment, items[VI_OFFSET+5].comment);
+          strcpy(items[VI_OFFSET+5+6].comment, items[VI_OFFSET+6].comment);
+          sprintf(items[VI_OFFSET+2].text, "NTSC Sharpness: %1.1f", config.ntsc_sharpness);
+          sprintf(items[VI_OFFSET+3].text, "NTSC Resolution: %1.1f", config.ntsc_resolution);
+          sprintf(items[VI_OFFSET+4].text, "NTSC Artifacts: %1.1f", config.ntsc_artifacts);
+          sprintf(items[VI_OFFSET+5].text, "NTSC Color Bleed: %1.1f", config.ntsc_bleed);
+          sprintf(items[VI_OFFSET+6].text, "NTSC Color Fringing: %1.1f", config.ntsc_fringing);
+          strcpy(items[VI_OFFSET+2].comment, "Adjust edge contrast enhancement/blurring");
+          strcpy(items[VI_OFFSET+3].comment, "Adjust image resolution");
+          strcpy(items[VI_OFFSET+4].comment, "Adjust artifacts caused by color changes");
+          strcpy(items[VI_OFFSET+5].comment, "Adjust color resolution reduction");
+          strcpy(items[VI_OFFSET+6].comment, "Adjust artifacts caused by brightness changes");
+          ntsc_offset = 5;
+          m->max_items  = VI_OFFSET + 11 + (config.aspect == 0);
+        }
+        else
+        {
+          sprintf (items[VI_OFFSET+1].text, "NTSC Filter: OFF");
+          strcpy(items[VI_OFFSET+2].text, items[VI_OFFSET+5+2].text);
+          strcpy(items[VI_OFFSET+3].text, items[VI_OFFSET+5+3].text);
+          strcpy(items[VI_OFFSET+4].text, items[VI_OFFSET+5+4].text);
+          strcpy(items[VI_OFFSET+5].text, items[VI_OFFSET+5+5].text);
+          strcpy(items[VI_OFFSET+6].text, items[VI_OFFSET+5+6].text);
+          strcpy(items[VI_OFFSET+2].comment, items[VI_OFFSET+5+2].comment);
+          strcpy(items[VI_OFFSET+3].comment, items[VI_OFFSET+5+3].comment);
+          strcpy(items[VI_OFFSET+4].comment, items[VI_OFFSET+5+4].comment);
+          strcpy(items[VI_OFFSET+5].comment, items[VI_OFFSET+5+5].comment);
+          strcpy(items[VI_OFFSET+6].comment, items[VI_OFFSET+5+6].comment);
+          ntsc_offset = 0;
+          m->max_items  = VI_OFFSET + 6 + (config.aspect == 0);
+        }
+        break;
+      }
+
+      case VI_OFFSET+2: /*** NTSC Sharpness ***/
+        GUI_OptionBox(m,update_bgm,"NTSC Sharpness",(void *)&config.ntsc_sharpness,0.01,-1.0,1.0,0);
+        sprintf(items[VI_OFFSET+2].text, "NTSC Sharpness: %1.2f", config.ntsc_sharpness);
         break;
 
-      case VI_OFFSET+1: /*** overscan emulation ***/
+      case VI_OFFSET+3: /*** NTSC Resolution ***/
+        GUI_OptionBox(m,update_bgm,"NTSC Resolution",(void *)&config.ntsc_resolution,0.01,0.0,1.0,0);
+        sprintf(items[VI_OFFSET+3].text, "NTSC Resolution: %1.2f", config.ntsc_resolution);
+        break;
+
+      case VI_OFFSET+4: /*** NTSC Artifacts ***/
+        GUI_OptionBox(m,update_bgm,"NTSC Artifacts",(void *)&config.ntsc_artifacts,0.01,-1.0,0.0,0);
+        sprintf(items[VI_OFFSET+4].text, "NTSC Artifacts: %1.2f", config.ntsc_artifacts);
+        break;
+
+      case VI_OFFSET+5: /*** NTSC Color Bleed ***/
+        GUI_OptionBox(m,update_bgm,"NTSC Color Bleed",(void *)&config.ntsc_bleed,0.01,-1.0,1.0,0);
+        sprintf(items[VI_OFFSET+5].text, "NTSC Color Bleed: %1.2f", config.ntsc_bleed);
+        break;
+
+      case VI_OFFSET+6: /*** NTSC Color Fringing ***/
+        GUI_OptionBox(m,update_bgm,"NTSC Color Fringing",(void *)&config.ntsc_fringing,0.01,-1.0,1.0,0);
+        sprintf(items[VI_OFFSET+6].text, "NTSC Color Fringing: %1.2f", config.ntsc_fringing);
+        break;
+
+      case VI_OFFSET+7: /*** overscan emulation ***/
+      {
         config.overscan = (config.overscan + 1) & 3;
         if (config.overscan == 3)
-          sprintf (items[VI_OFFSET+1].text, "Borders: FULL");
+          sprintf (items[VI_OFFSET+ntsc_offset+2].text, "Borders: FULL");
         else if (config.overscan == 2)
-          sprintf (items[VI_OFFSET+1].text, "Borders: H ONLY");
+          sprintf (items[VI_OFFSET+ntsc_offset+2].text, "Borders: H ONLY");
         else if (config.overscan == 1)
-          sprintf (items[VI_OFFSET+1].text, "Borders: V ONLY");
+          sprintf (items[VI_OFFSET+ntsc_offset+2].text, "Borders: V ONLY");
         else
-          sprintf (items[VI_OFFSET+1].text, "Borders: NONE");
+          sprintf (items[VI_OFFSET+ntsc_offset+2].text, "Borders: NONE");
         break;
+      }
 
-      case VI_OFFSET+2: /*** Game Gear extended screen */
+      case VI_OFFSET+8: /*** Game Gear extended screen */
+      {
         config.gg_extra ^= 1;
-        sprintf(items[VI_OFFSET+2].text, "GG Screen: %s", config.gg_extra ? "EXTENDED":"ORIGINAL");
+        sprintf(items[VI_OFFSET+ntsc_offset+3].text, "GG Screen: %s", config.gg_extra ? "EXTENDED":"ORIGINAL");
         break;
+      }
 
-      case VI_OFFSET+3: /*** aspect ratio ***/
+      case VI_OFFSET+9: /*** aspect ratio ***/
+      {
         config.aspect = (config.aspect + 1) % 3;
         if (config.aspect == 1)
-          sprintf (items[VI_OFFSET+3].text,"Aspect: ORIGINAL (4:3)");
+          sprintf (items[VI_OFFSET+ntsc_offset+4].text,"Aspect: ORIGINAL (4:3)");
         else if (config.aspect == 2)
-          sprintf (items[VI_OFFSET+3].text, "Aspect: ORIGINAL (16:9)");
+          sprintf (items[VI_OFFSET+ntsc_offset+4].text, "Aspect: ORIGINAL (16:9)");
         else
-          sprintf (items[VI_OFFSET+3].text, "Aspect: SCALED");
+          sprintf (items[VI_OFFSET+ntsc_offset+4].text, "Aspect: SCALED");
 
         if (config.aspect)
         {
           /* disable items */
-          m->max_items  = VI_OFFSET+5;
+          m->max_items  = VI_OFFSET + ntsc_offset + 6;
 
           /* reset menu selection */
-          if (m->offset > VI_OFFSET)
+          if (m->selected < 2)
           {
-            m->offset  = VI_OFFSET;
-            m->selected = 3;
+            m->offset  = VI_OFFSET + ntsc_offset + 2;
+            m->selected = 2;
           }
         }
         else
         {
           /* enable items */
-          m->max_items  = VI_OFFSET+6;
+          m->max_items  = VI_OFFSET + ntsc_offset + 7;
         }
-
         break;
+      }
 
-      case VI_OFFSET+4: /*** screen position ***/
+      case VI_OFFSET+10: /*** screen position ***/
+      {
         if (system_hw) 
         {
           state[0] = m->arrows[0]->state;
@@ -1718,7 +2081,7 @@ static void videomenu ()
           m->arrows[1]->state = state[1];
           m->screenshot = 0;
           strcpy(m->title,"Video Settings");
-          sprintf (items[VI_OFFSET+4].text, "Screen Position: (%s%02d,%s%02d)",
+          sprintf (items[VI_OFFSET+ntsc_offset+5].text, "Screen Position: (%s%02d,%s%02d)",
                                             (config.xshift < 0) ? "":"+", config.xshift,
                                             (config.yshift < 0) ? "":"+", config.yshift);
         }
@@ -1727,8 +2090,10 @@ static void videomenu ()
           GUI_WaitPrompt("Error","Please load a game first !\n");
         }
         break;
+      }
 
-      case VI_OFFSET+5: /*** screen scaling ***/
+      case VI_OFFSET+11: /*** screen scaling ***/
+      {
         if (system_hw) 
         {
           state[0] = m->arrows[0]->state;
@@ -1746,7 +2111,7 @@ static void videomenu ()
           m->arrows[1]->state = state[1];
           m->screenshot = 0;
           strcpy(m->title,"Video Settings");
-          sprintf (items[VI_OFFSET+5].text, "Screen Scaling: (%s%02d,%s%02d)",
+          sprintf (items[VI_OFFSET+ntsc_offset+6].text, "Screen Scaling: (%s%02d,%s%02d)",
                                             (config.xscale < 0) ? "":"+", config.xscale,
                                             (config.yscale < 0) ? "":"+", config.yscale);
         }
@@ -1755,10 +2120,13 @@ static void videomenu ()
           GUI_WaitPrompt("Error","Please load a game first !\n");
         }
         break;
+      }
 
       case -1:
+      {
         quit = 1;
         break;
+      }
     }
   }
 
@@ -1921,65 +2289,74 @@ static void ctrlmenu(void)
   int update = 0;
   gui_item *items = NULL;
   u8 *special = NULL;
-  u32 exp;
-  u8 type = 0;
+  u32 exp, index = 0;
 
   /* System devices */
-  gui_item items_sys[2][13] =
+  gui_item items_sys[2][14] =
   {
     {
-      {NULL,Ctrl_none_png       ,"","Select Port 1 device",110,130,48,72},
-      {NULL,Ctrl_gamepad_md_png ,"","Select Port 1 device", 85,117,96,84},
-      {NULL,Ctrl_mouse_png      ,"","Select Port 1 device", 97,113,64,88},
-      {NULL,Ctrl_menacer_png    ,"","Select Port 1 device", 94,113,80,88},
-      {NULL,Ctrl_justifiers_png ,"","Select Port 1 device", 88,117,80,84},
-      {NULL,Ctrl_xe_a1p_png     ,"","Select Port 1 device", 98,118,72,84},
-      {NULL,Ctrl_activator_png  ,"","Select Port 1 device", 94,121,72,80},
-      {NULL,Ctrl_gamepad_ms_png ,"","Select Port 1 device", 91,125,84,76},
-      {NULL,Ctrl_lightphaser_png,"","Select Port 1 device", 89,109,88,92},
-      {NULL,Ctrl_paddle_png     ,"","Select Port 1 device", 86,117,96,84},
-      {NULL,Ctrl_sportspad_png  ,"","Select Port 1 device", 95,117,76,84},
-      {NULL,Ctrl_teamplayer_png ,"","Select Port 1 device", 94,109,80,92},
-      {NULL,Ctrl_4wayplay_png   ,"","Select Port 1 device", 98,110,72,92}
+      {NULL,Ctrl_none_png           ,"","Select Port 1 device",110,130,48,72},
+      {NULL,Ctrl_gamepad_png        ,"","Select Port 1 device",100,109,68,92},
+      {NULL,Ctrl_mouse_png          ,"","Select Port 1 device", 97,113,64,88},
+      {NULL,Ctrl_menacer_png        ,"","Select Port 1 device", 94,113,80,88},
+      {NULL,Ctrl_justifiers_png     ,"","Select Port 1 device", 88,117,80,84},
+      {NULL,Ctrl_xe_1ap_png         ,"","Select Port 1 device", 98,118,72,84},
+      {NULL,Ctrl_activator_png      ,"","Select Port 1 device", 94,121,72,80},
+      {NULL,Ctrl_lightphaser_png    ,"","Select Port 1 device", 89,109,88,92},
+      {NULL,Ctrl_paddle_png         ,"","Select Port 1 device", 86,117,96,84},
+      {NULL,Ctrl_sportspad_png      ,"","Select Port 1 device", 95,117,76,84},
+      {NULL,Ctrl_graphic_board_png  ,"","Select Port 1 device", 90,105,88,96},
+      {NULL,Ctrl_mastertap_png      ,"","Select Port 1 device", 96,104,76,96},
+      {NULL,Ctrl_teamplayer_png     ,"","Select Port 1 device", 94,109,80,92},
+      {NULL,Ctrl_4wayplay_png       ,"","Select Port 1 device", 98,110,72,92}
     },
     {
-      {NULL,Ctrl_none_png       ,"","Select Port 2 device",110,300,48,72},
-      {NULL,Ctrl_gamepad_md_png ,"","Select Port 2 device", 85,287,96,84},
-      {NULL,Ctrl_mouse_png      ,"","Select Port 2 device", 97,283,64,88},
-      {NULL,Ctrl_menacer_png    ,"","Select Port 2 device", 94,283,80,88},
-      {NULL,Ctrl_justifiers_png ,"","Select Port 2 device", 88,287,80,84},
-      {NULL,Ctrl_xe_a1p_png     ,"","Select Port 2 device", 98,288,72,84},
-      {NULL,Ctrl_activator_png  ,"","Select Port 2 device", 94,291,72,80},
-      {NULL,Ctrl_gamepad_ms_png ,"","Select Port 2 device", 91,295,84,76},
-      {NULL,Ctrl_lightphaser_png,"","Select Port 2 device", 89,279,88,92},
-      {NULL,Ctrl_paddle_png     ,"","Select Port 2 device", 86,287,96,84},
-      {NULL,Ctrl_sportspad_png  ,"","Select Port 2 device", 95,287,76,84},
-      {NULL,Ctrl_teamplayer_png ,"","Select Port 2 device", 94,279,80,92},
-      {NULL,Ctrl_4wayplay_png   ,"","Select Port 2 device", 98,280,72,92}
+      {NULL,Ctrl_none_png           ,"","Select Port 2 device",110,300,48,72},
+      {NULL,Ctrl_gamepad_png        ,"","Select Port 2 device",100,279,68,92},
+      {NULL,Ctrl_mouse_png          ,"","Select Port 2 device", 97,283,64,88},
+      {NULL,Ctrl_menacer_png        ,"","Select Port 2 device", 94,283,80,88},
+      {NULL,Ctrl_justifiers_png     ,"","Select Port 2 device", 88,287,80,84},
+      {NULL,Ctrl_xe_1ap_png         ,"","Select Port 2 device", 98,288,72,84},
+      {NULL,Ctrl_activator_png      ,"","Select Port 2 device", 94,291,72,80},
+      {NULL,Ctrl_lightphaser_png    ,"","Select Port 2 device", 89,279,88,92},
+      {NULL,Ctrl_paddle_png         ,"","Select Port 2 device", 86,287,96,84},
+      {NULL,Ctrl_sportspad_png      ,"","Select Port 2 device", 95,287,76,84},
+      {NULL,Ctrl_graphic_board_png  ,"","Select Port 2 device", 90,275,88,96},
+      {NULL,Ctrl_mastertap_png      ,"","Select Port 1 device", 96,274,76,96},
+      {NULL,Ctrl_teamplayer_png     ,"","Select Port 2 device", 94,279,80,92},
+      {NULL,Ctrl_4wayplay_png       ,"","Select Port 2 device", 98,280,72,92}
     }
   };    
 
   /* Specific controller options */
-  gui_item items_special[4][2] =
+  gui_item items_special[4][4] =
   {
     {
       /* Gamepad option */
       {NULL,Ctrl_pad3b_png,"Pad\nType","Use 3-buttons Pad",528,180,44,28},
-      {NULL,Ctrl_pad6b_png,"Pad\nType","Use 6-buttons Pad",528,180,44,28}
+      {NULL,Ctrl_pad6b_png,"Pad\nType","Use 6-buttons Pad",528,180,44,28},
+      {NULL,Ctrl_pad2b_png,"Pad\nType","Use 2-buttons Pad",528,180,44,28},
+      {NULL,Ctrl_pad_auto_png,"Pad\nType","Auto-detect Pad type",528,180,44,28},
     },
     {
       /* Mouse option */
       {NULL,ctrl_option_off_png,"Invert\nMouse","Enable/Disable Y-Axis inversion",534,180,24,24},
       {NULL,ctrl_option_on_png ,"Invert\nMouse","Enable/Disable Y-Axis inversion",534,180,24,24},
+      {NULL,NULL,"","",0,0,0,0},
+      {NULL,NULL,"","",0,0,0,0},
     },
     {
       /* Gun option */
       {NULL,ctrl_option_off_png,"Show\nCursor","Enable/Disable Lightgun cursor",534,180,24,24},
       {NULL,ctrl_option_on_png ,"Show\nCursor","Enable/Disable Lightgun cursor",534,180,24,24},
+      {NULL,NULL,"","",0,0,0,0},
+      {NULL,NULL,"","",0,0,0,0},
     },
     {
       /* no option */
       {NULL,NULL,"No Option","",436,180,160,52},
+      {NULL,NULL,"","",0,0,0,0},
+      {NULL,NULL,"","",0,0,0,0},
       {NULL,NULL,"","",0,0,0,0},
     }
   };
@@ -2012,12 +2389,14 @@ static void ctrlmenu(void)
   button_player_none_data.texture[0] = gxTextureOpenPNG(button_player_none_data.image[0],0);
 
   /* initialize custom images */
-  for (i=0; i<13; i++)
+  for (i=0; i<14; i++)
   {
     items_sys[1][i].texture = items_sys[0][i].texture = gxTextureOpenPNG(items_sys[0][i].data,0);
   }
   items_special[0][0].texture = gxTextureOpenPNG(items_special[0][0].data,0);
   items_special[0][1].texture = gxTextureOpenPNG(items_special[0][1].data,0);
+  items_special[0][2].texture = gxTextureOpenPNG(items_special[0][2].data,0);
+  items_special[0][3].texture = gxTextureOpenPNG(items_special[0][3].data,0);
   items_special[2][0].texture = items_special[1][0].texture = gxTextureOpenPNG(items_special[1][0].data,0);
   items_special[2][1].texture = items_special[1][1].texture = gxTextureOpenPNG(items_special[1][1].data,0);
   items_device[0].texture = items_special[1][0].texture;
@@ -2088,6 +2467,12 @@ static void ctrlmenu(void)
             input.system[0]++;
           }
 
+          /* allow only one connected graphic board */
+          if ((input.system[0] == SYSTEM_GRAPHIC_BOARD) && (input.system[1] == SYSTEM_GRAPHIC_BOARD))
+          {
+            input.system[0]++;
+          }
+
           /* 4-wayplay uses both ports */
           if (input.system[0] == SYSTEM_WAYPLAY)
           {
@@ -2098,7 +2483,7 @@ static void ctrlmenu(void)
           if (input.system[0] > SYSTEM_WAYPLAY)
           {
             input.system[0] = NO_SYSTEM;
-            input.system[1] = SYSTEM_MD_GAMEPAD;
+            input.system[1] = SYSTEM_GAMEPAD;
           }
 
           /* reset I/O ports */
@@ -2148,12 +2533,7 @@ static void ctrlmenu(void)
           /* fixed configurations */
           if (system_hw)
           {
-            if (cart.special & HW_J_CART)
-            {
-              GUI_WaitPrompt("Error","J-CART detected !");
-              break;
-            }
-            else if (cart.special & HW_TEREBI_OEKAKI)
+            if (cart.special & HW_TEREBI_OEKAKI)
             {
               GUI_WaitPrompt("Error","Terebi Oekaki detected !");
               break;
@@ -2177,13 +2557,19 @@ static void ctrlmenu(void)
           /* allow only one gun type */
           if ((input.system[0] == SYSTEM_LIGHTPHASER) && (input.system[1] == SYSTEM_MENACER))
           {
-            input.system[1] += 3;
+            input.system[1]++;
           }
 
           /* allow only one gun type */
           if ((input.system[0] == SYSTEM_LIGHTPHASER) && (input.system[1] == SYSTEM_JUSTIFIER))
           {
-            input.system[1] += 2;
+            input.system[1]++;
+          }
+
+          /* allow only one connected graphic board */
+          if ((input.system[0] == SYSTEM_GRAPHIC_BOARD) && (input.system[1] == SYSTEM_GRAPHIC_BOARD))
+          {
+            input.system[1]++;
           }
 
           /* 4-wayplay uses both ports */
@@ -2196,7 +2582,7 @@ static void ctrlmenu(void)
           if (input.system[1] > SYSTEM_WAYPLAY)
           {
             input.system[1] = NO_SYSTEM;
-            input.system[0] = SYSTEM_MD_GAMEPAD;
+            input.system[0] = SYSTEM_GAMEPAD;
           }
 
           /* reset I/O ports */
@@ -2262,10 +2648,13 @@ static void ctrlmenu(void)
             }
           }
 
+          /* save device index */
+          index = m->selected - 2;
+
           /* update player index */
           old_player = player;
           player = 0;
-          for (i=0; i<(m->selected-2); i++)
+          for (i=0; i<index; i++)
           {
             if (input.dev[i] != NO_DEVICE) player ++;
           }
@@ -2299,17 +2688,24 @@ static void ctrlmenu(void)
             m->buttons[9].shift[3] = 1;
           }
 
-          /* emulated device type */
-          type = input.dev[m->selected - 2];
-
           /* retrieve current player informations */
-          switch (type)
+          switch (input.dev[index])
           {
+            case DEVICE_PAD2B:
             case DEVICE_PAD3B:
             case DEVICE_PAD6B:
             {
-              items = items_special[0];
-              special = &config.input[player].padtype;
+              if (input.system[index/4] == SYSTEM_MASTERTAP)
+              {
+                /* force 2-buttons pad */
+                items = items_special[3];
+                special = NULL;
+              }
+              else
+              {
+                items = items_special[0];
+                special = &config.input[player].padtype;
+              }
               break;
             }
 
@@ -2323,16 +2719,15 @@ static void ctrlmenu(void)
             case DEVICE_LIGHTGUN:
             {
               items = items_special[2];
-
               if ((input.system[1] == SYSTEM_MENACER) || (input.system[1] == SYSTEM_JUSTIFIER))
               {
-                /* Menacer & Justifiers affected to devices 4 & 5 */
-                special = &config.gun_cursor[m->selected & 1];
+                /* Menacer & Justifiers affected to entries 4 & 5 */
+                special = &config.gun_cursor[index & 1];
               }
               else
               {
-                /* Lightphasers affected to devices 0 & 4 */
-                special = &config.gun_cursor[m->selected >> 2];
+                /* Lightphasers affected to entries 0 & 4 */
+                special = &config.gun_cursor[index / 4];
               }
               break;
             }
@@ -2364,11 +2759,11 @@ static void ctrlmenu(void)
           GUI_DrawMenuFX(m, 20, 0);
 
           /* some devices require analog sticks */
-          if ((type == DEVICE_XE_A1P) && ((config.input[player].device == -1) || (config.input[player].device == 1)))
+          if ((input.dev[index] == DEVICE_XE_1AP) && ((config.input[player].device == -1) || (config.input[player].device == 1)))
           {
             GUI_WaitPrompt("Warning","One Analog Stick required !");
           }
-          else if ((type == DEVICE_ACTIVATOR) && ((config.input[player].device != 0) && (config.input[player].device != 3)))
+          else if ((input.dev[index] == DEVICE_ACTIVATOR) && ((config.input[player].device != 0) && (config.input[player].device != 3)))
           {
             GUI_WaitPrompt("Warning","Two Analog Sticks required !");
           }
@@ -2389,18 +2784,20 @@ static void ctrlmenu(void)
         {
           if (special)
           {
-            /* switch option */
-            *special ^= 1;
-
             /* specific case: controller type */
-            if (type < 2)
+            if (input.dev[index] < 0x03)
             {
-              /* re-initialize emulated device */
-              input_init();
-              input_reset();
+              /* switch pad type */
+              *special = (*special + 1) & 0x03;
 
-              /* update emulated device type */
-              type = *special;
+              /* reinitialize emulated device(s) */
+              io_init();
+              input_reset();
+            }
+            else
+            {
+              /* switch option */
+              *special ^= 1;
             }
 
             /* update menu items */
@@ -2455,23 +2852,22 @@ static void ctrlmenu(void)
           /* autodetect connected wiimotes (without nunchuk) */
           if (config.input[player].device == 1)
           {
-            /* test current port */
-            exp = 255;
-            if (config.input[player].port < 4)
-            {
-              WPAD_Probe(config.input[player].port,&exp);
-            }
-
             /* find first connected controller */
+            exp = 255;
             while ((config.input[player].port < 4) && (exp == 255))
             {
-              /* try next port */
-              config.input[player].port ++;
-              if (config.input[player].port < 4)
+              WPAD_Probe(config.input[player].port,&exp);
+
+              /* check if this is a Wii U Pro Controller */
+              if (exp == WPAD_EXP_CLASSIC)
               {
-                exp = 255;
-                WPAD_Probe(config.input[player].port,&exp);
+                WPADData *data = WPAD_Data(config.input[player].port);
+                exp = data->exp.classic.rjs.max.x;
               }
+
+              /* try next port if no wimote available */
+              if (exp == 255)
+                config.input[player].port ++;
             }
 
             /* no more wiimote */
@@ -2556,7 +2952,15 @@ static void ctrlmenu(void)
           if (config.input[player].device >= 0)
           {
             GUI_MsgBoxOpen("Keys Configuration", "",0);
-            gx_input_Config(config.input[player].port, config.input[player].device, type);
+            if (!system_hw && special && (*special == 3))
+            {
+              /* no auto-detected pad type, use 6-buttons key mapping as default */
+              gx_input_Config(config.input[player].port, config.input[player].device, DEVICE_PAD6B);
+            }
+            else
+            {
+              gx_input_Config(config.input[player].port, config.input[player].device, input.dev[index]);
+            }
             GUI_MsgBoxClose();
           }
           break;
@@ -2681,12 +3085,14 @@ static void ctrlmenu(void)
   gxTextureClose(&button_player_none_data.texture[0]);
 
   /* delete custom images */
-  for (i=0; i<13; i++)
+  for (i=0; i<14; i++)
   {
     gxTextureClose(&items_sys[0][i].texture);
   }
   gxTextureClose(&items_special[0][0].texture);
   gxTextureClose(&items_special[0][1].texture);
+  gxTextureClose(&items_special[0][2].texture);
+  gxTextureClose(&items_special[0][3].texture);
   gxTextureClose(&items_special[1][0].texture);
   gxTextureClose(&items_special[1][1].texture);
   gxTextureClose(&items_device[1].texture);
@@ -2756,11 +3162,12 @@ static void optionmenu(void)
 *
 ****************************************************************************/
 static t_slot slots[5];
+static gx_texture *star;
+
 static void savemenu_cb(void)
 {
   int i;
   char msg[16];
-  gx_texture *star = gxTextureOpenPNG(Star_full_png,0);
   
   if (sram.on)
   {
@@ -2800,7 +3207,6 @@ static void savemenu_cb(void)
     if (i == config.s_default)
       gxDrawTexture(star,22,buttons_saves[i].y+(buttons_saves[i].h-star->height)/2,star->width,star->height,255);
   }
-  gxTextureClose(&star);
 }
 
 static int savemenu(void)
@@ -2812,6 +3218,7 @@ static int savemenu(void)
   gui_menu *m = &menu_saves;
   FILE *snap;
 
+  star = gxTextureOpenPNG(Star_full_png,0);
   GUI_InitMenu(m);
   GUI_DrawMenuFX(m,30,0);
 
@@ -2989,13 +3396,17 @@ static int savemenu(void)
         {
           if (slots[slot].valid)
           {
-            if (slot_delete(slot,config.s_device) >= 0)
+            if (GUI_WaitConfirm("Warning","Delete Save File ?"))
             {
-              /* hide screenshot */
-              gxTextureClose(&bg_saves[0].texture);
-              bg_saves[0].state &= ~IMAGE_VISIBLE;
-              slots[slot].valid = 0;
-              update = -1;
+              if (slot_delete(slot,config.s_device) >= 0)
+              {
+                /* hide screenshot */
+                gxTextureClose(&bg_saves[0].texture);
+                bg_saves[0].state &= ~IMAGE_VISIBLE;
+                bg_saves[1].state |= IMAGE_VISIBLE;
+                slots[slot].valid = 0;
+                update = -1;
+              }
             }
           }
           break;
@@ -3071,6 +3482,7 @@ static int savemenu(void)
   m->bg_images[5].state |= IMAGE_SLIDE_TOP;
   GUI_DrawMenuFX(m,30,1);
   GUI_DeleteMenu(m);
+  gxTextureClose(&star);
   return ret;
 }
 
@@ -3116,7 +3528,7 @@ static int loadgamemenu ()
         if (ret)
         {
           GUI_DeleteMenu(m);
-          if (FileSelector(filetype))
+          if (FileSelector(filetype) > 0)
           {
             /* directly jump to game */
             return 1;
@@ -3362,9 +3774,12 @@ static void mainmenu_cb(void)
   int status = areplay_get_status();
 
   /* Action Replay Switch current status */
-  if (status == AR_SWITCH_TRAINER) strcpy(temp,"TM");
-  else if (status == AR_SWITCH_ON) strcpy(temp,"ON");
-  else strcpy(temp,"OFF");
+  if (status == AR_SWITCH_TRAINER)
+    strcpy(temp,"TM");
+  else if (status == AR_SWITCH_ON)
+    strcpy(temp,"ON");
+  else
+    strcpy(temp,"OFF");
 
   /* Display informations */
   if (m->selected == 6)
@@ -3568,9 +3983,9 @@ void mainmenu(void)
           /* Soft Reset */
           gen_reset(0);
         }
-        else if (system_hw == SYSTEM_SMS)
+        else if ((system_hw == SYSTEM_SMS) && (region_code != REGION_JAPAN_NTSC))
         {
-          /* assert RESET input (Master System model 1 only) */
+          /* assert RESET input (export Master System 1 only) */
           io_reg[0x0D] &= ~IO_RESET_HI;
         }
         else
