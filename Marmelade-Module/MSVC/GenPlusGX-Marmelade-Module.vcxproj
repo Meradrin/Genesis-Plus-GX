@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -20,12 +20,14 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -98,6 +100,7 @@
     <ClCompile Include="..\..\core\genesis.c" />
     <ClCompile Include="..\..\core\input_hw\activator.c" />
     <ClCompile Include="..\..\core\input_hw\gamepad.c" />
+    <ClCompile Include="..\..\core\input_hw\graphic_board.c" />
     <ClCompile Include="..\..\core\input_hw\input.c" />
     <ClCompile Include="..\..\core\input_hw\lightgun.c" />
     <ClCompile Include="..\..\core\input_hw\mouse.c" />
@@ -105,7 +108,7 @@
     <ClCompile Include="..\..\core\input_hw\sportspad.c" />
     <ClCompile Include="..\..\core\input_hw\teamplayer.c" />
     <ClCompile Include="..\..\core\input_hw\terebi_oekaki.c" />
-    <ClCompile Include="..\..\core\input_hw\xe_a1p.c" />
+    <ClCompile Include="..\..\core\input_hw\xe_1ap.c" />
     <ClCompile Include="..\..\core\io_ctrl.c" />
     <ClCompile Include="..\..\core\loadrom.c" />
     <ClCompile Include="..\..\core\m68k\m68kcpu.c" />
@@ -123,6 +126,21 @@
     <ClCompile Include="..\..\core\sound\ym2612.c" />
     <ClCompile Include="..\..\core\state.c" />
     <ClCompile Include="..\..\core\system.c" />
+    <ClCompile Include="..\..\core\tremor\bitwise.c" />
+    <ClCompile Include="..\..\core\tremor\block.c" />
+    <ClCompile Include="..\..\core\tremor\codebook.c" />
+    <ClCompile Include="..\..\core\tremor\floor0.c" />
+    <ClCompile Include="..\..\core\tremor\floor1.c" />
+    <ClCompile Include="..\..\core\tremor\framing.c" />
+    <ClCompile Include="..\..\core\tremor\info.c" />
+    <ClCompile Include="..\..\core\tremor\mapping0.c" />
+    <ClCompile Include="..\..\core\tremor\mdct.c" />
+    <ClCompile Include="..\..\core\tremor\registry.c" />
+    <ClCompile Include="..\..\core\tremor\res012.c" />
+    <ClCompile Include="..\..\core\tremor\sharedbook.c" />
+    <ClCompile Include="..\..\core\tremor\synthesis.c" />
+    <ClCompile Include="..\..\core\tremor\vorbisfile.c" />
+    <ClCompile Include="..\..\core\tremor\window.c" />
     <ClCompile Include="..\..\core\vdp_ctrl.c" />
     <ClCompile Include="..\..\core\vdp_render.c" />
     <ClCompile Include="..\..\core\z80\z80.c" />
@@ -154,6 +172,26 @@
     <ClInclude Include="..\..\core\cd_hw\gfx.h" />
     <ClInclude Include="..\..\core\cd_hw\pcm.h" />
     <ClInclude Include="..\..\core\cd_hw\scd.h" />
+    <ClInclude Include="..\..\core\input_hw\graphic_board.h" />
+    <ClInclude Include="..\..\core\input_hw\xe_1ap.h" />
+    <ClInclude Include="..\..\core\tremor\asm_arm.h" />
+    <ClInclude Include="..\..\core\tremor\backends.h" />
+    <ClInclude Include="..\..\core\tremor\block.h" />
+    <ClInclude Include="..\..\core\tremor\codebook.h" />
+    <ClInclude Include="..\..\core\tremor\codec_internal.h" />
+    <ClInclude Include="..\..\core\tremor\config_types.h" />
+    <ClInclude Include="..\..\core\tremor\ivorbiscodec.h" />
+    <ClInclude Include="..\..\core\tremor\ivorbisfile.h" />
+    <ClInclude Include="..\..\core\tremor\lsp_lookup.h" />
+    <ClInclude Include="..\..\core\tremor\mdct.h" />
+    <ClInclude Include="..\..\core\tremor\mdct_lookup.h" />
+    <ClInclude Include="..\..\core\tremor\misc.h" />
+    <ClInclude Include="..\..\core\tremor\ogg.h" />
+    <ClInclude Include="..\..\core\tremor\os.h" />
+    <ClInclude Include="..\..\core\tremor\os_types.h" />
+    <ClInclude Include="..\..\core\tremor\registry.h" />
+    <ClInclude Include="..\..\core\tremor\window.h" />
+    <ClInclude Include="..\..\core\tremor\window_lookup.h" />
     <ClInclude Include="..\Debug\Breakpoint.h" />
     <ClInclude Include="..\Debug\DebugCPU.h" />
     <ClInclude Include="..\Debug\DebugInfo.h" />
@@ -171,7 +209,6 @@
     <ClInclude Include="..\..\core\input_hw\sportspad.h" />
     <ClInclude Include="..\..\core\input_hw\teamplayer.h" />
     <ClInclude Include="..\..\core\input_hw\terebi_oekaki.h" />
-    <ClInclude Include="..\..\core\input_hw\xe_a1p.h" />
     <ClInclude Include="..\..\core\io_ctrl.h" />
     <ClInclude Include="..\..\core\loadrom.h" />
     <ClInclude Include="..\..\core\m68k\m68k.h" />
@@ -221,6 +258,11 @@
     <None Include="..\..\core\ntsc\license.txt" />
     <None Include="..\..\core\ntsc\readme.txt" />
     <None Include="..\..\core\ntsc\sms_ntsc.txt" />
+    <None Include="..\..\core\tremor\CHANGELOG" />
+    <None Include="..\..\core\tremor\configure.in" />
+    <None Include="..\..\core\tremor\COPYING" />
+    <None Include="..\..\core\tremor\README" />
+    <None Include="..\..\core\tremor\Version_script.in" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -144,7 +144,7 @@ void SetInputFnc(InputCallback _InputFnc)
     gInputFnc = _InputFnc;
 }
 
-#define CONFIG_VERSION "GENPLUS-GX 1.6.1"
+#define CONFIG_VERSION "GENPLUS-GX 1.7.5"
 
 void InitConfig()
 {
@@ -167,37 +167,39 @@ void InitConfig()
     /* version TAG */
     strncpy(config.version,CONFIG_VERSION,16);
 
-    /* sound options */
-    config.psg_preamp     = 150;
-    config.fm_preamp      = 100;
-    config.hq_fm          = 1; /* high-quality resampling */
-    config.psgBoostNoise  = 1;
-    config.filter         = 0; /* no filter */
-    config.lp_range       = 0x9999; /* 0.6 in 16.16 fixed point */
-    config.low_freq       = 880;
-    config.high_freq      = 5000;
-    config.lg             = 1.0;
-    config.mg             = 1.0;
-    config.hg             = 1.0;
-    config.dac_bits 	     = 14; /* MAX DEPTH */ 
-    config.ym2413         = 2; /* AUTO */
-    config.mono           = 0; /* STEREO output */
+	/* sound options */
+	config.psg_preamp = 150;
+	config.fm_preamp = 100;
+	config.hq_fm = 1; /* high-quality resampling */
+	config.psgBoostNoise = 1;
+	config.filter = 0; /* no filter */
+	config.lp_range = 0x9999; /* 0.6 in 16.16 fixed point */
+	config.low_freq = 880;
+	config.high_freq = 5000;
+	config.lg = 1.0;
+	config.mg = 1.0;
+	config.hg = 1.0;
+	config.dac_bits = 14; /* MAX DEPTH */
+	config.ym2413 = 2; /* AUTO */
+	config.mono = 0; /* STEREO output */
 
-    /* system options */
-    config.system         = 0; /* AUTO */
-    config.region_detect  = 0; /* AUTO */
-    config.vdp_mode       = 0; /* AUTO */
-    config.master_clock   = 0; /* AUTO */
-    config.force_dtack    = 0;
-    config.addr_error     = 1;
-    config.bios           = 0;
-    config.lock_on        = 0;
+	/* system options */
+	config.system = 0; /* AUTO */
+	config.region_detect = 0; /* AUTO */
+	config.vdp_mode = 0; /* AUTO */
+	config.master_clock = 0; /* AUTO */
+	config.force_dtack = 0;
+	config.addr_error = 1;
+	config.bios = 0;
+	config.lock_on = 0;
+	config.lcd = 0; /* 0.8 fixed point */
 
-    /* video options */
-    config.overscan = 0;
-    config.gg_extra = 0;
-    config.ntsc     = 0;
-    config.render   = 0;
+	/* video options */
+	config.overscan = 0;
+	config.gg_extra = 0;
+	config.ntsc = 0;
+	config.lcd = 0;
+	config.render = 0;
 
     YM2612Config(config.dac_bits);
 }
@@ -333,15 +335,15 @@ bool OpenROM(EmulatorHandle _hData, const char* _szROMFile)
     case SYSTEM_MCD:
         for(uint32 i = 0; i < MAX_INPUTS; i++)
         {
-            config.input[i].padtype = DEVICE_PAD6B;
+            config.input[i].padtype = DEVICE_PAD2B | DEVICE_PAD3B | DEVICE_PAD6B;
         }	
-        input.system[0] = SYSTEM_MD_GAMEPAD;
-        input.system[1] = SYSTEM_MD_GAMEPAD;
+        input.system[0] = SYSTEM_GAMEPAD;
+        input.system[1] = SYSTEM_GAMEPAD;
         break;
     case SYSTEM_GG:
     case SYSTEM_SMS:
-        input.system[0] = SYSTEM_MS_GAMEPAD;
-        input.system[1] = SYSTEM_MS_GAMEPAD;
+        input.system[0] = SYSTEM_GAMEPAD;
+        input.system[1] = SYSTEM_GAMEPAD;
         break;
     default:
         break;
@@ -531,7 +533,7 @@ int giDeviceValue[kDevice_Count] =
     DEVICE_SPORTSPAD,
     DEVICE_PICO,
     DEVICE_TEREBI,
-    DEVICE_XE_A1P,
+	DEVICE_XE_1AP,
     DEVICE_ACTIVATOR,
 };
 
@@ -577,17 +579,17 @@ void osd_input_update()
         case kDevice_GamePad2B:
             pInputInfo = gGamePad2B;
             uiDevID = DEVICE_PAD2B;
-            uiSystemID = SYSTEM_MS_GAMEPAD;
+            uiSystemID = SYSTEM_GAMEPAD;
             break;
         case kDevice_GamePad3B:
             pInputInfo = gGamePad3B;
             uiDevID = DEVICE_PAD3B;
-            uiSystemID = SYSTEM_MD_GAMEPAD;
+            uiSystemID = SYSTEM_GAMEPAD;
             break;
         case kDevice_GamePad6B:
             pInputInfo = gGamePad6B;
             uiDevID = DEVICE_PAD6B;
-            uiSystemID = SYSTEM_MD_GAMEPAD;
+            uiSystemID = SYSTEM_GAMEPAD;
             break;
         }
 
